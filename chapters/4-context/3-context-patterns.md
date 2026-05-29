@@ -87,7 +87,7 @@ _[2025-12-09]_: Most LLM interaction patterns treat context as **accumulated**�
 
 ### The Default Mental Model (Accumulation)
 
-```
+```text
 User message → append to context
 Tool result → append to context
 Agent response → append to context
@@ -96,7 +96,7 @@ Agent response → append to context
 
 ### Context Loading Mental Model
 
-```
+```text
 For this specific call:
 ├── Load: base config (always)
 ├── Load: project context (if relevant)

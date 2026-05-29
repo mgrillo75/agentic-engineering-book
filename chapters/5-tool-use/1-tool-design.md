@@ -87,7 +87,7 @@ Asking "What should I prioritize?" yields vague answers. Showing 4 options with 
 - Recommended option guides optimal choice
 - Multi-select support when appropriate
 
-**Example: Feature Implementation Scope Clarification**
+#### Example: Feature Implementation Scope Clarification
 
 ```python
 AskUserQuestion(
@@ -185,7 +185,7 @@ AskUserQuestion(
 
 **Avoid:**
 
-```
+```text
 Please choose:
 1. Fast
 2. Cheap

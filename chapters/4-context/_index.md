@@ -19,7 +19,7 @@ Context management sits at the heart of agentic engineering. It determines what 
 
 **Example contrast:**
 
-```
+```text
 # Poor context management (80% filled)
 - 15k tokens of verbose logging output
 - 10k tokens of redundant tool definitions

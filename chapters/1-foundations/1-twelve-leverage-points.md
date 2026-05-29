@@ -63,7 +63,7 @@ What does the agent actually know? What's in the context window? Is it all neces
 - How to distinguish "necessary" context from "nice to have" information
 - Processes for pruning context that isn't contributing to outcomes
 
-**Example: Good vs. Poor Context Management**
+#### Example: Good vs. Poor Context Management
 
 Poor: Loading entire documentation suite into context for every task (500k+ tokens, most irrelevant).
 
@@ -81,7 +81,7 @@ What model is the system using? How capable is it? What tradeoffs exist? Cost vs
 - Identifying cases where over-indexing on capability wastes resources
 - Staying current on model capabilities without constant churn
 
-**Example: Good vs. Poor Model Selection**
+#### Example: Good vs. Poor Model Selection
 
 Poor: Using GPT-4o for simple text extraction tasks that GPT-3.5-turbo handles perfectly (10x cost overhead).
 
@@ -99,7 +99,7 @@ What instructions does the agent have? Are they concrete? Can they be followed p
 - How to test whether a prompt can actually be followed
 - Setting quality bars for prompts before looking elsewhere for the problem
 
-**Example: Good vs. Poor Prompting**
+#### Example: Good vs. Poor Prompting
 
 Poor: "Make this code better" (vague, no success criteria).
 
@@ -252,7 +252,7 @@ This framework comes from [agenticengineer.com](https://agenticengineer.com). Th
 
 ## Anti-Patterns by Leverage Level
 
-_[2026-04-11]_: The per-level examples above describe correct use. This section catalogs named failure behaviors — practitioner-observed anti-patterns that corrupt specific leverage points regardless of individual prompt or tool quality. Four independent practitioners (Liu [1], Hamel [4][5][6], Willison [7]) converge on a common diagnosis: the gap between high- and low-leverage AI engineers is behavioral, not technical. These anti-patterns map that behavioral gap onto the existing hierarchy.
+_[2026-04-11]_: The per-level examples above describe correct use. This section catalogs named failure behaviors — practitioner-observed anti-patterns that corrupt specific leverage points regardless of individual prompt or tool quality. Four independent practitioners (Liu [1], Hamel [4] [5] [6], Willison [7]) converge on a common diagnosis: the gap between high- and low-leverage AI engineers is behavioral, not technical. These anti-patterns map that behavioral gap onto the existing hierarchy.
 
 Organization follows the three leverage tiers from the hierarchy above.
 
@@ -358,7 +358,7 @@ _Source:_ Hamel [6] — "Good writing is good thinking. Prompt engineering requi
 
 The [Engineer Leverage Progression](../9-mental-models/2-prompt-maturity-model.md) section maps these anti-patterns to practitioner framing stages: Isolated Prompting and Tool Proliferation are Stage 1 behaviors applied to system components; Design Delegation and Post-Hoc Learning indicate Stage 1-2 framing applied to Stage 3 leverage points. Testing Theatre and Metric Over-Aggregation are treated in depth in the [Evaluation](../8-practices/2-evaluation.md) chapter.
 
-**Sources**
+## Sources
 
 - [1] Liu, Jason. "Do Your Engineers Know How to Leverage AI?" 2025-09-11.
 - [4] Hamel Husain. "AI Evals For Engineers & Product Managers." 2026-01-23.

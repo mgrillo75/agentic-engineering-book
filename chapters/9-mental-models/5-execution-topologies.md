@@ -25,7 +25,7 @@ This framework, inspired by thread-based engineering work from indydevdan, provi
 
 Engineers appear at two points in any agent workflow: the beginning and the end. At the beginning, engineers provide prompts, plans, or specifications. At the end, they review outputs, validate results, or approve artifacts. Everything between these two boundaries constitutes the **agent autonomy space**.
 
-```
+```text
 Engineer                                                Engineer
    │                                                       │
    │  ┌──────────────────────────────────────────────┐    │
@@ -68,7 +68,7 @@ Each topology follows a consistent structure: definition, visual representation,
 
 Multiple independent operations execute concurrently. Results aggregate after all branches complete.
 
-```
+```text
                     ┌──────────┐
                     │  Branch  │
                ┌───►│    A     │───┐
@@ -105,7 +105,7 @@ _[2026-01-30]_: Model-native swarm orchestration (e.g., Kimi K2.5) enables branc
 
 Operations execute in strict order. Each phase produces artifacts consumed by the next.
 
-```
+```text
 ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
 │ Phase 1 │───►│ Phase 2 │───►│ Phase 3 │───►│ Phase 4 │
 │  Plan   │    │  Build  │    │ Review  │    │ Refine  │
@@ -135,7 +135,7 @@ Operations execute in strict order. Each phase produces artifacts consumed by th
 
 Multiple perspectives analyze the same problem. Results merge through comparison, voting, or reasoned integration.
 
-```
+```text
                     ┌────────────┐
                ┌───►│  Expert A  │───┐
                │    │ (Security) │   │
@@ -170,7 +170,7 @@ Multiple perspectives analyze the same problem. Results merge through comparison
 
 Parent operations spawn child operations. Results bubble up through the hierarchy.
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │                Coordinator              │
 │  ┌─────────────────────────────────┐   │
@@ -210,7 +210,7 @@ Parent operations spawn child operations. Results bubble up through the hierarch
 
 Operations span multiple sessions. State persists in artifacts—files, databases, or memory systems.
 
-```
+```text
 Session 1                Session 2                Session 3
 ┌─────────┐             ┌─────────┐             ┌─────────┐
 │  Work   │             │  Work   │             │  Work   │
@@ -246,13 +246,13 @@ Session 1                Session 2                Session 3
 
 ### The Core Question
 
-**"How do agents get better over time?"**
+#### "How do agents get better over time?"
 
 Without measurement, improvement claims remain aspirational. Execution topologies provide a framework for making improvement observable through four vectors.
 
 ### Four Improvement Vectors
 
-```
+```text
               WIDER (more parallel)
                     ↑
                     │
@@ -291,7 +291,7 @@ This connects to cost management: [Cost and Latency](../8-practices/3-cost-and-l
 
 A baseline measurement enables trend analysis:
 
-```
+```text
 Week 1: Parallel branches = 2, Depth = 4 steps, Tools = 12/session
 Week 4: Parallel branches = 4, Depth = 8 steps, Tools = 35/session
 Week 8: Parallel branches = 5, Depth = 15 steps, Tools = 80/session
@@ -341,7 +341,7 @@ Trust increases through demonstrated reliability:
 
 Real systems often combine topologies:
 
-```
+```text
 Sequential Phases with Parallel Sub-Tasks:
 
 ┌─────────────────────────────────────────────────────────┐
@@ -402,7 +402,7 @@ Regular topology audits catch drift before it calcifies.
 
 Beyond the five core topologies lies the aspirational endpoint: **zero-touch execution**.
 
-```
+```text
 ┌─────────────┐                              ┌─────────────┐
 │   Trigger   │ ────────────────────────────►│   Result    │
 │  (Event)    │         No human in loop     │ (Verified)  │

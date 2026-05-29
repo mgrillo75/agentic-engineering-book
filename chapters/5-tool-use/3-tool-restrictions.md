@@ -149,7 +149,7 @@ Wildcards expand the permission surface. Apply least-privilege principles:
 - **Combine allow and deny:** Allow broad patterns, deny dangerous subsets
 - **Test coverage:** Verify patterns match intended commands before production use
 
-**Anti-Pattern: Over-Broad Wildcards**
+### Anti-Pattern: Over-Broad Wildcards
 
 ```json
 {

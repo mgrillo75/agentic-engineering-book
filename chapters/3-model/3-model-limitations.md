@@ -149,7 +149,7 @@ Models advertise 200K-1M token context windows. This doesn't mean all tokens are
 
 _[2025-12-10]_: Research across 50+ agent implementations shows consistent pattern: context fill inversely correlates with capability. A 60% full context window means 40% remaining capability, not 60% used resources.
 
-```
+```text
 Context Utilization vs. Capability
 0%   ████████████████████  100% capable
 20%  ████████████████░░░░   80% capable
@@ -165,7 +165,7 @@ As context fills, every token competes for attention. Signal-to-noise ratio degr
 
 Place critical instructions at both the beginning and end of context. Repeat essential constraints periodically throughout long conversations.
 
-**Pattern: Instruction anchoring**
+#### Pattern: Instruction anchoring
 
 ```markdown
 # System prompt (start of context)
@@ -187,9 +187,9 @@ Repetition is not redundancy—it's strategic placement within the attention mec
 
 _[2025-12-10]_: The standard pattern is to compact at 90%+ utilization as emergency response. Effective pattern: compact deliberately at 40-60% utilization, before quality degrades.
 
-**Pattern: Proactive context management**
+#### Pattern: Proactive context management
 
-```
+```text
 Traditional (reactive):
 0% → 20% → 40% → 60% → 80% → 95% → COMPACT (emergency)
                                      └─> quality already degraded
@@ -218,7 +218,7 @@ Models forget or deviate from instructions over long interactions. This is not d
 
 Restate critical instructions at regular intervals. Use system prompt anchoring for constraints that must never change.
 
-**Pattern: Checkpoint verification**
+#### Pattern: Checkpoint verification
 
 ```markdown
 ## Workflow
@@ -264,7 +264,7 @@ Models select wrong tools or provide malformed parameters. Function calling is l
 
 Define strict JSON schemas for tool parameters. Provide concrete examples demonstrating correct usage patterns.
 
-**Pattern: Tool definition with examples**
+#### Pattern: Tool definition with examples
 
 ```json
 {
@@ -343,7 +343,7 @@ New model versions change behavior. What worked yesterday stops working today. T
 
 Pin to specific model versions in production. Test new versions in staging before promotion.
 
-**Pattern: Explicit version control**
+#### Pattern: Explicit version control
 
 ```python
 # Production configuration
@@ -367,7 +367,7 @@ Version pinning trades continuous improvement for stability. The choice depends 
 
 Build evaluation suites that catch behavioral changes. Test not just outcomes but also the path taken—tool sequences, intermediate reasoning, output formats.
 
-**Pattern: Behavioral regression tests**
+#### Pattern: Behavioral regression tests
 
 ```python
 # Test case structure

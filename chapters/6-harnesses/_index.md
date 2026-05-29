@@ -15,7 +15,7 @@ order: 1.6.0
 
 The harness is everything around the model that makes it an agent.
 
-```
+```text
 Agent = Model + Harness
 ```
 

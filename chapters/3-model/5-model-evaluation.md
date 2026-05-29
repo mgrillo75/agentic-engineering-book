@@ -70,7 +70,7 @@ Evaluating agents requires different approaches than evaluating chatbots or code
 
 _[2025-12-10]_: Error rates multiply across steps, not add. This shapes every architectural decision in agentic systems.
 
-**The Math of Cascading Failures**
+### The Math of Cascading Failures
 
 If each step in a workflow has accuracy `p`, then the probability of completing an `n`-step task successfully is `p^n`. This compounds errors exponentially:
 
@@ -83,7 +83,7 @@ If each step in a workflow has accuracy `p`, then the probability of completing 
 
 A 95% per-step accuracy—high by many standards—yields only 60% success over 10 steps and nearly 0% over 100 steps. This explains why agents that seem to work well in demos fail catastrophically in production multi-step workflows.
 
-**Architectural Implications**
+### Architectural Implications
 
 The compound error problem drives several core architectural patterns:
 
@@ -433,21 +433,21 @@ LLM judges scale evaluation but cannot replace human judgment entirely.
 
 _[2026-04-11]_: Autoresearch introduces a structurally distinct application of evaluation that does not appear elsewhere in this file. Existing coverage evaluates deployed agent outputs — task completion, tool accuracy, error recovery, LLM-as-judge quality ratings. The autoresearch pattern applies evaluation in a different role: as the fitness function inside an iterative model training loop.
 
-**The structural distinction**
+#### The structural distinction
 
 In standard agent evaluation, an eval suite measures output quality after deployment to guide prompt or architecture improvements. Evaluation is a gate on changes. In autoresearch, validation bits-per-byte (val_bpb) on a held-out set is measured after every five-minute training experiment to make a binary keep/discard decision. Evaluation is not a gate; it is the decision function inside a loop running approximately 100 iterations overnight. The loop modifies architecture, optimizer selection, attention configuration, and regularization — and keeps or discards each change based solely on whether val_bpb improves.
 
-**The formal basis**
+#### The formal basis
 
 GEPA (gradient-free evolutionary program adaptation, arxiv 2501.09361, ICLR 2026) formalizes this pattern: the validation metric is the fitness function for evolutionary search over training programs. The eval infrastructure does not change; its role does. The same held-out set and scalar metric that measure a deployed model's quality can drive an autonomous model improvement loop.
 
-**Why this matters for practitioners**
+#### Why this matters for practitioners
 
 The prerequisite for autoresearch is a scalar quality metric computable in minutes. Practitioners who have already instrumented production eval pipelines — held-out sets, task completion metrics, domain-specific accuracy signals — are closer to autoresearch-capable than they may realize. The infrastructure investment they have made in evaluation supports both post-deployment monitoring and, if the task is narrow and compute is available, autonomous model improvement.
 
 The compound error analysis elsewhere in this file establishes that small per-step accuracy improvements yield dramatic compounding reliability gains. Autoresearch applies this logic one level down: improving per-step training efficiency (via architecture and optimizer search) compounds within a fixed compute budget. The eval-in-the-loop pattern closes a feedback loop that compound error theory implies but does not close.
 
-**Constraints for safe autonomous evaluation loops**
+#### Constraints for safe autonomous evaluation loops
 
 Four constraints identified independently by the HN community (2026-03-08) and embedded in Karpathy's implementation define the minimum viable guardrails for unattended evaluation-driven loops:
 

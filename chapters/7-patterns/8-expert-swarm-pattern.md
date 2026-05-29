@@ -27,7 +27,7 @@ Traditional orchestration patterns face a fundamental tension: generic orchestra
 
 ## Core Structure
 
-```
+```text
 Expert Lead (existing domain expert)
     │
     ├─── expertise.yaml (shared knowledge source)
@@ -145,7 +145,7 @@ Expert Swarm coordinates through two primary mechanisms: spec files and Teammate
 
 The orchestrator creates specification files that workers reference:
 
-```
+```text
 Orchestrator creates: .claude/.cache/specs/knowledge/expert-swarm-pattern-spec.md
 Workers read spec + expertise.yaml
 Workers implement their section
@@ -212,7 +212,7 @@ Expert Swarm enforces strict separation between execution and learning phases.
 
 Allowing workers to update expertise during parallel execution creates race conditions:
 
-```
+```text
 Worker 1 reads expertise.yaml (version A)
 Worker 2 reads expertise.yaml (version A)
 Worker 1 updates expertise.yaml → version B
@@ -222,7 +222,7 @@ Result: Worker 1's learnings lost
 
 Sequential improve phase after swarm completion prevents conflicts:
 
-```
+```text
 Workers 1-10 execute in parallel (read-only access to expertise)
 Swarm completes → commit
 Improve agent analyzes all 10 worker outputs
@@ -232,7 +232,7 @@ Next swarm benefits from all learnings
 
 ### The Workflow
 
-```
+```text
 1. Expert lead spawns 10 workers (read expertise.yaml)
 2. Workers execute tasks in parallel
 3. Workers complete, orchestrator synthesizes
@@ -429,7 +429,7 @@ Claude Code subagent nesting is unreliable—workers cannot reliably spawn sub-w
 
 **Aspirational nested approach:**
 
-```
+```text
 Expert Lead
 ├─ Worker 1 (section A)
 │  ├─ Sub-worker 1.1 (subsection A.1)
@@ -510,7 +510,7 @@ Expertise path-passing adds ~3,000 tokens per worker (for 750-line expertise.yam
 
 ### Decision Framework
 
-```
+```text
 Multiple independent tasks? ─No─→ Use sequential Expert Pattern
           │
          Yes
@@ -563,7 +563,7 @@ Agent teams systems enforce three architectural constraints:
 
 **Structure:**
 
-```
+```text
 Lead (orchestrator, coordination-only tools)
 ├── Build Agent 1: src/auth/*.ts (exclusive ownership)
 ├── Build Agent 2: src/api/*.ts (exclusive ownership)
@@ -596,7 +596,7 @@ Lead (orchestrator, coordination-only tools)
 
 **Structure:**
 
-```
+```text
 Lead (orchestrator, aggregates findings)
 ├── Security Analyst: Read, Grep only
 ├── Performance Auditor: Read, Grep only
@@ -629,7 +629,7 @@ Lead (orchestrator, aggregates findings)
 
 **The problem:** Sometimes teammates need sequential coordination:
 
-```
+```text
 Agent A: Implement database schema
 Agent B: Implement API routes (DEPENDS ON schema)
 ```
@@ -656,7 +656,7 @@ Orchestrator spawns both agents in parallel, but Agent B waits for Agent A compl
 
 Production teams often combine patterns:
 
-```
+```text
 Lead
 ├── Implementation Track (file ownership)
 │   ├── Build Agent 1: auth module

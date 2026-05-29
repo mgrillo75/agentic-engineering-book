@@ -248,7 +248,7 @@ Legacy systems impose hard limits on agent autonomy. An agent cannot safely modi
 
 The workshop-to-factory transition is not a goal to pursue—it is a consequence of scale that demands infrastructure. The signals indicating the transition has become necessary:
 
-```
+```text
 Scale Transition Signals:
 
   Are agent count > 8-12?

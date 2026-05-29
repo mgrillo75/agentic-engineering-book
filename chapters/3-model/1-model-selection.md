@@ -71,7 +71,7 @@ Reliability compounds across a system—small model failures cascade through mul
 
 _[2025-12-09]_: Small models function as RAG systems when embedded in an orchestrator pattern.
 
-```
+```text
 USER/trigger → Orchestrator → Delegation → retrieval-agent (Haiku, natural_language_query)
 ```
 
@@ -102,7 +102,7 @@ This explains why Haiku excels at scouting—it's not doing heavy reasoning, it'
 
 _[2026-04-11]_: A third pathway now exists between using a commodity SLM and staying on frontier: training a small model overnight specifically for your production task via an autonomous agent loop. This is distinct from prompt-tuning or hyperparameter search — the agent modifies model architecture, optimizer configuration, attention patterns, and regularization, and rewrites the training loop itself.
 
-**The mechanism: autoresearch**
+#### The mechanism: autoresearch
 
 Autoresearch (Karpathy, 2026-03-06) is an autonomous agent loop that receives a training script (`train.py`) and a single validation metric (bits-per-byte on a held-out set), then iterates approximately 12 cycles per hour — running five-minute experiments and applying a binary keep/discard decision per cycle. An overnight run delivers roughly 100 experiments. The agent searches over architecture and training-procedure space, not hyperparameter space. The formal basis is gradient-free evolutionary program adaptation: GEPA (arxiv 2501.09361, ICLR 2026) formalizes this as evolutionary search over training programs where the validation metric is the fitness function.
 
@@ -115,7 +115,7 @@ Four constraints make unattended runs viable (independently identified by the HN
 | Time-boxed experiments | Each trial capped at ~5 minutes, preventing runaway compute      |
 | Git checkpoint per run | Every accepted change is committed; rollback is always available |
 
-**Production evidence**
+#### Production evidence
 
 Two high-credibility results establish viability:
 
@@ -124,7 +124,7 @@ Two high-credibility results establish viability:
 
 Academic backing: Marquez Ayala et al. (KDD SKnowLLM Workshop 2025, arxiv 2505.24189) found fine-tuned SLMs outperform prompted frontier LLMs by 10% on structured domain tasks.
 
-**When to use this pathway**
+#### When to use this pathway
 
 This pathway applies when all four conditions hold:
 
@@ -167,7 +167,7 @@ Latency matters most in multi-agent architectures: a single orchestrator running
 
 ## The Decision Framework
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         Model Selection                                  │
 ├─────────────────────────────────────────────────────────────────────────┤
@@ -307,7 +307,7 @@ _[2026-01-30]_: Orchestration research reveals distinct model selection strategi
 
 **Common progression:** Start cheap for data gathering, escalate for decisions, balance for execution.
 
-```
+```text
 Haiku (Research) → Opus (Design) → Sonnet (Implement) → Haiku (Verify)
   ↓                  ↓                ↓                    ↓
 Fast data         Creative         Efficient          Fast
@@ -363,7 +363,7 @@ gathering         decisions        execution       verification
 
 ### Practical Example: PR Review
 
-```
+```text
 Orchestrator (Sonnet):
 ├─ Spawn 3 parallel reviewers (single message):
 │  ├─ Security (Opus): Deep analysis, high stakes

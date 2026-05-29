@@ -126,7 +126,7 @@ CrewAI organizes agents into "crews" where each agent has a defined role, backst
 
 Role-based design mirrors human team organization:
 
-```
+```text
 ┌─────────────────────────────────────┐
 │              Flow                   │
 │  ┌───────────────────────────────┐  │
@@ -293,7 +293,7 @@ Claude Agent SDK does not fit when:
 
 ### Decision Tree
 
-```
+```text
 Is model-agnostic critical?
 ├─ Yes → LangGraph or CrewAI
 └─ No

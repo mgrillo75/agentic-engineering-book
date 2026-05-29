@@ -34,7 +34,7 @@ Recent research reveals that verb mood (declarative vs. imperative) affects reas
 
 **Declarative statements** describe facts or states without issuing direct commands:
 
-```
+```text
 The output follows JSON schema format.
 Analysis identifies security vulnerabilities.
 Test coverage reaches 80% minimum.
@@ -42,7 +42,7 @@ Test coverage reaches 80% minimum.
 
 **Imperative commands** issue direct instructions:
 
-```
+```text
 Format output as JSON schema.
 Identify security vulnerabilities.
 Achieve 80% test coverage.
@@ -362,8 +362,6 @@ Analyze the codebase for security issues.
 ```
 ````
 
-````
-
 **Format variance impact:** Research shows **up to 40% accuracy variance** in smaller models based solely on delimiter choice. Frontier models are more robust but still show preference-based performance differences.
 
 ### Recommended Structural Order
@@ -391,11 +389,13 @@ EMNLP 2024 study (arxiv:2311.10054) tested 162 different personas across 2,410 q
 **Key Finding:** Personas "do not improve performance" on factual or reasoning tasks. In 30% of cases, persona framing **decreased accuracy**.
 
 **Why personas fail:**
+
 - Irrelevant details compete for attention in context window
 - Models lack internal role-based reasoning pathways
 - Persona details can introduce biased reasoning patterns
 
 **When personas help:**
+
 - Creative writing tasks requiring specific tone/style
 - Customer-facing outputs needing particular voice
 - Exploratory brainstorming requiring perspective shifts
@@ -408,13 +408,15 @@ When role framing is justified, use minimal, task-relevant framing:
 
 ```markdown
 # Over-specified (ineffective)
+
 You are a senior security engineer with 15 years of experience in financial
 services, specializing in cryptographic implementations and threat modeling,
 who has worked at major banks and led security teams...
 
 # Minimal (effective when role matters)
+
 Focus on security implications, particularly authentication and authorization.
-````
+```
 
 The minimal version specifies the domain focus without elaborate backstory. The model doesn't benefit from fictional experience claims.
 
@@ -539,7 +541,7 @@ The final line provides focus after context, leveraging recency bias.
 
 **Pattern:**
 
-```
+```text
 Perhaps it might be worth considering possibly trying to maybe implement
 something that could potentially help with this issue if feasible.
 ```
@@ -548,7 +550,7 @@ something that could potentially help with this issue if feasible.
 
 **Better:**
 
-```
+```text
 Implement error recovery for network timeout scenarios.
 ```
 
@@ -556,7 +558,7 @@ Implement error recovery for network timeout scenarios.
 
 **Pattern:**
 
-```
+```text
 I know you're very smart and capable, so please use your intelligence to
 carefully analyze this complex problem and apply your expertise to find
 the optimal solution.
@@ -566,7 +568,7 @@ the optimal solution.
 
 **Better:**
 
-```
+```text
 Analyze for security vulnerabilities. Prioritize authentication issues.
 ```
 
@@ -574,7 +576,7 @@ Analyze for security vulnerabilities. Prioritize authentication issues.
 
 **Pattern:**
 
-```
+```text
 Avoid global state, don't use mutable data structures, never expose internals.
 ```
 
@@ -582,7 +584,7 @@ Avoid global state, don't use mutable data structures, never expose internals.
 
 **Better:**
 
-```
+```text
 Use dependency injection, prefer immutable data structures, return sanitized errors.
 ```
 
@@ -590,7 +592,7 @@ Use dependency injection, prefer immutable data structures, return sanitized err
 
 **Pattern:**
 
-```
+```text
 Return the results in a nice readable format.
 ```
 
@@ -598,7 +600,7 @@ Return the results in a nice readable format.
 
 **Better:**
 
-```
+```text
 Return JSON array of objects with fields: id, name, status, timestamp.
 ```
 
@@ -606,7 +608,7 @@ Return JSON array of objects with fields: id, name, status, timestamp.
 
 **Pattern:**
 
-```
+```text
 You are a world-class expert in security, performance, architecture, UX,
 accessibility, and business strategy with decades of experience in...
 ```
@@ -615,7 +617,7 @@ accessibility, and business strategy with decades of experience in...
 
 **Better:**
 
-```
+```text
 Prioritize security analysis. Note performance issues as secondary findings.
 ```
 

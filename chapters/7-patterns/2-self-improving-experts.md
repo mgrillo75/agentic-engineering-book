@@ -134,7 +134,7 @@ This enables tracking the evolution of knowledge and pruning outdated patterns.
 
 ### Directory Structure
 
-```
+```text
 .claude/commands/experts/
 └── [domain]-expert/
     ├── [domain]_expert_plan.md
@@ -266,23 +266,23 @@ You analyze recent [domain] changes and update expert knowledge.
 ## Workflow
 
 1. **Analyze Recent Changes**
+
    ```bash
    git log --oneline -20 -- "[relevant-paths]"
    git diff main -- "[relevant-files]"
    ```
-````
 
 1. **Extract Learnings**
    - Identify successful patterns
    - Note approaches that worked
    - Document fixes and improvements
 
-2. **Identify Anti-Patterns**
+1. **Identify Anti-Patterns**
    - Review issues fixed
    - Note failure modes
    - Capture prevention strategies
 
-3. **Update Expertise**
+1. **Update Expertise**
    - Edit `[domain]_expert_plan.md` Expertise sections
    - Edit `[domain]_expert_build.md` Expertise sections
    - Add timestamps to all new entries
@@ -307,7 +307,6 @@ You analyze recent [domain] changes and update expert knowledge.
 
 - File: changes made
 - Sections updated
-
 ````
 
 ---
@@ -317,18 +316,22 @@ You analyze recent [domain] changes and update expert knowledge.
 The pattern is implemented in several projects in this knowledge base:
 
 ### KotaDB Experts
+
 `appendices/examples/kotadb/.claude/commands/experts/`
 
 Domain-specific experts for the KotaDB project, each accumulating knowledge about their specialized area. These demonstrate production-ready patterns including:
+
 - Webhook idempotency and external service integration
 - Validation patterns for APIs
 - Environment-specific configuration resolution
 - Anti-patterns discovered through debugging
 
 ### Questions Workflow Expert
+
 `.claude/agents/experts/questions/`
 
 Specializes in iterative content development through question-driven exploration. The expertise in the four agents (ask, build, deepen, format) has evolved to include:
+
 - Question selection patterns that elicit substantive responses
 - Voice preservation techniques during content synthesis
 - Follow-up question templates that reveal genuine depth
@@ -342,6 +345,7 @@ Note: This expert has a non-standard structure (4 agents instead of 3) but follo
 ## Anti-Patterns
 
 ### Updating Workflow Sections
+
 **Problem**: Modifying the stable process sections makes the expert unpredictable.
 
 **Why it's bad**: The workflow is the expert's consistent methodology. Changing it means each execution could behave differently, making the system unreliable.
@@ -349,6 +353,7 @@ Note: This expert has a non-standard structure (4 agents instead of 3) but follo
 **Solution**: Only update Expertise sections. If the workflow itself needs to change, that's a major revision requiring deliberate design.
 
 ### Removing Patterns Without Evidence
+
 **Problem**: Deleting expertise based on hunches rather than actual failures.
 
 **Why it's bad**: You might be removing knowledge that's still valuable in edge cases or specific contexts.
@@ -356,6 +361,7 @@ Note: This expert has a non-standard structure (4 agents instead of 3) but follo
 **Solution**: Only remove patterns when you have clear evidence they cause problems. Document why in the improve commit.
 
 ### Not Dating New Expertise Entries
+
 **Problem**: Adding new patterns without timestamp prefixes.
 
 **Why it's bad**: Can't track when knowledge was added, making it hard to prune outdated patterns or understand evolution.
@@ -363,6 +369,7 @@ Note: This expert has a non-standard structure (4 agents instead of 3) but follo
 **Solution**: Always prefix new expertise entries with `*[YYYY-MM-DD]*:` to establish provenance.
 
 ### Letting Expertise Sections Grow Unbounded
+
 **Problem**: Continuously adding patterns without consolidation or organization.
 
 **Why it's bad**: Expertise becomes harder to navigate and apply. Context windows fill up with outdated or redundant information.
@@ -370,6 +377,7 @@ Note: This expert has a non-standard structure (4 agents instead of 3) but follo
 **Solution**: Periodically consolidate related patterns, remove duplicates, and organize into clear categories. Consider splitting overgrown experts into specialized sub-experts.
 
 ### Improving Without Production Evidence
+
 **Problem**: Running the Improve command without actual production usage to analyze.
 
 **Why it's bad**: You end up adding theoretical patterns that haven't been validated in real usage.
@@ -377,6 +385,7 @@ Note: This expert has a non-standard structure (4 agents instead of 3) but follo
 **Solution**: Only run Improve after meaningful production usage. Look for concrete evidence in git history, issues, and actual code changes.
 
 ### Mixing Multiple Domains in One Expert
+
 **Problem**: Creating a single expert that tries to cover too many different concerns.
 
 **Why it's bad**: Expertise becomes unfocused, and different domains may evolve at different rates or in conflicting directions.
@@ -388,22 +397,26 @@ Note: This expert has a non-standard structure (4 agents instead of 3) but follo
 ## Questions to Explore
 
 ### How do you decide what's worth capturing vs. discarding?
+
 When analyzing production experience, which patterns represent genuine learnings versus one-off solutions? What criteria distinguish reusable knowledge from context-specific fixes?
 
 ### What's the right consolidation strategy?
+
 As expertise accumulates, how do you balance comprehensiveness with clarity? When should you consolidate multiple specific patterns into a general principle, and when should you keep them separate?
 
 ### How does this interact with external documentation?
+
 When should expertise reference external docs versus inline them? How do you keep expertise fresh when the external tools/APIs evolve?
 
 ### Can Improve be automated?
+
 Could you run the Improve command automatically after certain triggers (e.g., merged PRs, fixed issues)? What would be the tradeoffs of automation versus deliberate human-guided improvement?
 
 ---
 
 ## Operational Insights
 
-*[2025-12-09]*: After extended use of self-improving expert systems, several insights emerged about why this pattern works reliably in practice:
+_[2025-12-09]_: After extended use of self-improving expert systems, several insights emerged about why this pattern works reliably in practice:
 
 ### Thin Orchestrator, Fat Specialists
 
@@ -412,6 +425,7 @@ The orchestrator's job is **coordination, not execution**. It parses arguments, 
 ### Spec File as Multi-Purpose Artifact
 
 The intermediate artifact (spec file) serves multiple roles:
+
 - **Contract** between plan and build phases
 - **Checkpoint** for user review before potentially destructive changes
 - **Context carrier** without bloating agent prompts
@@ -420,6 +434,7 @@ The intermediate artifact (spec file) serves multiple roles:
 ### Maintenance Burden Reduction
 
 The self-improvement value isn't dramatic compound effects—it's **maintenance burden reduction**. You don't have to:
+
 - Remember what patterns you've used
 - Manually update agent knowledge
 - Re-explain context from prior implementations
@@ -429,6 +444,7 @@ The improve agent handles institutional memory. Even if individual updates are s
 ### Sequential When Dependencies Exist
 
 The strict plan → build → improve sequence works because there's a genuine dependency chain:
+
 - Build **needs** the spec file from plan
 - Improve **needs** the completed implementation to analyze
 
@@ -442,7 +458,7 @@ Reliability comes from correct delegation. Each agent has a focused job with res
 
 ## Three-Role Architecture for Self-Improvement
 
-*[2025-12-10]*: The conceptual "self-improving expert" pattern has a formalized execution-level architecture that separates learning into three distinct roles. This addresses a critical failure mode: when evaluation and rewriting are combined in a single agent, you get **premature optimization** and **compression bias**—the model prematurely discards exploration paths or compresses nuanced lessons into oversimplified patterns.
+_[2025-12-10]_: The conceptual "self-improving expert" pattern has a formalized execution-level architecture that separates learning into three distinct roles. This addresses a critical failure mode: when evaluation and rewriting are combined in a single agent, you get **premature optimization** and **compression bias**—the model prematurely discards exploration paths or compresses nuanced lessons into oversimplified patterns.
 
 ### The Three Roles
 
@@ -469,6 +485,7 @@ The architecture separates concerns across three specialized components:
 **Output**: Structured lessons learned—what patterns emerged, why they worked/failed, under what conditions.
 
 **Implementation Pattern**:
+
 ```python
 def reflect(execution_trace, max_iterations=5):
     """Extract insights through iterative refinement."""
@@ -487,7 +504,7 @@ def reflect(execution_trace, max_iterations=5):
             break
 
     return insights
-````
+```
 
 #### 3. Curator: Deterministic Knowledge Integration
 
@@ -586,7 +603,7 @@ _[2025-12-25]_: Experience with large-scale agent systems revealed a variant of 
 
 Instead of expertise embedded in command files, a separate `expertise.yaml` (500-700 lines) contains all domain knowledge. This book uses this structure for all 11 expert domains:
 
-```
+```text
 .claude/agents/experts/<domain>/
 ├── expertise.yaml              # Complete knowledge base in YAML
 ├── <domain>-question-agent.md  # Read-only Q&A interface
@@ -1175,35 +1192,35 @@ The /do command routes user requirements directly to expert domains based on pat
 
 **Pattern A - Direct Questions** → **question-agent** (domain-specific)
 
-```
+```text
 User: "/do How do I structure a PR?"
 → github-question-agent (haiku, read-only)
 ```
 
 **Pattern B - Simple Implementation** → **build-agent** (skip planning)
 
-```
+```text
 User: "/do Fix typo in README.md line 42"
 → knowledge-build-agent (with inline spec)
 ```
 
 **Pattern C - Standard Plan→Build** → **plan-agent** → [approval] → **build-agent**
 
-```
+```text
 User: "/do Add new section on context patterns"
 → knowledge-plan-agent → spec file → [user reviews] → knowledge-build-agent
 ```
 
 **Pattern D - Full Lifecycle** → **plan** → [approval] → **build** → **improve**
 
-```
+```text
 User: "/do Implement GitHub release workflow"
 → github-plan-agent → spec → [approval] → github-build-agent → github-improve-agent
 ```
 
 **Pattern E - Improve Only** → **improve-agent** (analysis mode)
 
-```
+```text
 User: "/do Update GitHub expertise from recent commits"
 → github-improve-agent (analyzes git log, updates expertise.yaml)
 ```
@@ -1245,7 +1262,7 @@ With 11 domains, clear boundaries prevent overlap:
 **Overlap Resolution**:
 When operations span domains, use **primary domain routing** with cross-references:
 
-```
+```text
 User: "/do Create GitHub PR for new book chapter"
 
 Primary: github-plan-agent (handles PR creation)
@@ -1277,7 +1294,7 @@ _[2025-12-26]_: Commit 35a871a demonstrates the eight-step pattern for absorbing
 
 ### The Absorption Pattern (8 Steps)
 
-**Step 1: Identify Standalone Agent for Absorption**
+#### Step 1: Identify Standalone Agent for Absorption
 
 **Before State**:
 
@@ -1292,7 +1309,7 @@ _[2025-12-26]_: Commit 35a871a demonstrates the eight-step pattern for absorbing
 - Domain knowledge would benefit from accumulation (commit patterns, PR structures)
 - Standalone structure limits evolution
 
-**Step 2: Create Domain Directory**
+#### Step 2: Create Domain Directory
 
 ```bash
 mkdir -p .claude/agents/experts/github
@@ -1300,7 +1317,7 @@ mkdir -p .claude/agents/experts/github
 
 **Naming Convention**: Domain name in singular form (github, orchestration, knowledge), not pluralized.
 
-**Step 3: Extract Domain Knowledge to expertise.yaml**
+#### Step 3: Extract Domain Knowledge to expertise.yaml
 
 **Source Material**: github-versioning-agent.md contained embedded knowledge:
 
@@ -1321,7 +1338,7 @@ mkdir -p .claude/agents/experts/github
 
 **Key Insight**: Monolithic agent contained ~150 lines of actual knowledge mixed with 233 lines of workflow instructions. Expertise extraction **separated knowledge from process**, enabling independent evolution.
 
-**Step 4: Create plan-agent from Analysis Capabilities**
+#### Step 4: Create plan-agent from Analysis Capabilities\*\*
 
 **Source**: github-versioning-agent.md had "planning" concerns mixed with execution.
 
@@ -1349,7 +1366,7 @@ color: yellow
 
 **Lines**: 229 lines (60% workflow, 40% quick reference from expertise.yaml)
 
-**Step 5: Create build-agent from Execution Capabilities**
+#### Step 5: Create build-agent from Execution Capabilities\*\*
 
 **Source**: github-versioning-agent.md had execution logic for git/gh commands.
 
@@ -1376,7 +1393,7 @@ color: green
 
 **Lines**: 187 lines (execution-focused, references expertise.yaml for conventions)
 
-**Step 6: Create improve-agent for Git History Learning**
+#### Step 6: Create improve-agent for Git History Learning
 
 **New Capability** (didn't exist in standalone agent):
 
@@ -1416,7 +1433,7 @@ gh pr view <number> --json title,body,reviews,state
 
 This enables **repository-specific learning**: observed that this repo uses direct-to-main workflow (0 PRs), favors feat (45%) and refactor (20%) commits, has 28% generic "update" messages.
 
-**Step 7: Create question-agent for Read-Only Q&A**
+#### Step 7: Create question-agent for Read-Only Q&A\*\*
 
 **New Capability** (advisory interface):
 
@@ -1447,7 +1464,7 @@ color: cyan
 
 **Key Benefit**: Haiku model provides 4× cost reduction for simple Q&A vs sonnet-based build/plan agents.
 
-**Step 8: Delete Original Agent, Update Routing**
+#### Step 8: Delete Original Agent, Update Routing\*\*
 
 **Deletions**:
 
@@ -1500,7 +1517,7 @@ domain_routing:
 
 **Commit Message** (35a871a):
 
-```
+```text
 feat(experts): add github expert domain with full 4-agent pattern
 
 Migrates github-versioning-agent → experts/github/ with:
@@ -1615,40 +1632,40 @@ output-style: practitioner-focused
 
 **Cost-sensitive queries:** Route to Haiku agents when speed/cost matters
 
-```
+```text
 Query: "How do I structure a PR?"
 → github-question-agent (haiku, read-only, 4× cheaper)
 ```
 
 **Capability-aware delegation:** Route based on required tool access
 
-```
+```text
 Task: "Implement new section"
 → knowledge-build-agent (has Write, Edit, WebSearch)
 ```
 
 **Domain discovery:** "Which agents can help with GitHub operations?"
 
-```
+```text
 Query index: domain="github" AND tools CONTAINS "Bash"
 → [github-build-agent, github-improve-agent]
 ```
 
 ### Registry Update Strategy
 
-**Option 1: Build-time generation**
+#### Option 1: Build-time generation
 
 - Script scans `.claude/agents/experts/` at build time
 - Generates `agent-registry.json`
 - Commit to repository (static lookup)
 
-**Option 2: Runtime query**
+#### Option 2: Runtime query
 
 - On-demand frontmatter parsing
 - No pre-generated file required
 - Slower but always fresh
 
-**Option 3: Hybrid with cache invalidation**
+#### Option 3: Hybrid with cache invalidation
 
 - Generate on first query, cache result
 - Invalidate when `.claude/agents/` directory changes

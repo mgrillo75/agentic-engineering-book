@@ -131,7 +131,7 @@ Code-based orchestration (deterministic routing) and LLM-based routing (flexible
 
 ### Topology Selection Heuristic
 
-```
+```text
 Is the workflow linear with clear stages?
     Yes → Sequential Pipeline
     No  → Continue
@@ -161,7 +161,7 @@ Defense-in-depth is the baseline pattern, not a nice-to-have. Every production m
 
 ### The Defense-in-Depth Stack
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │  Manual Review (human approval gates)        │
 ├─────────────────────────────────────────────┤
@@ -330,7 +330,7 @@ This is not an argument against high autonomy. It is evidence that autonomy leve
 
 Match autonomy level to task risk and reversibility:
 
-```
+```text
 Is the action easily reversible?
     Yes → Higher autonomy acceptable (bounded autonomy or above)
     No  → Continue

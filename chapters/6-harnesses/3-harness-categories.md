@@ -138,7 +138,7 @@ _[2026-04-12]_: Workflow harnesses are a recently named category (2026-Q1) that 
 
 **Tooling hierarchy:**
 
-```
+```text
 Scale and abstraction:
   Raw coding agent       → Single-session, ad-hoc interaction
   Workflow harness (GSD) → Multi-phase structured lifecycle, context-engineered

@@ -90,7 +90,7 @@ _[2026-01-11]_: **Real-Time Message Steering** - Claude Code 2.1.0 introduced th
 - **Context injection:** "The config file moved to /etc/app.conf last week"
 - **Priority shifts:** "This is blocking, handle error cases before edge cases"
 
-**Pattern: Progressive Refinement**
+### Pattern: Progressive Refinement
 
 Rather than crafting a perfect initial prompt, start with a direction and refine as Claude works:
 
@@ -141,7 +141,7 @@ _[2026-03-19]_: **Claude Cowork and Claude Dispatch** — Claude Cowork is Anthr
 
 **Architectural relationship:**
 
-```
+```text
 Claude Cowork (desktop app)
   └── Claude Dispatch (research preview)
         ├── Local file access
@@ -251,7 +251,7 @@ _[2025-12-11]_: Claude Code's Task tool is unavailable to subagents—they canno
 
 This creates a flat orchestration model: one HEAD agent coordinates multiple subagents, but subagents are leaf nodes that cannot delegate further.
 
-**Workaround 1: Subprocess spawning via `claude -p`**
+#### Workaround 1: Subprocess spawning via `claude -p`
 
 Subagents can invoke `claude -p <prompt>` through the Bash tool to spawn independent Claude Code processes:
 
@@ -272,7 +272,7 @@ EOF
 - **Cost**: Adds 10+ second subprocess startup overhead per spawn
 - **Cost**: Subprocess billing is separate (may complicate cost tracking)
 
-**Workaround 2: MCP-based agent spawning**
+#### Workaround 2: MCP-based agent spawning
 
 Create an MCP server that exposes agent spawning as a tool. This maintains observability within the Claude Code session while enabling nested delegation:
 
@@ -297,7 +297,7 @@ Subagents invoke the MCP tool, which handles spawning and returns results within
 - **Cost**: Additional architectural complexity
 - **Cost**: MCP server itself must manage agent lifecycles
 
-**Workaround 3: Document-driven coordination**
+#### Workaround 3: Document-driven coordination
 
 Instead of nested spawning, use shared document state for multi-level coordination:
 
@@ -338,13 +338,13 @@ _[2026-02-05]_: Claude Code ships with agent teams, a multi-agent coordination l
 
 Agent teams are experimental and disabled by default. Enable them before use:
 
-**Option 1: Environment Variable**
+#### Option 1: Environment Variable
 
 ```bash
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 ```
 
-**Option 2: settings.json**
+#### Option 2: settings.json
 
 ```json
 {
@@ -408,7 +408,7 @@ export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 
 **2. Create a team naturally**:
 
-```
+```text
 I'm designing a CLI tool that helps developers track TODO comments across
 their codebase. Create an agent team to explore this from different angles: one
 teammate on UX, one on technical architecture, one playing devil's advocate.
@@ -453,7 +453,7 @@ Use when: Lead should focus entirely on breaking down work, assigning tasks, and
 
 Require teammates to plan before implementing. Teammate works in read-only mode until lead approves approach.
 
-```
+```text
 Spawn an architect teammate to refactor the authentication module.
 Require plan approval before they make any changes.
 ```
@@ -477,9 +477,9 @@ Task file locking prevents race conditions when multiple teammates claim simulta
 
 Agent teams enable five coordination patterns documented in the implementation:
 
-**1. Lead-Teammate**
+#### 1. Lead-Teammate
 
-```
+```text
 ┌──────────┐
 │   Lead   │
 └─────┬────┘
@@ -500,9 +500,9 @@ Agent teams enable five coordination patterns documented in the implementation:
 
 Lead spawns N teammates, distributes work via SendMessage, collects results via Join. Common for parallel data processing, batch operations, or distributed search.
 
-**2. Swarm**
+#### 2. Swarm
 
-```
+```text
 ┌──────────────────────────────────┐
 │         Broadcast (all)          │
 └──────────┬───────────────────────┘
@@ -517,9 +517,9 @@ Lead spawns N teammates, distributes work via SendMessage, collects results via 
 
 N peers spawned simultaneously, Broadcast coordinates, emergent behavior from local rules. No central coordinator after initialization; agents self-organize based on shared state.
 
-**3. Pipeline**
+#### 3. Pipeline
 
-```
+```text
 Agent A ──SendMessage──> Agent B ──SendMessage──> Agent C ──SendMessage──> Agent D
   │                        │                        │                        │
   └─── Process ────────────└─── Transform ──────────└─── Enrich ────────────└─── Finalize
@@ -527,9 +527,9 @@ Agent A ──SendMessage──> Agent B ──SendMessage──> Agent C ──
 
 Sequential processing where each agent completes before next begins. Agent A messages Agent B, B processes and messages C, etc. Classic ETL pattern for multi-stage transformations.
 
-**4. Council**
+#### 4. Council
 
-```
+```text
          ┌──────────────┐
          │   Arbiter    │
          └──────┬───────┘
@@ -551,9 +551,9 @@ Sequential processing where each agent completes before next begins. Agent A mes
 
 Spawn domain experts, Broadcast question, collect responses, synthesize with arbiter. Enables multi-perspective analysis without requiring experts to coordinate directly.
 
-**5. Plan Approval (HITL)**
+#### 5. Plan Approval (HITL)
 
-```
+```text
 ┌──────────┐
 │ Planner  │
 └─────┬────┘
@@ -607,7 +607,7 @@ Agent teams excel at:
 
 Teammates load CLAUDE.md, MCP servers, and skills automatically, but not lead's conversation history. Include task-specific details in spawn prompt:
 
-```
+```text
 Spawn a security reviewer teammate with the prompt: "Review the authentication module
 at src/auth/ for security vulnerabilities. Focus on token handling, session
 management, and input validation. The app uses JWT tokens stored in
@@ -626,7 +626,7 @@ httpOnly cookies. Report any issues with severity ratings."
 
 If lead starts implementing instead of waiting:
 
-```
+```text
 Wait for your teammates to complete their tasks before proceeding
 ```
 
@@ -726,7 +726,7 @@ Or in `settings.json`:
 
 **Decision Framework:**
 
-```
+```text
 Do teammates need to message each other during execution? ──No──> Use subagents (Task tool) (simpler)
                 │
                Yes
@@ -848,7 +848,7 @@ _[2026-02-05]_: As agent domain count scales (11 domains in this book), template
 
 Instead of manually authoring 4 agents + expertise.yaml for each domain, maintain standardized templates:
 
-```
+```text
 .claude/templates/
 ├── base-agent.md            # Common frontmatter + structure
 ├── plan-agent.md            # Specification creation template
@@ -1056,9 +1056,9 @@ _[2026-01-11]_: Claude Code 2.1.0 introduced automatic skill hot-reload. Skills 
 2. **Save** the file
 3. **Use** the skill immediately—no restart, no reload command
 
-**Development Pattern: Iterative Refinement**
+#### Development Pattern: Iterative Refinement
 
-```
+```text
 # Terminal 1: Claude Code session
 > [Working on task, notice skill needs adjustment]
 
@@ -1119,7 +1119,7 @@ Two configuration layers shape orchestrator behavior:
 
 Restricts tools uniformly across HEAD and all subagents. The HEAD agent can explore (Read, Glob) and delegate (Task), but cannot implement. _Note: This also restricts subagents unless they explicitly declare tools in frontmatter._
 
-**2. Slash Commands as Workflow Boundaries**
+#### 2. Slash Commands as Workflow Boundaries
 
 Orchestrator commands (like `/orchestrators:knowledge`) embody this pattern structurally. The orchestrator has one job: spawn and coordinate specialists. The slash command defines the workflow, not the implementation.
 
@@ -1175,9 +1175,9 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 ```
 
-**3. HEAD cannot implement (no Write/Edit/Bash)**
+#### 3. HEAD cannot implement (no Write/Edit/Bash)
 
-**4. Subagents opt-in to capabilities they need**
+#### 4. Subagents opt-in to capabilities they need
 
 **Trade-offs:**
 
@@ -1368,7 +1368,7 @@ Session memory operates as a background process that automatically summarizes co
 
 **Storage Architecture:**
 
-```
+```text
 ~/.claude/projects/<project-hash>/<session-id>/session-memory/summary.md
 ```
 
@@ -1417,7 +1417,7 @@ The `#` shortcut provides a fast path for adding memories directly to CLAUDE.md 
 
 **Syntax:**
 
-```
+```text
 # Remember to use pytest fixtures for test setup
 ```
 
@@ -1434,7 +1434,7 @@ The rules system enables modular, path-specific configuration separate from mono
 
 Claude Code recursively discovers all `.md` files in these directories. Subdirectories are supported for organization:
 
-```
+```text
 .claude/rules/
 ├── testing/
 │   ├── pytest-conventions.md
@@ -1486,7 +1486,7 @@ Rules without `paths` frontmatter load for all files (project-wide). Rules with 
 
 Rules can be symlinked across projects for shared conventions.
 
-**Example: User-level Security Rules**
+##### Example: User-level Security Rules
 
 ```bash
 # Create user-level rule once
@@ -1587,7 +1587,7 @@ Session memory provides this external storage mechanism. Agents now have persist
 
 ### Decision Framework
 
-```
+```text
 Is memory automatic or manual?
 │
 ├─ Automatic → Session Memory
@@ -1653,13 +1653,13 @@ Applies to all projects for this user automatically. No per-project configuratio
 
 **Session 2:** Start new work in same project
 
-```
+```text
 > Recalled 1 memory
 ```
 
 **Expand with Ctrl+O:**
 
-```
+```text
 Previous session refactored auth module, extracted JWT logic to
 separate service. Token validation now happens in middleware layer
 before route handlers execute.
@@ -1708,7 +1708,7 @@ _[2026-01-30]_: Claude Code ships with capabilities hidden behind server-side fe
 3. Dynamically capture minified function name
 4. Replace gate logic with unconditional return
 
-**Example: Swarm Mode Gate**
+#### Example: Swarm Mode Gate
 
 **Original minified code:**
 
@@ -1900,7 +1900,7 @@ Feature gates discovered through these techniques unlock capabilities documented
 - Five coordination patterns (Leader-Worker, Swarm, Pipeline, Council, Plan Approval)
 - Backend selection (in-process, tmux, iterm2)
 
-**See:** [TeammateTool: Native Multi-Agent Coordination](#teammatetool-native-multi-agent-coordination-hidden) for what these patches unlock.
+**See:** [TeammateTool: Native Multi-Agent Coordination](#agent-teams-native-multi-agent-coordination-experimental) for what these patches unlock.
 
 ### Sources
 

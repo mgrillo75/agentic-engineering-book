@@ -79,7 +79,7 @@ _[2026-04-12]_: The trajectory capture question is frequently deferred because i
 
 ## Decision Tree for Harness Selection
 
-```
+```text
 Is the work single-session and exploratory?
 ├─ Yes → Chat interface or raw coding agent
 └─ No (multi-session or structured work)

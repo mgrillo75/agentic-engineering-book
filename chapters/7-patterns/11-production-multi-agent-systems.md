@@ -65,7 +65,7 @@ Agent sessions are inherently ephemeral. Context windows fill, processes crash, 
 
 ### Core Structure
 
-```
+```text
 ┌─────────────────────────────┐
 │     Persistent Identity     │
 │  ┌───────────────────────┐  │
@@ -197,7 +197,7 @@ No single supervision mechanism handles the full failure spectrum. A fast proces
 
 ### Core Structure
 
-```
+```text
 Tier 4: Strategic Patrol (AI, slow, deep reasoning)
   │     "Is the overall system making progress?"
   │     Runs: Every 30-60 minutes
@@ -243,7 +243,7 @@ Both implement the same escalation pattern (mechanical → AI reasoning → stra
 
 ### Escalation Flow
 
-```
+```text
 Daemon detects: Worker 7 unresponsive (30s timeout)
     │
     ▼
@@ -306,7 +306,7 @@ Shared memory coordination breaks at scale. When 20 agents read and write a shar
 
 ### Core Structure
 
-```
+```text
 Worker A ──── TASK_COMPLETE ────► Merge Queue
 Worker B ──── MERGE_READY ──────► Merge Processor
 Merge Proc ── REWORK_REQUEST ──► Worker B
@@ -345,7 +345,7 @@ _[2026-02-13]_: Overstory implements typed mail protocol through custom SQLite d
 
 Minimal mail implementation using filesystem:
 
-```
+```text
 mail/
 ├── outbox/
 │   └── worker-7-task-complete-2026-02-11T14:30:00.json
@@ -409,7 +409,7 @@ Agent systems leak resources. A worker that finishes its task but remains runnin
 
 ### Core Structure
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │              Worker Lifecycle                │
 │                                             │
@@ -459,7 +459,7 @@ _[2026-02-13]_: Overstory implements the same pattern through worktree lifecycle
 
 A well-defined cleanup sequence prevents partial resource release:
 
-```
+```text
 1. Push branch to remote
    └── Failure here: Branch preserved locally, supervisor notified
 
@@ -502,7 +502,7 @@ When 20 workers operate across multiple repositories, tracking overall progress 
 
 ### Core Structure
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │              CONVOY                       │
 │  (persistent tracking unit)              │
@@ -542,7 +542,7 @@ When 20 workers operate across multiple repositories, tracking overall progress 
 
 **Persistence across failures:**
 
-```
+```text
 Swarm 1: Workers A, B, C
   - Worker A: completes task 1 ✓
   - Worker B: crashes on task 2 ✗
@@ -593,7 +593,7 @@ With 20 workers pushing branches in parallel, merge conflicts are not occasional
 
 ### Core Structure
 
-```
+```text
 Worker 1 ─── branch ──► ┌──────────────┐
 Worker 2 ─── branch ──► │              │
 Worker 3 ─── branch ──► │  Merge Queue │ ──► main branch
@@ -666,7 +666,7 @@ These six patterns compose into a coherent production architecture. No pattern o
 
 ### Composition Map
 
-```
+```text
                     Convoy (tracking)
                          │
                     ┌────▼────┐
@@ -763,7 +763,7 @@ Not every system needs all six patterns. Complexity should match scale.
 
 ### Decision Framework
 
-```
+```text
 How many concurrent agents?
 │
 ├── 1-3 agents

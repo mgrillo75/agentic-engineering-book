@@ -31,7 +31,7 @@ Knowledge bases aren't documentation—they're the runtime instructions that det
 
 The ACE playbook format exemplifies context as code:
 
-```
+```text
 [str-00001] helpful=5 harmful=0 :: Use structured output for complex tasks
 [cal-00003] helpful=8 harmful=0 :: Token cost = (input + output) * rate
 [mis-00004] helpful=6 harmful=0 :: Don't retry on rate limits without backoff
@@ -71,7 +71,7 @@ When agent behavior regresses, you can `git bisect` to find which knowledge chan
 
 ### Testing: Helpful/Harmful Counters as Unit Tests
 
-```
+```text
 # Before testing
 [str-00023] :: Always validate user input
 
@@ -89,7 +89,7 @@ You can track these over time like code coverage metrics.
 
 ### Modular Organization: Category Prefixes, Unique IDs
 
-```
+```text
 strategies/
   str-00001.md  # High-level approaches
   str-00002.md
@@ -115,7 +115,7 @@ Just like code modules, categories enable:
 
 ### Refactoring: Semantic Deduplication
 
-```
+```text
 # Before refactoring (duplication)
 [str-00008] :: For database queries, use connection pooling
 [str-00015] :: When connecting to databases, use a connection pool
@@ -130,7 +130,7 @@ Like code refactoring, you extract common patterns, eliminate redundancy, and ma
 
 ### Documentation: Each Entry is Self-Describing
 
-```
+```text
 # Weak (requires external context)
 [str-00042] :: Use the pattern
 
@@ -166,7 +166,7 @@ Like good function names and docstrings, each knowledge entry should be understa
 
 ## The Continuum: From Documents to Code
 
-```
+```text
 Documents                                                    Code
     │                                                         │
     ├─ Plain text notes (no structure)                       │
@@ -240,7 +240,7 @@ cp ~/agents/security-expert.md ./project-x/.agents/
 
 **Transparent system composition:**
 
-```
+```text
 agents/
 ├── security-expert.md         # 245 lines
 ├── architect.md               # 312 lines
@@ -317,7 +317,7 @@ BMAD-METHOD (34.5k GitHub stars) implements agent-as-code across 26 agents:
 
 BMAD includes agents specifically for _creating_ agents:
 
-```
+```text
 /create-agent "API integration specialist"
     ↓
 Builder agent generates:
@@ -423,7 +423,7 @@ def test_agent_follows_knowledge():
 
 ### Knowledge Metrics
 
-```
+```text
 # Knowledge health dashboard
 Total entries: 247
   Proven (helpful > 5, harmful = 0): 89 (36%)

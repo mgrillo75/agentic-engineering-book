@@ -64,7 +64,7 @@ When prompts fail, it's often because the contract was violated—either the pro
 
 The model will interpret what you write, not what you meant. Explicit, unambiguous instructions outperform clever shortcuts:
 
-```
+```text
 # Fragile
 "Handle errors appropriately"
 

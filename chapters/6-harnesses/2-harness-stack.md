@@ -234,7 +234,7 @@ Subagent delegation is the harness component responsible for spawning bounded su
 
 When a coding agent underperforms, Raschka's six-component taxonomy provides the audit sequence. The order reflects the components most commonly responsible for failures:
 
-```
+```text
 1. Workspace context       → Is the agent aware of the correct environment?
 2. Prompt shape            → Is the stable/dynamic split correct? Is caching active?
 3. Context management      → Has context quality degraded through accumulation?

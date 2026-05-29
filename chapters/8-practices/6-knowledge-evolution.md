@@ -170,7 +170,7 @@ _[2026-02-05]_: Production multi-agent systems extend the learning separation pr
 
 In flat team orchestration (see [Expert Swarm Pattern](../../7-patterns/8-expert-swarm-pattern.md)), multiple agents execute tasks in parallel. If agents update shared expertise during execution, race conditions emerge:
 
-```
+```text
 Agent 1 reads expertise.yaml (version A)
 Agent 2 reads expertise.yaml (version A)
 Agent 1 updates expertise.yaml → version B
@@ -196,7 +196,7 @@ Result: Agent 1's learnings lost
 
 **Example workflow:**
 
-```
+```text
 1. Orchestrator spawns 10 build agents (read expertise.yaml)
 2. Build agents execute tasks in parallel
 3. All agents complete, orchestrator commits changes

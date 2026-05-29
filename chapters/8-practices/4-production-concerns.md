@@ -118,15 +118,15 @@ _Document production incidents, what happened, what you learned:_
 
 _[2025-12-09]_: Hard-won lessons from practitioners running multi-agent systems at scale (including a 400K LOC codebase). These patterns emerge repeatedly across production deployments.
 
-**Context Switching Kills Productivity**
+#### Context Switching Kills Productivity
 
 "It is better to start with fresh context on a fresh problem rather than using an existing context." Don't try to salvage a degraded agent—boot a new one. The cost of context confusion exceeds the cost of restarting. In multi-agent systems, this is even more important: let each subagent start fresh and focused rather than inheriting accumulated state.
 
-**CLAUDE.md as Convention Encoding**
+#### CLAUDE.md as Convention Encoding
 
 Document project conventions in CLAUDE.md. Agents read this to understand boundaries, patterns, and expectations. For large codebases, this is essential—agents can't infer all conventions from code alone. Investing time in clear specs saves 10× in agent iterations. The alternative is watching agents repeatedly violate conventions you thought were obvious.
 
-**Lifecycle Hooks for Control**
+#### Lifecycle Hooks for Control
 
 Wire hooks at critical transitions:
 
@@ -136,7 +136,7 @@ Wire hooks at critical transitions:
 
 These hooks provide observability and control points without requiring constant human monitoring.
 
-**The Orchestrator Observes Itself**
+#### The Orchestrator Observes Itself
 
 _[2025-12-09]_: Hooks enable a powerful pattern—the orchestrator becomes self-aware of its own operations. PreToolUse and PostToolUse hooks capture every Claude Code action, creating real-time visibility into agent behavior.
 
@@ -156,7 +156,7 @@ Traditional software logs after the fact. Hooks let platforms observe themselves
 - [Tool Use: Tool Restrictions as Security Boundaries](../5-tool-use/3-tool-restrictions.md#tool-restrictions-as-security-boundaries) — How hooks integrate with tool permission boundaries
 - [Claude Code Hooks Documentation](/.claude/ai_docs/claude-code/hooks.md) — Complete technical reference
 
-**Test-First Discipline**
+#### Test-First Discipline
 
 The test-first pattern works remarkably well with multi-agent systems:
 
@@ -167,7 +167,7 @@ The test-first pattern works remarkably well with multi-agent systems:
 
 This creates natural quality gates and makes progress measurable. Agents write better code when following this discipline—they have clear success criteria.
 
-**Dedicated Review Gate**
+#### Dedicated Review Gate
 
 Maintain a dedicated code-review subagent as a final gate. Configure it to enforce:
 
@@ -177,11 +177,11 @@ Maintain a dedicated code-review subagent as a final gate. Configure it to enfor
 
 This catches issues before they reach humans, and the reviewing agent doesn't have the sunk-cost bias of having written the code.
 
-**Documentation Investment**
+#### Documentation Investment
 
 Time spent on clear specs saves 10× in agent iterations. If you're watching agents go in circles, the problem is usually upstream in the specification, not in the agents themselves. Write clear specs once, save debugging time forever.
 
-**Opus 4.5 for Orchestration**
+#### Opus 4.5 for Orchestration
 
 Practitioner consensus: Opus 4.5 is particularly effective at managing teams of subagents. It handles the coordination overhead well and produces more coherent multi-agent workflows than smaller models used for orchestration.
 
@@ -191,17 +191,17 @@ Practitioner consensus: Opus 4.5 is particularly effective at managing teams of 
 
 _[2025-12-09]_: Hard-won lessons from practitioners deploying Google ADK agents to production. These are framework-agnostic lessons that apply broadly—they just happen to surface most visibly with ADK on Google Cloud.
 
-**Infrastructure Permissions**
+#### Infrastructure Permissions
 
 Enable Cloud Run Admin API _before_ deployment. Missing permissions fail with cryptic errors that don't obviously point to the permission issue. This isn't ADK-specific—it's a Google Cloud pattern. Before deploying anything, verify required APIs are enabled.
 
-**Environment Variable Naming**
+#### Environment Variable Naming
 
 Generic environment variable names conflict with system variables. `MODEL` is particularly problematic—it conflicts with Google Cloud's internal variables.
 
 The fix: prefix everything. Use `GEMMA_MODEL_NAME` instead of `MODEL`, `ADK_API_KEY` instead of `API_KEY`. This namespacing prevents silent conflicts that cause mysterious runtime behavior.
 
-**MCP Session Affinity**
+#### MCP Session Affinity
 
 MCP connections are stateful. At scale, this means:
 
@@ -211,7 +211,7 @@ MCP connections are stateful. At scale, this means:
 
 Plan load balancing accordingly. Stateless is easy; stateful requires architecture decisions.
 
-**Asyncio Everywhere**
+#### Asyncio Everywhere
 
 ADK and MCP both assume async-first Python. Common mistakes:
 
@@ -221,7 +221,7 @@ ADK and MCP both assume async-first Python. Common mistakes:
 
 Default to `async def` for everything. Sync code in an async codebase serializes naturally parallel operations—you lose the concurrency benefits without obvious errors.
 
-**The "Works Locally, Fails in Cloud" Pattern**
+#### The "Works Locally, Fails in Cloud" Pattern
 
 Local development hides many issues:
 
@@ -287,7 +287,7 @@ async function sessionStartHook(context: SessionContext): Promise<void> {
 
 **The pattern:** Before file modifications, inject dynamic context agents need for correct implementation.
 
-**Example: TypeScript module editing**
+#### Example: TypeScript module editing
 
 ```typescript
 async function preEditHook(file: string): Promise<void> {
@@ -320,7 +320,7 @@ async function preEditHook(file: string): Promise<void> {
 
 **The pattern:** Load domain-specific expertise dynamically based on repository structure or task context.
 
-**Example: Domain detection + expertise loading**
+#### Example: Domain detection + expertise loading
 
 ```typescript
 async function sessionStartHook(): Promise<void> {
@@ -352,7 +352,7 @@ async function sessionStartHook(): Promise<void> {
 
 **The pattern:** Validate file modifications against agent's declared contract before write operations.
 
-**Example: Contract-based scope validation**
+#### Example: Contract-based scope validation
 
 ```typescript
 async function preEditHook(file: string, agent: AgentContext): Promise<void> {
@@ -395,7 +395,7 @@ async function preEditHook(file: string, agent: AgentContext): Promise<void> {
 
 **The solution:** Shared utilities library:
 
-```
+```text
 .claude/hooks/
 ├── utils/
 │   ├── logger.ts        # Structured logging

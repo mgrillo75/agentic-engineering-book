@@ -93,7 +93,7 @@ _[2025-12-09]_: For complex workflows, let the agent write orchestration code in
 
 _[2025-12-09]_: MCP deployment isn't one-size-fits-all. The transport mechanism determines scaling characteristics and operational constraints.
 
-**Three Deployment Patterns**
+### Three Deployment Patterns
 
 | Pattern             | Mechanism                             | Scaling                                   | Best For                               |
 | ------------------- | ------------------------------------- | ----------------------------------------- | -------------------------------------- |
@@ -101,7 +101,7 @@ _[2025-12-09]_: MCP deployment isn't one-size-fits-all. The transport mechanism 
 | **Streamable HTTP** | SSE-based, independent process        | Stateless replication possible            | Cloud services, production APIs        |
 | **Sidecar**         | Kubernetes co-located container       | Lifecycle-coupled with main app           | Orchestrated container environments    |
 
-**The Statefulness Challenge**
+### The Statefulness Challenge
 
 MCP connections are stateful. This creates real constraints:
 
@@ -111,9 +111,9 @@ MCP connections are stateful. This creates real constraints:
 
 For simple deployments, this doesn't matter. At scale, it determines your architecture.
 
-**Pattern Selection Guide**
+### Pattern Selection Guide
 
-```
+```text
 Local dev only?
   └── Yes → stdio (simplest, no scaling needed)
   └── No → Cloud deployment?
@@ -122,7 +122,7 @@ Local dev only?
                 └── No → Streamable HTTP (stateless scaling)
 ```
 
-**Google ADK's MCP Integration**
+### Google ADK's MCP Integration
 
 ADK supports both directions:
 
@@ -131,7 +131,7 @@ ADK supports both directions:
 
 The bidirectional nature enables framework interoperability—ADK tools accessible from Claude Code, MCP servers accessible from ADK.
 
-**Tool Filtering at Runtime**
+### Tool Filtering at Runtime
 
 `tool_filter` in McpToolset enables dynamic capability restriction:
 
@@ -155,7 +155,7 @@ This serves two purposes:
 
 _[2026-01-17]_: Claude Code 2.1.7 introduced automatic MCP tool selection, enabled by default. This changes how tools surface in agent workflows.
 
-**Default Behavior**
+### Default Behavior
 
 Starting with version 2.1.7:
 
@@ -163,7 +163,7 @@ Starting with version 2.1.7:
 - Tool descriptions load automatically without explicit configuration
 - System uses keyword matching against tool names and descriptions
 
-**Threshold Configuration (2.1.9+)**
+### Threshold Configuration (2.1.9+)
 
 Control when tool descriptions defer vs. load upfront:
 
@@ -183,7 +183,7 @@ Control when tool descriptions defer vs. load upfront:
 - `auto:15-20` — Aggressive: load more tools upfront
 - `auto:0` — Disable auto mode (manual tool management)
 
-**When to Adjust Threshold**
+### When to Adjust Threshold
 
 | Scenario                            | Recommended Threshold |
 | ----------------------------------- | --------------------- |
@@ -192,7 +192,7 @@ Control when tool descriptions defer vs. load upfront:
 | Context-constrained workflows       | Lower (`auto:5`)      |
 | Discovery-heavy exploration         | Higher (`auto:20`)    |
 
-**Trade-offs**
+### Trade-offs
 
 Benefits of auto mode:
 
@@ -206,7 +206,7 @@ Costs:
 - Context overhead for tool descriptions
 - Less predictable tool availability
 
-**Disabling Auto Mode**
+### Disabling Auto Mode
 
 For deterministic workflows where tool availability must be explicit:
 

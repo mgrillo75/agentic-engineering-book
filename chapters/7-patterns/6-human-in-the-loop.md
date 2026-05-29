@@ -45,7 +45,7 @@ Not every action needs a gate. Use these criteria to decide:
 
 ### The Gate Decision Tree
 
-```
+```text
 Is this action reversible within 5 minutes?
  |-- Yes --> Is it modifying production systems?
  |            |-- Yes --> GATE: Require approval
@@ -95,7 +95,7 @@ Is this the first time performing this type of operation?
 
 The agent presents a plan and waits for approval before execution.
 
-```
+```text
 Agent: "I will deploy version 2.3.1 to production. This will:
         - Update 3 API endpoints
         - Run database migration #47
@@ -119,7 +119,7 @@ Agent: "I will deploy version 2.3.1 to production. This will:
 
 The agent executes, then pauses for human review before proceeding to the next phase.
 
-```
+```text
 Agent: "I completed the code refactoring. Summary:
         - Changed 12 files
         - Updated 47 function signatures
@@ -141,7 +141,7 @@ Agent: "I completed the code refactoring. Summary:
 
 Natural gate placement at phase transitions in the [Plan-Build-Review](1-plan-build-review.md) pattern:
 
-```
+```text
 Research --> [GATE: approve research findings]
          --> Plan --> [GATE: approve spec before implementation]
                   --> Build --> [GATE: review before merge/deploy]
@@ -153,7 +153,7 @@ Research --> [GATE: approve research findings]
 
 The agent proceeds autonomously until it encounters uncertainty or risk.
 
-```
+```text
 Agent: "I encountered an unexpected situation:
         - Found 3 circular dependencies I didn't anticipate
         - Options:
@@ -306,14 +306,14 @@ For complex approvals, use artifacts rather than inline descriptions:
 
 **Spec files** (from Plan-Build-Review):
 
-```
+```text
 Agent: "Review the spec at docs/specs/auth-v2.1-deploy.md
         and respond with 'approve spec' or provide modifications."
 ```
 
 **Diff summaries**:
 
-```
+```text
 Agent: "Review the PR at github.com/org/repo/pull/234
         12 files changed, +340/-120 lines
         Key changes: [summarized]"
@@ -443,7 +443,7 @@ The [Autonomous Loops (Ralph Wiggum)](4-autonomous-loops.md) pattern deliberatel
 
 **Hybrid approach:** Autonomous loops with escalation gates:
 
-```
+```python
 while not complete:
     result = attempt_iteration()
     if result.needs_human:

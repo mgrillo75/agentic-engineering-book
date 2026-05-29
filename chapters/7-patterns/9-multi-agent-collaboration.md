@@ -19,7 +19,7 @@ Multi-agent collaboration enables simultaneous input from multiple specialized p
 
 ## Your Mental Model
 
-**Think "team design meeting" not "sequential handoffs."**
+### Think "team design meeting" not "sequential handoffs."
 
 Traditional orchestration runs agents in sequence or parallel but isolated. Multi-agent collaboration creates a shared conversation space where agents interact with each other's ideas. The orchestrator selects 2-3 relevant agents per message (not all agents every time—that creates chaos), agents respond in character, and the human steers the discussion.
 
@@ -27,7 +27,7 @@ Traditional orchestration runs agents in sequence or parallel but isolated. Mult
 
 ### The Conversation Flow
 
-```
+```text
 User: "How should we handle authentication?"
     ↓
 Orchestrator selects: Security Expert, Architect, Developer
@@ -132,7 +132,7 @@ Each agent response adds context. With 5 agents × 3 rounds = 15 responses, cont
 
 **Authentic disagreement example:**
 
-```
+```text
 Security Expert: "Never store tokens in localStorage—XSS vulnerability"
 Developer: "I disagree—with proper CSP headers, localStorage is fine and simpler to implement"
 Architect: "Both points valid. Security concern is real, but CSP mitigates.
@@ -165,7 +165,7 @@ BMAD-METHOD (MIT-licensed, 34.5k stars) demonstrates this pattern in production.
 
 **Example session:**
 
-```
+```text
 User: "We need to add real-time notifications to the app."
 
 BMad Master selects: John (PM), Winston (Architect), Amelia (Developer)

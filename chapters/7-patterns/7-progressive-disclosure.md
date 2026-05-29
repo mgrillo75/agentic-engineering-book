@@ -35,7 +35,7 @@ Information loads in three tiers:
 2. **Full content on selection** — Complete documentation when explicitly chosen (~500-5,000 words)
 3. **Detailed resources on-demand** — Supporting files, source code, references (unbounded)
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │ Context Window                                       │
 │                                                     │
@@ -125,7 +125,7 @@ When a task involves authentication, `authentication-expert` loads:
 **Resources (Tier 3):**
 During execution, the skill references supporting files:
 
-```
+```text
 Read: /examples/oauth-implementation.py
 Read: /configs/jwt-validation.yaml
 Grep: "refresh_token" in /src/auth/
@@ -176,7 +176,7 @@ To activate: "Load [Domain] expertise"
 
 For deep knowledge structures, use nested tiers:
 
-```
+```text
 Level 0: Category summaries
   └── Level 1: Section overviews
         └── Level 2: Full documentation
@@ -185,7 +185,7 @@ Level 0: Category summaries
 
 Example traversal:
 
-```
+```text
 "What testing patterns exist?" → Level 0 (category list)
 "Tell me about integration testing" → Level 1 (section overview)
 "How do I mock external services?" → Level 2 (full documentation)
@@ -285,7 +285,7 @@ skill:
 
 **Problem:** Activating multiple knowledge items "just in case" defeats the purpose.
 
-```
+```text
 # Anti-pattern: loading everything anyway
 Task: Fix authentication bug
 Activated: auth-expert, database-expert, api-expert, testing-expert, security-expert

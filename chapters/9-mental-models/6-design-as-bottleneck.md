@@ -64,7 +64,7 @@ The Theory of Constraints (Goldratt, 1984) states that every system has exactly 
 
 Multi-agent systems invert this. A swarm of 20-30 agents can implement a well-decomposed feature set in minutes. The implementation phase, once the bottleneck, becomes nearly instantaneous relative to design. The constraint moves upstream.
 
-```
+```text
 Traditional Software Development:
 
 Design          Implementation          Testing
@@ -146,7 +146,7 @@ Most mental models for AI agents draw from human interaction: agents as assistan
 
 The piston model discards all of this. A piston fires when compressed gas expands. It doesn't confirm, negotiate, or report status. The mechanical contract is the assignment: compression happens, the piston fires.
 
-```
+```text
 Conversational Model:              Piston Model:
 
 Orchestrator: "Can you do X?"      ┌─────────────┐
@@ -190,7 +190,7 @@ This contract has three properties:
 
 The conversational model creates a characteristic failure: **agents that announce readiness and wait.** An agent that says "I'm ready for my next task" is consuming resources while producing nothing. Worse, it creates a coordination dependency—something must respond to the readiness announcement.
 
-```
+```text
 Idle Agent Anti-Pattern:
 
 Agent A: "Ready for work"         ─── idle ───
@@ -241,7 +241,7 @@ Two failing models dominate thinking about agent state:
 
 The middle path separates **who** from **how**:
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │                PERSISTENT IDENTITY                   │
 │                                                      │
@@ -280,7 +280,7 @@ The persistent layer holds identity, skills, track record, and accumulated exper
 
 When an agent needs context from a prior session, it performs what Gas Town calls **seancing**—querying past session records for decisions and rationale. This is analogous to institutional memory in organizations: no employee remembers every meeting, but meeting notes make past decisions retrievable.
 
-```
+```text
 Current Session:
 
 Agent: "What authentication approach did we choose for the API?"
@@ -354,7 +354,7 @@ _[2026-02-11]_: Gas Town implements this model through "polecats"—agents with 
 
 Most agent systems treat execution as ephemeral—work happens, results appear, the process vanishes. The ledger model treats execution as accounting: every action, decision, and outcome is a timestamped, attributed entry in a permanent record.
 
-```
+```text
 Fire-and-Forget Model:            Ledger Model:
 
 Task → Agent → Result             Task → Agent → Result
@@ -397,7 +397,7 @@ Attribution is not a compliance afterthought—it is system intelligence. The le
 
 One anti-pattern threatens ledger integrity: **closing entries retroactively.** When an agent marks work as complete after the fact—or worse, when a supervisor closes entries on behalf of agents—the ledger loses its causal ordering.
 
-```
+```text
 Correct Ledger:                    Corrupted Ledger:
 
 14:23 START task-42                14:23 START task-42
@@ -463,7 +463,7 @@ _[2026-02-11]_: Gas Town implements the ledger model through its "Bead" system�
 
 Two distinct models exist for organizing agentic work:
 
-```
+```text
 WORKSHOP (1-3 agents):            FACTORY FLOOR (10-30 agents):
 
 ┌─────────────────────┐           ┌──────────────────────────────────┐
@@ -496,7 +496,7 @@ The factory floor is industrial. No human can directly manage 20+ agents. Infras
 
 The transition between these models is not gradual. It is a phase change—a discontinuity where the old model stops working and new infrastructure becomes necessary.
 
-```
+```text
 Agent Count:    1    3    5    8    10   15   20   30
                 │    │    │    │    │    │    │    │
 Workshop:       ████████████████░░░░░░░░░░░░░░░░░░
@@ -565,7 +565,7 @@ _[2026-02-11]_: Gas Town's entire architecture is factory-floor infrastructure�
 
 The decision to move from workshop to factory is not about ambition—it is about observable symptoms:
 
-```
+```text
 Transition Signals (Workshop → Factory):
 
   Merge conflicts appearing?
@@ -597,7 +597,7 @@ Ethan Mollick frames this as "capability overhang" — the gap between what AI c
 
 The chat interface shapes cognition. A chat window makes users think in terms of "questions and responses." A task-dispatch interface makes users think in terms of "work delegation." The same model, different interaction paradigm, different effective capability.
 
-```
+```text
 Developer-Side Bottleneck (Models 1-5):      User-Side Bottleneck (Model 6):
 
 AI Capability          AI Capability
@@ -676,7 +676,7 @@ Most capability-overhang conversations conflate the interface layer with the mod
 
 These five models form an interlocking system. Each addresses a different aspect of multi-agent work at scale:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                                                                     │
 │  INTERFACE AS BOTTLENECK                                            │

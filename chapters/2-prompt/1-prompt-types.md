@@ -418,7 +418,7 @@ This prevents premature deletion of valuable patterns. Require evidence from mul
 - What approval gates exist?
 - How to ensure system stability?
 
-**Implementation Pattern: Bulk-Update Coordination**
+### Implementation Pattern: Bulk-Update Coordination
 
 _[2025-12-08]_: Level 7 meta-cognitive prompts can coordinate multiple Level 6 self-improving prompts using parallel delegation. The bulk-update pattern spawns improve commands in parallel using lightweight models (e.g., Haiku), where each sub-agent invokes a single `*_improve.md` command in its own isolated context window. This achieves:
 
@@ -450,7 +450,7 @@ Example: A bulk-update orchestrator spawns 8 sub-agents in a single message usin
 
 Prompts naturally evolve as requirements grow. Common progressions:
 
-```
+```text
 Level 1 → Level 2
   "I need this to work with different inputs"
   Add: $ARGUMENTS or template variables

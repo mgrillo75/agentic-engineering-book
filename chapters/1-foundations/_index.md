@@ -45,7 +45,7 @@ Explaining agentic engineering in 60 seconds:
 
 The pillars are deeply interdependent:
 
-```
+```text
 ┌──────────────────────────────────────────────────────┐
 │                      Harness                         │
 │                                                      │

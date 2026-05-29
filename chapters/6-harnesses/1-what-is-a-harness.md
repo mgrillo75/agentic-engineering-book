@@ -15,7 +15,7 @@ order: 1.6.1
 
 A harness is everything around the model that makes it an agent.
 
-```
+```text
 Agent = Model + Harness
 ```
 
@@ -137,7 +137,7 @@ The shift: the harness is now the primary design object. When an agent underperf
 
 Each era added a layer without eliminating the previous ones. Prompt engineering remains essential. Context engineering remains essential. Harness engineering adds a third layer of systematic optimization that operates above and around both.
 
-```
+```text
 Era 3: Harness Engineering
   ↑ wraps
 Era 2: Context Engineering

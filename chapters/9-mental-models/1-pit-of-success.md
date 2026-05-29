@@ -21,7 +21,7 @@ Design systems where the easiest path is also the correct path.
 
 The term comes from Rico Mariani's work on .NET Framework design: make it easier to write correct code than incorrect code. Instead of guardrails that prevent mistakes, design the system so the natural path leads to the right outcome.
 
-```
+```text
 Traditional approach:        Pit of Success:
 
     ┌─────────┐                 ╲         ╱
@@ -42,7 +42,7 @@ This is the holy grail of agentic engineering: **Shape the input tokens so the m
 
 Transformers are next-token prediction machines. Every input token influences the probability distribution over output tokens. The context window isn't just "information for the model"—it's the gravitational field that pulls outputs toward certain regions of possibility space.
 
-```
+```text
 Input Tokens                    Output Distribution
 ┌─────────────────────┐
 │ System prompt       │         ┌──────────────────┐
@@ -95,7 +95,7 @@ This is why prompt engineering works: you're not "instructing" the model in a hu
 
 ### Make the Correct Output the Obvious Continuation
 
-```
+```text
 # Weak: Model must infer what you want
 "Handle this user request appropriately."
 

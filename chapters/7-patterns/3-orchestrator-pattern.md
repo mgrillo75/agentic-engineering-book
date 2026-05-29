@@ -20,7 +20,7 @@ A main coordinator invokes specialized sub-agents, synthesizes their outputs, an
 
 ## Core Structure
 
-```
+```text
 Orchestrator (Main Coordinator)
 ├── Phase 1: Scout Agent (read-only exploration)
 ├── Phase 2: Planning Council (parallel domain experts)
@@ -41,7 +41,7 @@ Orchestrator (Main Coordinator)
 
 All parallel agents must be invoked in **one message** for true concurrency. Sequential messages serialize execution.
 
-```
+```text
 In a single message, make multiple Task tool calls:
 - Task(subagent_type="build-agent", prompt="[spec for file1]")
 - Task(subagent_type="build-agent", prompt="[spec for file2]")
@@ -134,7 +134,7 @@ This raw data crowds out the orchestrator's primary job: workflow coordination a
 
 **Deploy fresh context windows for search operations:**
 
-```
+```text
 Orchestrator (clean context):
 ├─ Task → Scout: "Find all Python files in src/"
 │         Scout context: file paths, directory structure
@@ -406,7 +406,7 @@ The orchestrator LLM focuses on decisions that require reasoning: which primitiv
 
 Primitives compose naturally:
 
-```
+```python
 SequentialAgent([
     ParallelAgent([scout_a, scout_b, scout_c]),  # Fan-out exploration
     planning_agent,                               # Synthesize findings
@@ -469,21 +469,21 @@ Maintain engagement without revealing machinery:
 
 **Starting:**
 
-```
+```text
 "Breaking this into parallel tracks"
 "Checking a few angles on this"
 ```
 
 **Working:**
 
-```
+```text
 "Got several threads running"
 "Early returns look promising"
 ```
 
 **Synthesis:**
 
-```
+```text
 "Pulling it together now"
 "Building on what I found"
 ```
@@ -575,7 +575,7 @@ _[2026-01-30]_: TeammateTool and orchestration skill research document backgroun
 
 **Non-blocking check** (`block=False`):
 
-```
+```text
 TaskOutput(task_id="task-123", block=False)
 → Returns current progress or "still running"
 ```
@@ -584,7 +584,7 @@ Use for status updates while orchestrator continues other work.
 
 **Blocking wait** (`block=True`):
 
-```
+```text
 TaskOutput(task_id="task-123", block=True)
 → Waits for completion, returns full results
 ```
@@ -624,7 +624,7 @@ _[2026-01-30]_: Real-world orchestration combines fundamental patterns into comp
 
 **Structure:**
 
-```
+```text
 1. Read PR metadata (orchestrator, 1 file)
 2. Fan-Out: Spawn 3 parallel reviewers (single message)
    - security-reviewer (Opus): Check vulnerabilities
@@ -638,7 +638,7 @@ _[2026-01-30]_: Real-world orchestration combines fundamental patterns into comp
 
 **User experience:**
 
-```
+```text
 "Got several threads running on this review..."
 
 [30 seconds later]
@@ -656,7 +656,7 @@ The SQL issue needs immediate attention before merge."
 
 **Structure:**
 
-```
+```text
 1. Clarify via AskUserQuestion (4×4 rich questions)
 2. Pipeline Phase 1: Research (Haiku)
    - Find existing theme code
@@ -679,7 +679,7 @@ The SQL issue needs immediate attention before merge."
 
 **Structure:**
 
-```
+```text
 1. Fan-Out: Parallel investigation (Haiku, 3 agents)
    - Agent A: Analyze error logs
    - Agent B: Trace code flow

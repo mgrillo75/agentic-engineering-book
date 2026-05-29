@@ -110,7 +110,7 @@ Verification-driven development (tianpan.co production analysis, 2026-04-09): th
 
 An effective harness implements both guides and sensors in a continuous loop:
 
-```
+```text
 Specification
     ↓
 [Guide: Plan agent validates specification]
@@ -168,7 +168,7 @@ Production experience from SWE-bench analysis (tianpan.co, 2026-04-09): verifica
 
 The Agent Psychometrics formula (arXiv:2604.00594, 2026-04) provides quantitative support for treating harness control quality as an independent variable:
 
-```
+```text
 P(success) = σ(θ_LLM + θ_scaffold − β_difficulty)
 ```
 

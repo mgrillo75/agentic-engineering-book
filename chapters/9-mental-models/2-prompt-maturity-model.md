@@ -270,7 +270,7 @@ Three stages characterize the progression, observed independently by multiple pr
 
 **Prompt-level correlation:** Typically L5-L7. Meta-cognitive prompts (Level 7) emerge from the demands of this framing: once an engineer treats the system as measurable, prompts that improve themselves become structurally necessary rather than optional.
 
-**Named by:** Hamel [4][6] — manual error analysis is the highest-ROI starting point; "good writing is good thinking" — prompt engineering requires active intellectual engagement; Willison [7] — design decisions remain human before delegation to the system.
+**Named by:** Hamel [4] [6] — manual error analysis is the highest-ROI starting point; "good writing is good thinking" — prompt engineering requires active intellectual engagement; Willison [7] — design decisions remain human before delegation to the system.
 
 **Key advancement:** Feedback discipline. Improvement is systematic rather than intuitive; the measurement infrastructure determines what is worth optimizing.
 

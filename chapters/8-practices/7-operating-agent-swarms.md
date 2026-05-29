@@ -109,7 +109,7 @@ The swarm matches a senior engineer's daily cost while delivering 25× the paral
 
 When 20-30 agents can implement simultaneously, the limiting factor is no longer implementation capacity. It's the human's ability to design, decompose, and specify work at a rate that keeps the swarm fed.
 
-```
+```text
 Traditional Bottleneck:
   Design (fast) → Implement (slow) → Review (fast)
                    ^^^^^^^^^^^^^^^^
@@ -202,7 +202,7 @@ _[2026-02-13]_: Overstory implements attribution through SQLite metrics store (`
 
 With sufficient work history, the system can route tasks to agents with proven track records:
 
-```
+```text
 New task: "Refactor authentication module"
 
 Agent capability lookup:
@@ -237,7 +237,7 @@ The logging overhead is negligible relative to the token cost of agent operation
 
 Production swarms enforce a strict flow:
 
-```
+```text
 Agent Work → Quality Gate → Merge Queue → Main Branch
      │            │              │
      │            ├─ Lint pass   ├─ AI validation
@@ -269,7 +269,7 @@ The goal of sampling isn't catching every defect—it's calibrating the automate
 
 When quality gates reject work, the feedback must be structured for agent consumption:
 
-```
+```text
 Rejection:
   agent: builder-17
   task: ISSUE-342
@@ -353,7 +353,7 @@ The **Stalled vs. Thinking** distinction is the hardest. An agent that has been 
 
 Production swarms use layered monitoring with escalating intelligence:
 
-```
+```text
 Tier 1: Mechanical Watchdog (automated, continuous)
   │  ├─ Process heartbeat (is agent process alive?)
   │  ├─ Token flow (is agent producing/consuming tokens?)
@@ -590,7 +590,7 @@ Before adding agents beyond the current level, verify the infrastructure support
 
 A production swarm operation typically follows this daily cycle:
 
-```
+```text
 Morning:
   1. Review overnight results (quality gate reports, incidents)
   2. Triage failed work (reassign, respecify, or archive)
@@ -641,7 +641,7 @@ At 10+ agents, agents occasionally need to coordinate beyond the orchestrator. D
 
 The simplest coordination mechanism at swarm scale: **explicit file ownership**. Each agent owns specific files. No two agents modify the same file simultaneously.
 
-```
+```text
 agent-01: owns src/auth/*.ts
 agent-02: owns src/api/*.ts
 agent-03: owns src/database/*.ts
@@ -692,7 +692,7 @@ Quality gates need tuning based on actual failure data. Gates that are too stric
 
 Not every multi-agent problem requires swarm-scale operations. Use this to determine the right approach:
 
-```
+```text
 Is the work decomposable into 10+ independent units?
 ├─ No → Use 1-5 agents with direct supervision (Level 1-6)
 └─ Yes

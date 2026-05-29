@@ -54,7 +54,7 @@ Single-agent tools assume a model where one agent works in one repository at a t
 
 _[2026-02-11]_: At small scale, coordination overhead is negligible. A developer managing 2-3 Claude Code subagents via Task tool spends minimal time on coordination. At 20+ agents, coordination becomes the dominant cost:
 
-```
+```text
 Agent Count:     1    3    5    10    20    30
 Useful Work:   95%  85%  75%   60%   40%   25%  (without workspace manager)
 Coordination:   5%  15%  25%   40%   60%   75%
@@ -75,7 +75,7 @@ Gas Town provides two CLI tools:
 
 ### Architecture Overview
 
-```
+```text
 ~/gt/                          Town root (all projects live here)
 ├── .beads/                    Town-level beads (hq-* prefix)
 ├── mayor/                     Mayor config (global coordinator)
@@ -143,7 +143,7 @@ The `bd` tool manages workflow state through a bead-based issue tracker. Steps c
 
 The **refinery** is Gas Town's automated merge coordinator. When an agent completes work and calls `gt done`, the branch enters the merge queue:
 
-```
+```text
 Agent A completes ──> Refinery Queue ──> AI-Assisted Merge ──> Canonical Clone
 Agent B completes ──>                                          (mayor/rig/)
 Agent C completes ──>
@@ -177,7 +177,7 @@ This contrasts with ephemeral agent models (Claude Code subagents, LangGraph nod
 
 ### Supervision Architecture
 
-```
+```text
 ┌────────────────────────────────────┐
 │            Deacon                   │
 │  (Town-level supervisor daemon)    │
@@ -215,7 +215,7 @@ _[2026-02-13]_: Overstory represents the session-as-orchestrator alternative to 
 
 ### Architecture Overview
 
-```
+```text
 .overstory/                         Target project root
 ├── config.yaml                     Project configuration
 ├── agent-manifest.json             Agent registry
@@ -317,7 +317,7 @@ overstory metrics      # Show metrics summary
 
 When choosing between workspace managers, consider scale requirements, ecosystem preferences, and coordination models:
 
-```
+```text
 Scale and requirements:
   1-5 agents → Claude Code Agent Teams (built-in)
   5-15 agents → Overstory (session-based) OR Gas Town (daemon-based)
@@ -360,7 +360,7 @@ Coordination model:
 
 ### The Scale Decision
 
-```
+```text
 Agent Count Decision Framework:
 
 1-2 agents  ──> Single session or subagents (Task tool)
@@ -439,7 +439,7 @@ For Claude Code specifically, these map to:
 
 Beads are Gas Town's unit of persistent state. Every workflow step, task assignment, and completion record is a bead stored in Git:
 
-```
+```text
 .beads/
 ├── hq-project-setup           # Town-level bead
 ├── hq-architecture-review     # Town-level bead
@@ -457,7 +457,7 @@ This maps to the [Context as Code](../9-mental-models/4-context-as-code.md) ment
 
 ### Work Distribution Pattern
 
-```
+```text
 ┌──────────────┐
 │    Mayor     │  (Global coordinator)
 │  Assigns →   │

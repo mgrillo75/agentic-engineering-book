@@ -208,7 +208,7 @@ The relationship to [Specs as Source Code](../9-mental-models/3-specs-as-source-
 
 **The five stages.**
 
-```
+```text
 Encoding          Documenting        Consolidating       Specializing        Enforcing
 ────────────    ────────────────    ─────────────────    ──────────────    ──────────────
 Slash commands    CLAUDE.md:          Single source        Expert agents     Hooks and

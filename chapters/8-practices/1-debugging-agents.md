@@ -432,7 +432,7 @@ Effective agent debugging requires structured logs at decision points, not just 
 
 **What to log**:
 
-```
+```text
 [DECISION] Tool selection
   - Available tools: [list]
   - Chosen tool: {tool}
@@ -485,7 +485,7 @@ When the cause is unclear, test variations systematically.
 
 **Structure**:
 
-```
+```text
 Base case: [original prompt]
 Variation A: [change one element]
 Variation B: [change different element]
@@ -655,11 +655,11 @@ _Document specific debugging sessions—what happened, how you figured it out:_
 
 _[2025-12-09]_: Multi-agent systems have distinct failure modes that require different debugging approaches than single-agent systems.
 
-**Check Single-Message Parallelism First**
+#### Check Single-Message Parallelism First
 
 When parallel agents run slower than expected or produce suspiciously sequential results, check whether they were invoked in a single message. This is the most common multi-agent debugging issue—developers expect parallelism but the framework serializes execution because Task calls were spread across multiple messages. Look at your orchestrator's outputs: are all parallel Task calls in one response?
 
-**Graceful Degradation Patterns**
+#### Graceful Degradation Patterns
 
 Multi-agent systems should degrade gracefully when individual agents fail:
 
@@ -670,7 +670,7 @@ Multi-agent systems should degrade gracefully when individual agents fail:
 
 Implement this by checking subagent return status before synthesis. The orchestrator should be resilient to partial failures.
 
-**Partial Success Handling**
+#### Partial Success Handling
 
 Unlike single-agent (which either works or doesn't), multi-agent systems have complex success states:
 
@@ -679,7 +679,7 @@ Unlike single-agent (which either works or doesn't), multi-agent systems have co
 - Never leave the workflow in an inconsistent state
 - Track which subagents succeeded vs. failed
 
-**Use Hooks to Trace Agent Transitions**
+#### Use Hooks to Trace Agent Transitions
 
 SubagentStop hooks record what each subagent produced. ErrorEscalation surfaces failures to the orchestrator. These create an audit trail for debugging:
 
@@ -689,11 +689,11 @@ SubagentStop hooks record what each subagent produced. ErrorEscalation surfaces 
 
 Without these hooks, multi-agent failures are nearly impossible to diagnose.
 
-**Domain Isolation Debugging**
+#### Domain Isolation Debugging
 
 Each agent stays focused on its domain and doesn't need to know about other agents. If you see cross-domain confusion, something is leaking context incorrectly. The orchestrator is responsible for synthesis—individual experts should be testable in isolation.
 
-**Coordination vs. Agent Failures**
+#### Coordination vs. Agent Failures
 
 Two distinct failure modes:
 
@@ -894,7 +894,7 @@ The session ID can be found via `/hooks` output or by listing `~/.claude/env/` f
 
 When orchestrator context is active, attempting to use Write or Edit should fail with a clear error message:
 
-```
+```text
 BLOCKED: Orchestrator 'knowledge' cannot use Write directly.
 Delegate to a build agent using the Task tool instead.
 Example: Task(subagent_type='knowledge-build-agent', prompt='...')

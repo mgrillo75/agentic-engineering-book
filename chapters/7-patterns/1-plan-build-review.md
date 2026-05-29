@@ -36,7 +36,7 @@ The Improve phase closes the loop by extracting learnings from actual production
 
 ### The Learning Loop
 
-```
+```text
     Research (with Expertise)
          ↓
     Plan (with Expertise)
@@ -137,7 +137,7 @@ Good research is specific, sourced, and falsifiable. Bad research is vague and u
 
 In Claude Code's slash command system, this pattern is implemented through expert command sets:
 
-```
+```text
 .claude/commands/experts/[domain]-expert/
      [domain]_expert_research.md  # Has ## Expertise section
      [domain]_expert_plan.md      # Has ## Expertise section
@@ -226,7 +226,7 @@ _[2026-02-06]_: Not every task requires full Research-Plan-Build-Improve. BMAD-M
 
 ### The Spectrum
 
-```
+```text
 Bug Fix              Small Feature       New Product          Enterprise System
    ↓                      ↓                   ↓                      ↓
 Quick Flow          Partial Planning    Full Planning       Compliance Planning
@@ -235,7 +235,7 @@ Quick Flow          Partial Planning    Full Planning       Compliance Planning
 
 **Quick Flow** (Bug fixes, refactoring, prototypes):
 
-```
+```text
 /quick-spec → /dev-story → /code-review
 ```
 
@@ -243,7 +243,7 @@ Skip Research, Analysis, Architecture. Get to code fast.
 
 **Standard Flow** (Features, enhancements):
 
-```
+```text
 Research → Plan → Build → Review
 ```
 
@@ -251,7 +251,7 @@ The base pattern described in this chapter.
 
 **Full Planning** (New products, major features):
 
-```
+```text
 Research → Product Brief → PRD → Architecture →
 Epics/Stories → Sprint Planning → Dev → Review
 ```
@@ -260,7 +260,7 @@ Add business analysis and structured requirements.
 
 **Enterprise** (Compliance-required, multi-team):
 
-```
+```text
 Research → Product Brief → Stakeholder Review → PRD →
 Architecture → Security Review → Implementation Plan →
 Readiness Assessment → Build → QA → Release Gates → Retrospective
@@ -279,7 +279,7 @@ Add approval gates, compliance artifacts, governance.
 
 **Example decision logic:**
 
-```
+```text
 User: "Implement real-time notifications"
     ↓
 Framework analyzes:

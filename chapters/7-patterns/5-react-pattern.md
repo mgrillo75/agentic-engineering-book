@@ -32,7 +32,7 @@ An interleaved Reasoning + Acting loop where the agent explicitly reasons about 
 
 ## Core Structure
 
-```
+```text
 Thought: Analyze the current situation based on observations
 Action: Select and invoke a tool
 Observation: Record the tool's output
@@ -66,7 +66,7 @@ This interleaving creates three key properties:
 
 ### The Basic Loop
 
-```
+```text
 System Prompt:
 You solve tasks by interleaving Thought, Action, and Observation steps.
 
@@ -162,7 +162,7 @@ The trade-off: ReAct sacrifices speed for accuracy and observability.
 
 **ReAct**: Thoughts interleave with tool calls. Each observation grounds the next thought.
 
-```
+```text
 CoT: Thought → Thought → Thought → Final Answer
 ReAct: Thought → Action → Observation → Thought → Action → Observation → ...
 ```
@@ -262,7 +262,7 @@ ReAct's token cost scales with both depth (iterations) and breadth (observation 
 
 **Cost formula (approximate):**
 
-```
+```text
 Cost ≈ Σ(thought_tokens + action_tokens + observation_tokens) × iterations
 ```
 

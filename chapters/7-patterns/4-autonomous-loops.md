@@ -143,7 +143,7 @@ _[2026-01-21]_: Empirical testing shows only 40-60% of context window exhibits h
 
 The pattern creates closed-loop learning without human intervention:
 
-```
+```text
 Iteration N: Attempt migration of ComponentA
            ↓
 Commit: "feat: migrate ComponentA (partial, test failures)"
@@ -264,7 +264,7 @@ This creates **learning Ralph**: iteration loop that extracts meta-patterns and 
 
 **Synthesis**: Ralph + Orchestrator = **Iterative Orchestration**:
 
-```
+```text
 Loop:
   Parallel(scout_agents) → findings
   Plan(from findings) → spec

@@ -49,7 +49,7 @@ This balances discoverability (agent knows what's possible) with context efficie
 
 **Example Flow**:
 
-```
+```text
 1. Agent sees skill metadata: "Python debugging skill available"
 2. Agent encounters Python bug, invokes Skill tool with "python-debugging"
 3. System injects debugging instructions + enables relevant tools (Bash, Read)

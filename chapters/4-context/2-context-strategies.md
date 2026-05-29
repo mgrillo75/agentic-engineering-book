@@ -120,7 +120,7 @@ _[2026-01-17]_: Claude Code 2.1.9 introduced real-time context utilization perce
 
 The session header shows context usage as:
 
-```
+```text
 [45K/200K tokens] 22%
 ```
 
@@ -309,11 +309,11 @@ _[2026-02-06]_: Most context strategies assume a single repository or bounded kn
 
 ### How Federated Knowledge Works
 
-**1. Knowledge Aggregation**
+#### 1. Knowledge Aggregation
 
 Pull from multiple sources into unified cache:
 
-```
+```text
 .bmad-fks-cache/
 ├── api-gateway/           # Git repo 1
 │   └── [cached files]
@@ -327,7 +327,7 @@ Pull from multiple sources into unified cache:
 
 Each source maintains independent cache directory. Updates refresh caches without disrupting other sources.
 
-**2. Unified Context Map**
+#### 2. Unified Context Map
 
 Central `context.md` file maps sources → cached locations:
 
@@ -352,7 +352,7 @@ Central `context.md` file maps sources → cached locations:
 
 The agent loads `context.md` first, gaining awareness of all available knowledge sources. Specific sources load on-demand based on task needs.
 
-**3. Multi-Source Navigation**
+#### 3. Multi-Source Navigation
 
 Agent workflow:
 
@@ -367,11 +367,11 @@ Example for "implement JWT validation":
 - Load `oauth-spec/rfc-6749.pdf` (protocol requirements)
 - Load `design-docs/auth-flow.pdf` (why JWT was chosen)
 
-**4. Priority-Based Conflict Resolution**
+#### 4. Priority-Based Conflict Resolution
 
 When sources provide conflicting information:
 
-```
+```text
 Priority hierarchy:
 1. Local directory (current working context)
 2. Project-specific repos (company codebases)
@@ -530,7 +530,7 @@ Don't load all sources upfront. Load source summaries, then expand relevant sour
 
 **Example:** 5 federated sources, 3 active for current task
 
-```
+```text
 Metadata for 5 sources:        5 × 50 tokens =     250 tokens
 Context map file:                              +   300 tokens
 Selected source 1 (auth-service):              + 2,000 tokens
@@ -544,7 +544,7 @@ Compare to loading all 5 sources: 5 × 2,000 = 10,000 tokens. Federated approach
 
 ### Practical Patterns
 
-**1. Cross-Repo Dependency Analysis**
+#### 1. Cross-Repo Dependency Analysis
 
 ```markdown
 Task: "Update authentication to use refresh tokens"
@@ -558,7 +558,7 @@ Agent reasoning:
 Agent loads all three sources, analyzes dependencies, proposes update spanning repos.
 ```
 
-**2. Protocol Compliance Verification**
+#### 2. Protocol Compliance Verification
 
 ```markdown
 Task: "Ensure OAuth implementation follows RFC 6749"
@@ -572,7 +572,7 @@ Agent reasoning:
 Agent cross-references external standard with internal code.
 ```
 
-**3. Historical Context Recovery**
+#### 3. Historical Context Recovery
 
 ```markdown
 Task: "Why do we use 1-hour JWT expiry instead of 10 minutes?"

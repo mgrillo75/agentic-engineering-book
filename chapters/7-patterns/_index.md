@@ -32,7 +32,7 @@ Patterns are solutions that keep showing up. They're not prescriptions—they're
 | [Production Multi-Agent Systems](11-production-multi-agent-systems.md) | Running 10+ agents in production with recovery and lifecycle          | Operational robustness vs. infrastructure overhead |
 | [The Multi-Agent Landscape](10-multi-agent-landscape.md)               | Architectural decision-making across the multi-agent ecosystem        | Comprehensive coverage vs. rapid evolution         |
 
-_Add more patterns as you identify them_
+Add more patterns as you identify them.
 
 ---
 
@@ -71,7 +71,7 @@ The other patterns address specific limitations of Plan-Build-Review:
 
 ### Decision Tree
 
-```
+```text
 Start: What kind of task?
 │
 ├─► Architectural/Creative Decision
@@ -143,7 +143,7 @@ Patterns often combine. Common compositions:
 **Orchestrator + Plan-Build-Review**
 Each domain expert uses Plan-Build-Review internally while the orchestrator coordinates parallel execution.
 
-```
+```text
 Orchestrator
 ├─► Security Expert (Plan → Build → Review)
 ├─► Performance Expert (Plan → Build → Review)
@@ -153,7 +153,7 @@ Orchestrator
 **Autonomous Loops + Self-Improving Experts**
 Run iteration loop, then extract learnings to improve future prompts.
 
-```
+```text
 Loop: Execute PROMPT.md → Commit → Check completion
 After session: Run improve-agent → Update expertise.yaml
 Next session: Benefits from accumulated knowledge
@@ -162,14 +162,14 @@ Next session: Benefits from accumulated knowledge
 **Human-in-the-Loop + Orchestrator**
 Approval gates between orchestrator phases.
 
-```
+```text
 Scout (auto) → Plan (auto) → [Human Review] → Build (auto) → [Human Review] → Deploy
 ```
 
 **Progressive Disclosure + Any Pattern**
 Load context incrementally before any other pattern's execution.
 
-```
+```text
 Load minimal context → Determine what's needed → Load specifics → Execute pattern
 ```
 
@@ -189,23 +189,23 @@ Some patterns work against each other:
 
 ### Scaling Considerations
 
-**Small tasks (< 1 hour)**
+#### Small tasks (< 1 hour)
 
 - Skip patterns entirely or use minimal Plan-Build
 - Patterns add overhead that exceeds benefit
 
-**Medium tasks (1-8 hours)**
+#### Medium tasks (1-8 hours)
 
 - Plan-Build-Review is usually right
 - Consider Orchestrator if multiple concerns
 
-**Large tasks (multi-day)**
+#### Large tasks (multi-day)
 
 - Full pattern selection matters
 - Often requires pattern composition
 - Consider Autonomous Loops for mechanical portions
 
-**Team/Production systems**
+#### Team/Production systems
 
 - Self-Improving Experts become essential
 - Human-in-the-Loop for compliance

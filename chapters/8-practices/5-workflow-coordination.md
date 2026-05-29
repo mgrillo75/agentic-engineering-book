@@ -144,7 +144,7 @@ Agents use these to build dependency graphs for prioritization—identifying unb
 
 ## The Issue-to-PR Workflow
 
-```
+```text
 ┌─────────────┐
 │ Issue Created │
 │ (with labels) │
@@ -220,7 +220,7 @@ The `Closes #123` creates the link back to the originating issue.
 
 Plans live in `docs/specs/` with issue numbers in filenames:
 
-```
+```text
 docs/specs/feature-123-user-auth.md
 docs/specs/bug-456-token-refresh.md
 ```
@@ -245,14 +245,14 @@ This pattern has several advantages:
 
 **Anti-pattern** (context passing):
 
-```
+```text
 Orchestrator → Build Agent: "Based on the analysis from Scout Agent (3000 words),
 and the design from Planning Agent (2000 words), implement feature X..."
 ```
 
 **Better** (spec-based):
 
-```
+```text
 Orchestrator → Build Agent: "Read .claude/.cache/specs/feature-123-spec.md
 and implement according to the design section"
 ```
@@ -271,7 +271,7 @@ _[2026-02-06]_: Multi-session workflows require three complementary patterns: at
 
 **Commit pattern:**
 
-```
+```text
 One feature = One commit
 - Single logical change
 - Complete functionality (tests included)
@@ -436,14 +436,14 @@ Agents must not leak reasoning into artifacts. Forbidden patterns:
 
 **Bad** (meta-commentary):
 
-```
+```text
 Let me create a branch for this issue. Based on the labels,
 I'll use the feature/ prefix. Great, the branch was created successfully!
 ```
 
 **Good** (artifact only):
 
-```
+```text
 Branch: feature/123-add-user-auth
 From: develop (abc1234)
 Issue: #123 - Add user authentication
@@ -541,7 +541,7 @@ These map directly to the [structured state files](#structured-state-files) and 
 
 Workflow harnesses occupy a specific niche in the tooling hierarchy:
 
-```
+```text
 Scale and abstraction:
   Raw coding agent       → Single-session, ad-hoc interaction
   Workflow harness (GSD) → Multi-phase structured lifecycle, context-engineered
@@ -566,7 +566,7 @@ _[2026-04-11]_: As agents take over execution of hours-long workflows, the human
 
 ### Where These Roles Sit Relative to the Coordination Layer
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │  INSTITUTIONAL DESIGN                            │
 │  (What is the organization's agent strategy?)   │

@@ -57,7 +57,7 @@ Agent context essentially fine-tunes the model dynamically. Filling 30% of conte
 
 **Example contrast:**
 
-```
+```text
 # Poor context composition (30% filled)
 [15,000 tokens of JSON logging output]
 [5,000 tokens of redundant tool definitions]
@@ -66,7 +66,7 @@ Agent context essentially fine-tunes the model dynamically. Filling 30% of conte
 → Model has seen mostly noise, predictions weighted toward log patterns
 ```
 
-```
+```text
 # High-quality context composition (30% filled)
 [15,000 tokens of exemplary authentication code]
 [5,000 tokens of security best practices]

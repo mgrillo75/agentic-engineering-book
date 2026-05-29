@@ -84,7 +84,7 @@ A strong reasoning model decomposes tasks and coordinates execution by weaker, c
 
 ### The Pattern
 
-```
+```text
 ┌─────────────────────────────────────┐
 │   Orchestrator (Opus/GPT-4o)        │
 │   - Decompose task into subtasks    │
@@ -174,7 +174,7 @@ Route requests to a fast, cheap model first. Escalate to expensive model only wh
 
 ### The Pattern
 
-```
+```text
 Request → Cheap Model (Haiku/GPT-3.5)
             │
             ├─ Quality Gate Pass → Return Response
@@ -268,7 +268,7 @@ Complex reasoning (planning) uses an expensive model. Instruction-following (exe
 
 ### The Pattern
 
-```
+```text
 Phase 1: Planning (Expensive Model)
 ├─ Understand requirements
 ├─ Decompose into subtasks
@@ -329,7 +329,7 @@ This architectural shift moves orchestration from application layer to model cap
 
 ### The Pattern
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │   Main Agent (Kimi K2.5)                        │
 │   - Receives task                               │
@@ -364,7 +364,7 @@ Models trained on sequential demonstrations default to single-agent execution ev
 
 PARL addresses this through the **Critical Steps** metric:
 
-```
+```text
 CriticalSteps = Σ(Smain(t) + max_i(Ssub,i(t)))
 ```
 

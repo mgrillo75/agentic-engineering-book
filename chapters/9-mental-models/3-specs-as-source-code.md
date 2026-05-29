@@ -33,7 +33,7 @@ In agentic programming:
 - Generated code is secondary (can be regenerated)
 - **Specs are machine-readable and executable** (by agents)
 
-```
+```text
 Traditional:                    Agentic:
 
 ┌──────────────┐               ┌──────────────┐
@@ -66,7 +66,7 @@ This changes what you version control, what you review, and what you test.
 
 ### Specs Become First-Class Artifacts
 
-```
+```text
 # Traditional project structure
 src/
   main.py          # This is what you maintain
@@ -218,7 +218,7 @@ _[2026-02-06]_: BMAD-METHOD demonstrates an extreme application of specs-as-sour
 
 ### The Inversion
 
-```
+```text
 Traditional:                      BMAD Living Artifacts:
 
 Source Code                       Documentation (PRD, Architecture, Stories)
@@ -231,22 +231,22 @@ Documentation                     Source Code
 
 BMAD structures development as document-producing phases:
 
-**1. Analysis Phase (optional)**
+#### 1. Analysis Phase (optional)
 
 - Outputs: Product Brief, Research Summary
 - Purpose: Problem definition before solution
 
-**2. Planning Phase**
+#### 2. Planning Phase
 
 - Outputs: PRD (Product Requirements Document), UX Design
 - Purpose: Requirements + user flows
 
-**3. Solutioning Phase**
+#### 3. Solutioning Phase
 
 - Outputs: Architecture Document, Epics/Stories, Readiness Assessment
 - Purpose: Technical design + implementation plan
 
-**4. Implementation Phase**
+#### 4. Implementation Phase
 
 - Outputs: Working Code, Code Reviews, Test Automation
 - Purpose: Execute designs from phases 1-3
@@ -293,7 +293,7 @@ Not every project needs full four-phase documentation. BMAD adjusts:
 
 **Quick Flow (3-step rapid path):**
 
-```
+```text
 /quick-spec → /dev-story → /code-review
 ```
 
@@ -301,7 +301,7 @@ Skips Product Brief, PRD, Architecture for bug fixes and small features.
 
 **Full Planning Path (6-phase comprehensive):**
 
-```
+```text
 /product-brief → /create-prd → /create-architecture →
 /create-epics-and-stories → /sprint-planning → [Dev Story Cycle]
 ```
@@ -335,7 +335,7 @@ BMAD-METHOD (MIT-licensed, 34.5k GitHub stars, 19 releases) demonstrates this ap
 
 **To [Plan-Build-Review](../7-patterns/1-plan-build-review.md):** Living artifacts provide the research and plan documents that build phase executes from.
 
-**To [Agent-as-Code](#):** BMAD extends "specs as source code" to agents themselves—agent definitions are markdown + YAML artifacts version-controlled like specifications.
+**To Agent-as-Code:** BMAD extends "specs as source code" to agents themselves—agent definitions are markdown + YAML artifacts version-controlled like specifications.
 
 ### When to Use Living Artifacts
 
