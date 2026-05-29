@@ -2,7 +2,7 @@
 title: Debugging Agents
 description: Finding and fixing what went wrong in agentic systems
 created: 2025-12-08
-last_updated: 2026-02-06
+last_updated: 2026-05-29
 tags: [practices, debugging, troubleshooting, failure-modes, diagnostics]
 part: 2
 part_title: Craft
@@ -1183,6 +1183,7 @@ Quick reference for systematic debugging:
 - **To [Model Behavior](../3-model/2-model-behavior.md):** Understanding model attention patterns, recency bias, and capability limits informs debugging hypotheses. Model behavior explains why position and format matter.
 - **To [Production Concerns](4-production-concerns.md):** Production debugging requires logging, monitoring, and observability infrastructure. Invest in debugging capability before production deployment.
 - **To [Orchestrator Pattern](../7-patterns/3-orchestrator-pattern.md):** Multi-agent debugging requires understanding coordination failures vs agent failures. Orchestrator patterns have distinct failure modes documented in this chapter.
+- **To [Agent Readiness Failure Modes](../11-agent-readiness/2-failure-modes.md):** The readiness failure-mode vocabulary (context starvation, context poisoning, verification gap, tool poverty, spec drift, lossy handoff) gives debugging a shared triage language mapped to root surfaces.
 
 ---
 

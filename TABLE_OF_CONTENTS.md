@@ -84,6 +84,20 @@
 - [Agent Frameworks](chapters/10-practitioner-toolkit/4-agent-frameworks.md)
 - [Multi-Agent Workspace Managers](chapters/10-practitioner-toolkit/5-multi-agent-workspace-managers.md)
 - [Enterprise Codebase Context Tools](chapters/10-practitioner-toolkit/6-enterprise-context-tools.md)
+### Chapter 11: Agent Readiness
+- [Agent Readiness](chapters/11-agent-readiness/_index.md)
+- [The Four Surfaces](chapters/11-agent-readiness/1-the-four-surfaces.md)
+- [Failure Modes](chapters/11-agent-readiness/2-failure-modes.md)
+- [Readiness Principles](chapters/11-agent-readiness/3-readiness-principles.md)
+- [Dimensions of Readiness](chapters/11-agent-readiness/4-maturity-ladders.md)
+- [Ratcheting and Legacy](chapters/11-agent-readiness/5-ratcheting-legacy.md)
+### Chapter 12: Long-Horizon Agent State
+- [Long-Horizon Agent State](chapters/12-long-horizon-agent-state/_index.md)
+- [The Five-Layer Model](chapters/12-long-horizon-agent-state/1-five-layer-model.md)
+- [The Composition Loop](chapters/12-long-horizon-agent-state/2-composition-loop.md)
+- [Memory and Intent](chapters/12-long-horizon-agent-state/3-memory-and-intent.md)
+- [Coordination and Orchestration](chapters/12-long-horizon-agent-state/4-coordination-and-orchestration.md)
+- [From Factory to Institution](chapters/12-long-horizon-agent-state/5-factory-to-institution.md)
 
 ## Appendices
 

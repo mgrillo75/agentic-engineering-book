@@ -8,6 +8,51 @@ Categories: **Content** (chapters, sections), **Infrastructure** (agents, comman
 
 ---
 
+## Edition 2026-05-29
+
+_Changes since edition-2026-04-13 (103 commits)_
+
+### Content
+
+- **New Chapter 11 — Agent Readiness**: 5 sections on preparing codebases for agents — `1-the-four-surfaces`, `2-failure-modes`, `3-readiness-principles`, `4-maturity-ladders`, `5-ratcheting-legacy`
+- **New Chapter 12 — Long-Horizon Agent State**: 5 sections on durable state across long-running work — `1-five-layer-model`, `2-composition-loop`, `3-memory-and-intent`, `4-coordination-and-orchestration`, `5-factory-to-institution`
+- **Markdownlint cleanup**: cleared the book-wide lint backlog (3515 → 335 → 0 violations) across all 12 chapters — formatting/whitespace only, no prose changes
+
+### Structure
+
+- Closed the agent-readiness epic (Seeds 077c)
+- `CLAUDE.md` updated with Ch11/Ch12 tables and the linting/tooling reference
+- `TABLE_OF_CONTENTS.md` regenerated for the two new chapters
+
+### Expertise Learnings (Mulch)
+
+| Domain | Type | Learning |
+|--------|------|---------|
+| knowledge | failure | Cross-references to renumbered chapters silently break unless updated atomically |
+| orchestration | failure | Background subagents (`run_in_background=true`) hit silent runtime Write permission denials |
+| knowledge | decision | core-five-pillars-harness-addition |
+| knowledge | decision | harness-chapter-section-ordering |
+| knowledge | pattern | directory-rename-reverse-order-execution |
+| knowledge | pattern | content-migration-elevate-conceptual-leave-implementation |
+| knowledge | pattern | new-chapter-index-structure |
+| knowledge | pattern | definitional-crystallization-sourcing |
+| knowledge | pattern | ascii-diagram-update-for-pillar-expansion |
+| orchestration | pattern | Stage-parallel fan-out at N=17 is viable |
+| book-structure | pattern | markdownlint-backlog-fixes |
+| claude-config | pattern | verify-before-deleting-orphaned-hooks |
+| claude-config | pattern | devcontainer-isolate-venv-and-shellcheck |
+| github | pattern | ci-security-review-report |
+| claude-config | convention | Repo lint/format/type/complexity/dead-code/large-file/tech-debt gates (seeds 4225–da9a) |
+| claude-config | convention | Repo pytest entrypoint, coverage gate, durations, randomly isolation (seeds f074–5c87) |
+| claude-config | convention | Repo pre-commit + AGENTS.md-freshness + build/validate gates (seeds e594, 9888, 4d94) |
+| github | convention | Branch protection via repository ruleset; three-arm secret scanning (seed 87b6) |
+| github | convention | Issue forms, PR template, CODEOWNERS (last-match wins), label taxonomy |
+| github | convention | Public-repo sync strips Infrastructure sections from CHANGELOG.md |
+
+_51 records captured_
+
+---
+
 ## Edition 2026-04-13
 
 _Changes since edition-2026-04-12 (5 commits)_

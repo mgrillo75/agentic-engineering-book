@@ -2,7 +2,7 @@
 title: Tool Selection and Routing
 description: How agents decide which tool to use and what causes selection failures
 created: 2025-12-10
-last_updated: 2025-12-10
+last_updated: 2026-05-29
 tags: [tool-selection, routing, decision-making, tool-use]
 part: 1
 part_title: Foundations
@@ -123,3 +123,4 @@ This can go in the main system prompt or in tool descriptions themselves.
 - **To [Tool Restrictions](3-tool-restrictions.md):** Restrictions are a selection optimization
 - **To [Scaling Tools](4-scaling-tools.md):** Large tool sets require selection strategies
 - **To [Prompt](../2-prompt/_index.md):** Tool descriptions follow prompt design principles
+- **To [Agent Readiness](../11-agent-readiness/_index.md):** "Tool poverty" is a readiness failure mode—a missing tool or skill is an environment gap, not a model limitation; tools sit mid-way up the leverage hierarchy.

@@ -2,7 +2,7 @@
 title: Knowledge Evolution
 description: Guidelines for how knowledge base entries should be updated over time
 created: 2025-12-08
-last_updated: 2026-02-05
+last_updated: 2026-05-29
 tags: [practices, maintenance, evolution]
 part: 2
 part_title: Craft
@@ -526,6 +526,7 @@ Before updating any entry:
 - **[Workflow Coordination](5-workflow-coordination.md):** How to communicate knowledge base updates to collaborators
 - **[Specs as Source Code](../9-mental-models/3-specs-as-source-code.md):** Knowledge bases are specifications that agents execute, not just reference documentation
 - **[Context Management](../4-context/_index.md):** Delta-based updates prevent context collapse and respect window limits. Grow-and-refine principle directly addresses context size constraints.
+- **[Long-Horizon Agent State](../12-long-horizon-agent-state/_index.md):** Knowledge evolution is the memory layer of long-horizon agent state—typed expertise the next agent inherits across sessions.
 
 ---
 

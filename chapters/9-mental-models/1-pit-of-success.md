@@ -2,7 +2,7 @@
 title: Pit of Success
 description: Design context windows where the most likely output is also the correct output
 created: 2025-12-08
-last_updated: 2025-12-10
+last_updated: 2026-05-29
 tags: [mental-models, context, prompts, transformers]
 part: 3
 part_title: Perspectives
@@ -147,3 +147,4 @@ When you get this right:
 - **[Context](../4-context/_index.md)**: The mechanics of what goes in the window
 - **[Prompt Structuring](../2-prompt/2-structuring.md)**: Tactical implementation of these ideas
 - **[Twelve Leverage Points](../1-foundations/1-twelve-leverage-points.md)**: Context design as high-leverage intervention
+- **[Agent Readiness](../11-agent-readiness/_index.md)**: An agent-ready environment is a pit of success at the repository level—the right action becomes the easy action without a perfect prompt

@@ -2,7 +2,7 @@
 title: Context
 description: Managing the information available to an agent at any given moment
 created: 2025-12-08
-last_updated: 2025-12-10
+last_updated: 2026-05-29
 tags: [foundations, context, memory, retrieval]
 part: 1
 part_title: Foundations
@@ -125,3 +125,5 @@ Architectural approaches to active context management. Surveys three points on t
 - **To [Orchestrator Pattern](../7-patterns/3-orchestrator-pattern.md):** Context isolation via sub-agents. Emergency Context Rewriting anti-pattern shows why reactive compaction fails.
 - **To [Claude Code](../10-practitioner-toolkit/1-claude-code.md):** Skills implement progressive disclosure in production.
 - **To [Google ADK](../10-practitioner-toolkit/2-google-adk.md):** State prefixes demonstrate persistent state scoping.
+- **To [Agent Readiness](../11-agent-readiness/_index.md):** Context is the first of the four surfaces that determine agent readiness; the starvation and poisoning failure modes are context failures.
+- **To [Long-Horizon Agent State](../12-long-horizon-agent-state/_index.md):** Memory that survives between runs is the layer above the context window.

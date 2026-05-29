@@ -2,7 +2,7 @@
 title: Designing for Your Context
 description: Decision frameworks for harness design — when to use each category and how to build compound advantage
 created: 2026-04-12
-last_updated: 2026-04-12
+last_updated: 2026-05-29
 tags:
   [
     foundations,
@@ -218,3 +218,4 @@ The harness is not a peripheral concern. It is the system that makes the other f
 - **[Foundations](../1-foundations/_index.md)** — The full five-pillar model this chapter completes
 - **[Practitioner Toolkit](../10-practitioner-toolkit/_index.md)** — Specific tool evaluations for each harness category
 - **[Workflow Coordination](../8-practices/5-workflow-coordination.md)** — Workflow harness patterns in production depth
+- **[Agent Readiness](../11-agent-readiness/_index.md)** — An agent-ready environment is largely a well-engineered harness; "agents are an environment problem, not a hiring problem" is the readiness framing of harness design

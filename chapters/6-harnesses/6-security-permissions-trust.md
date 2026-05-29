@@ -2,7 +2,7 @@
 title: Security, Permissions, and Trust
 description: Permission models, sandbox architecture, and trust boundaries in agentic harnesses
 created: 2026-04-12
-last_updated: 2026-04-12
+last_updated: 2026-05-29
 tags:
   [foundations, harness, security, permissions, trust, sandbox, observability]
 part: 1
@@ -235,3 +235,4 @@ The order reflects both risk priority and implementation dependency. Observabili
 - **[Tool Restrictions](../5-tool-use/3-tool-restrictions.md)** — Tool-level restriction design
 - **[Human in the Loop](../7-patterns/6-human-in-the-loop.md)** — When human approval gates high-risk harness actions
 - **[Production Concerns](../8-practices/4-production-concerns.md)** — Operational security practices for production agentic systems
+- **[Agent Readiness](../11-agent-readiness/_index.md)** — Bounding blast radius by infrastructure rather than trust is a core readiness principle; reversibility and blast-radius controls are encoded in the harness
