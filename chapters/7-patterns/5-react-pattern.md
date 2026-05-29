@@ -3,7 +3,20 @@ title: ReAct Pattern
 description: Interleaved reasoning and action for grounded, observable agent behavior
 created: 2026-01-30
 last_updated: 2026-04-11
-tags: [patterns, reasoning, action, tool-use, grounding, coding-agent, execution-feedback, verification-driven, lint, test-runner, swe-bench]
+tags:
+  [
+    patterns,
+    reasoning,
+    action,
+    tool-use,
+    grounding,
+    coding-agent,
+    execution-feedback,
+    verification-driven,
+    lint,
+    test-runner,
+    swe-bench,
+  ]
 part: 2
 part_title: Craft
 chapter: 7
@@ -83,7 +96,7 @@ For production systems, enforce structure:
   "thought": "The user asked about error handling. I should search the codebase for exception patterns.",
   "action": {
     "tool": "grep",
-    "params": {"pattern": "except|catch", "path": "src/"}
+    "params": { "pattern": "except|catch", "path": "src/" }
   }
 }
 ```
@@ -97,12 +110,14 @@ The observation appends to context as a system message, triggering the next thou
 ### Good Fit
 
 **Information gathering tasks requiring evidence:**
+
 - Research questions needing multiple sources
 - Debugging where the root cause is unknown
 - Exploratory analysis across unfamiliar codebases
 - Tasks where premature conclusions cause failures
 
 **Task characteristics:**
+
 - Unknown number of steps required
 - Each step depends on what previous steps revealed
 - Hallucination is high-risk (medical, legal, financial)
@@ -111,12 +126,14 @@ The observation appends to context as a system message, triggering the next thou
 ### Poor Fit
 
 **Well-defined procedures with known steps:**
+
 - Standard CRUD operations
 - Template-based generation
 - Tasks where the action sequence is predetermined
 - High-throughput scenarios where reasoning overhead is unacceptable
 
 **When simpler approaches work:**
+
 - Single-tool tasks (no interleaving needed)
 - Tasks where the model already knows the answer (no retrieval needed)
 - Time-critical operations (ReAct adds latency per step)
@@ -125,13 +142,13 @@ The observation appends to context as a system message, triggering the next thou
 
 ## Trade-offs
 
-| Aspect | ReAct | Direct Generation |
-|--------|-------|-------------------|
-| **Grounding** | Strong (every claim from observation) | Weak (hallucination risk) |
-| **Latency** | Higher (multiple turns) | Lower (single generation) |
-| **Token cost** | Higher (thoughts + observations accumulate) | Lower (single response) |
-| **Explainability** | Excellent (full trace) | Poor (black box) |
-| **Adaptability** | High (adjusts to observations) | Low (fixed plan) |
+| Aspect             | ReAct                                       | Direct Generation         |
+| ------------------ | ------------------------------------------- | ------------------------- |
+| **Grounding**      | Strong (every claim from observation)       | Weak (hallucination risk) |
+| **Latency**        | Higher (multiple turns)                     | Lower (single generation) |
+| **Token cost**     | Higher (thoughts + observations accumulate) | Lower (single response)   |
+| **Explainability** | Excellent (full trace)                      | Poor (black box)          |
+| **Adaptability**   | High (adjusts to observations)              | Low (fixed plan)          |
 
 The trade-off: ReAct sacrifices speed for accuracy and observability.
 
@@ -158,12 +175,12 @@ CoT excels at reasoning tasks with sufficient in-context knowledge. ReAct excels
 
 **ReAct**: No upfront planning. Each step emerges from the previous observation.
 
-| Aspect | Plan-Build-Review | ReAct |
-|--------|-------------------|-------|
-| **Planning** | Explicit, upfront | Implicit, emergent |
-| **Adaptability** | Follows spec | Adjusts per observation |
-| **Coordination** | Multiple agents, checkpoints | Single agent loop |
-| **Best for** | Complex, multi-phase projects | Exploratory, information-gathering |
+| Aspect           | Plan-Build-Review             | ReAct                              |
+| ---------------- | ----------------------------- | ---------------------------------- |
+| **Planning**     | Explicit, upfront             | Implicit, emergent                 |
+| **Adaptability** | Follows spec                  | Adjusts per observation            |
+| **Coordination** | Multiple agents, checkpoints  | Single agent loop                  |
+| **Best for**     | Complex, multi-phase projects | Exploratory, information-gathering |
 
 Synthesis: Use Plan-Build-Review for tasks with known structure, ReAct for tasks where structure emerges from investigation.
 
@@ -202,6 +219,7 @@ Ralph suits mechanical tasks with many iterations. ReAct suits reasoning tasks r
 **Why it fails**: Without termination conditions, the loop continues indefinitely, wasting tokens.
 
 **Solution**:
+
 - Limit maximum iterations (10-20 for most tasks)
 - Detect repeated actions with same parameters
 - Require explicit "Final Answer" action to terminate
@@ -223,6 +241,7 @@ Ralph suits mechanical tasks with many iterations. ReAct suits reasoning tasks r
 ReAct accumulates context rapidly. Each cycle adds thought + action + observation tokens.
 
 **Mitigation strategies:**
+
 - Summarize older observations as context fills
 - Spawn fresh agent for new investigation threads
 - Limit observation verbosity at the tool level
@@ -232,6 +251,7 @@ ReAct accumulates context rapidly. Each cycle adds thought + action + observatio
 Each thought-action-observation cycle requires a model call plus tool execution time.
 
 **For time-sensitive applications:**
+
 - Set maximum iterations based on latency budget
 - Parallelize independent tool calls within a single action step (if supported)
 - Cache tool results for repeated queries
@@ -241,6 +261,7 @@ Each thought-action-observation cycle requires a model call plus tool execution 
 ReAct's token cost scales with both depth (iterations) and breadth (observation size).
 
 **Cost formula (approximate):**
+
 ```
 Cost ≈ Σ(thought_tokens + action_tokens + observation_tokens) × iterations
 ```
@@ -251,17 +272,17 @@ For complex tasks requiring 10+ iterations with substantial observations, ReAct 
 
 ## Coding Agent Specialization
 
-*[2026-04-11]*: The observation step is the highest-leverage design surface in a coding agent's ReAct loop. Generic tool outputs (file content, search results) are weak feedback signals; coding-specific outputs (test results, lint errors, compiler diagnostics) are strong ones. The difference determines whether the loop converges or drifts.
+_[2026-04-11]_: The observation step is the highest-leverage design surface in a coding agent's ReAct loop. Generic tool outputs (file content, search results) are weak feedback signals; coding-specific outputs (test results, lint errors, compiler diagnostics) are strong ones. The difference determines whether the loop converges or drifts.
 
 ### Observation Signal Taxonomy for Coding Loops
 
-| Signal Type | Source | Feedback Quality | Why It Works |
-|------------|--------|-----------------|--------------|
-| **Test results** | Test runner (pytest, jest, cargo test) | Binary + localized | Pass/fail is unambiguous; failure messages identify the exact assertion |
-| **Lint output** | Linter (ruff, eslint, clippy) | Binary + localized | Rule violations are precise; line numbers and rule IDs are actionable |
-| **Compiler errors** | Compiler (tsc, gcc, rustc) | Binary + localized | Type errors and missing references cannot be argued with — they are facts |
-| **Build output** | Build system | Binary + systemic | Catches integration failures that unit tests miss |
-| **Generic tool output** | File reads, search results | Non-binary, interpretive | Requires model judgment; hallucination risk higher |
+| Signal Type             | Source                                 | Feedback Quality         | Why It Works                                                              |
+| ----------------------- | -------------------------------------- | ------------------------ | ------------------------------------------------------------------------- |
+| **Test results**        | Test runner (pytest, jest, cargo test) | Binary + localized       | Pass/fail is unambiguous; failure messages identify the exact assertion   |
+| **Lint output**         | Linter (ruff, eslint, clippy)          | Binary + localized       | Rule violations are precise; line numbers and rule IDs are actionable     |
+| **Compiler errors**     | Compiler (tsc, gcc, rustc)             | Binary + localized       | Type errors and missing references cannot be argued with — they are facts |
+| **Build output**        | Build system                           | Binary + systemic        | Catches integration failures that unit tests miss                         |
+| **Generic tool output** | File reads, search results             | Non-binary, interpretive | Requires model judgment; hallucination risk higher                        |
 
 The practical design principle: prefer binary, localized feedback signals over interpretive ones. When the observation is "tests pass" or "lint: 0 errors," the model has an unambiguous success criterion. When the observation is "here is the file content," the model must judge whether the content satisfies the goal — introducing interpretive error.
 
@@ -301,7 +322,7 @@ The coding variant differs from generic ReAct in one structural way: verificatio
 
 SWE-bench analysis (tianpan.co, 2026-04-09) identifies the absence of verification-driven loops as the primary explanation for the gap between benchmark scores (80% on SWE-bench Verified, 23% on SWE-bench Pro) and production reliability. The pattern: agents that score well on narrow, verifiable tasks fail on cross-system work precisely because cross-system work lacks the binary feedback signals that ground convergent loops.
 
-**METR controlled study finding (2026):** Experienced developers using AI coding tools were 19% *slower*, despite subjective assessments of ~20% improvement. The gap between perceived and measured productivity is consistent with agents producing outputs that appear correct but require more review time to validate.
+**METR controlled study finding (2026):** Experienced developers using AI coding tools were 19% _slower_, despite subjective assessments of ~20% improvement. The gap between perceived and measured productivity is consistent with agents producing outputs that appear correct but require more review time to validate.
 
 **Sources:** [Building Effective Agents — Anthropic](https://www.anthropic.com/research/building-effective-agents), [Agentic Coding in Production: What SWE-bench Scores Don't Tell You — tianpan.co](https://tianpan.co/blog/2026-04-09-agentic-coding-production-swebench-gap) (2026-04-09), [Components of a Coding Agent — Raschka](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent) (2026-04-04)
 
@@ -311,7 +332,7 @@ SWE-bench analysis (tianpan.co, 2026-04-09) identifies the absence of verificati
 
 ### Temperature Settings
 
-*[2026-01-30]*: ReAct benefits from low temperature (0.0-0.3) for reliable reasoning chains. Higher temperature increases variance between thoughts, leading to inconsistent investigation paths.
+_[2026-01-30]_: ReAct benefits from low temperature (0.0-0.3) for reliable reasoning chains. Higher temperature increases variance between thoughts, leading to inconsistent investigation paths.
 
 Multi-step reliability degrades with temperature (see [Model Behavior: Temperature Effects](../3-model/2-model-behavior.md#temperature-effects-on-reliability)). For 10-step ReAct chains at temperature 1.0, reliability drops to approximately 60%.
 
@@ -373,6 +394,7 @@ The ReAct pattern was introduced in:
 The paper demonstrated that interleaving reasoning traces with action execution outperforms both reasoning-only (Chain-of-Thought) and action-only approaches on tasks requiring information retrieval and multi-step reasoning.
 
 **Key findings from the paper:**
+
 - ReAct reduces hallucination by grounding reasoning in observations
 - The trace improves human interpretability and error diagnosis
 - Performance gains appear primarily on tasks requiring external knowledge

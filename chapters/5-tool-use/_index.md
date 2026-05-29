@@ -34,6 +34,7 @@ This chapter explores how agents interact with tools—from design principles to
 ## Your Mental Model
 
 **Tools extend the agent's capabilities beyond pure reasoning.** Think of them as:
+
 - **Hands**: Writing/action tools that modify the world
 - **Senses**: Reading/observation tools that gather information
 - **Skills**: Temporary behavioral modifications that change how the agent reasons
@@ -46,7 +47,7 @@ The boundary between what the model does (reasoning) and what tools do (actions)
 
 ### Communication and Coordination
 
-*[2025-12-08]*: For multi-agent systems, providing CRUD operations on a shared communications database via tool calling enables effective collaboration. Agents can read what others have written, post updates, and query for relevant context. This is particularly useful for faster-moving, more flexible structures than what GitHub's issue/PR system provides—think of it as giving agents their own Slack or shared scratchpad.
+_[2025-12-08]_: For multi-agent systems, providing CRUD operations on a shared communications database via tool calling enables effective collaboration. Agents can read what others have written, post updates, and query for relevant context. This is particularly useful for faster-moving, more flexible structures than what GitHub's issue/PR system provides—think of it as giving agents their own Slack or shared scratchpad.
 
 ---
 
@@ -57,4 +58,3 @@ The boundary between what the model does (reasoning) and what tools do (actions)
 - **To [Context](../4-context/_index.md):** How do tool results become context for next steps? See [Progressive Disclosure](../4-context/3-context-patterns.md#progressive-disclosure-pattern)
 - **To [Cost and Latency](../8-practices/3-cost-and-latency.md):** Token cost models differ by feature type—tools vs. Skills vs. subagents vs. MCP
 - **To [Google ADK](../10-practitioner-toolkit/2-google-adk.md):** MCP deployment patterns and tool filtering at runtime
-

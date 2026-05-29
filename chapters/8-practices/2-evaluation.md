@@ -3,7 +3,19 @@ title: Evaluation
 description: Measuring agent performance systematically
 created: 2025-12-08
 last_updated: 2026-04-11
-tags: [practices, evaluation, testing, metrics, development-workflow, reliability-dimensions, consistency, robustness, predictability, safety]
+tags:
+  [
+    practices,
+    evaluation,
+    testing,
+    metrics,
+    development-workflow,
+    reliability-dimensions,
+    consistency,
+    robustness,
+    predictability,
+    safety,
+  ]
 part: 2
 part_title: Craft
 chapter: 8
@@ -25,14 +37,14 @@ Evaluation for agents differs from traditional testing because outputs vary, cor
 
 Traditional software testing checks if deterministic code produces expected outputs. Agent evaluation measures probabilistic systems where identical inputs can produce different outputs, success criteria are subjective, and failures cascade across multi-step reasoning chains.
 
-| Traditional Testing | Agent Evaluation |
-|---------------------|------------------|
-| Same input → same output | Same input → varying outputs |
-| Pass/fail is binary | Success is often a spectrum |
-| Tests define correctness | Rubrics approximate correctness |
-| Code bugs cause failures | Prompt, context, model, OR code can fail |
-| Unit tests isolate behavior | Agents compose unpredictably |
-| Regression tests are stable | Eval sets go stale as prompts evolve |
+| Traditional Testing         | Agent Evaluation                         |
+| --------------------------- | ---------------------------------------- |
+| Same input → same output    | Same input → varying outputs             |
+| Pass/fail is binary         | Success is often a spectrum              |
+| Tests define correctness    | Rubrics approximate correctness          |
+| Code bugs cause failures    | Prompt, context, model, OR code can fail |
+| Unit tests isolate behavior | Agents compose unpredictably             |
+| Regression tests are stable | Eval sets go stale as prompts evolve     |
 
 ### Three Consequences
 
@@ -82,12 +94,12 @@ Evaluation must measure what actually matters. Start with a minimal set that cov
 
 ### Starter Metrics
 
-| Metric | What It Measures | How to Collect |
-|--------|------------------|----------------|
-| **Task completion rate** | % of runs that produce usable output | Manual review or automated validator |
-| **Failure mode distribution** | What breaks and how often | Categorize failures: hallucination, tool error, timeout, wrong format |
-| **Cost per success** | Token usage / successful completions | Sum tokens across runs, divide by successes |
-| **Latency distribution** | P50, P95, P99 response time | Log timestamps, calculate percentiles |
+| Metric                        | What It Measures                     | How to Collect                                                        |
+| ----------------------------- | ------------------------------------ | --------------------------------------------------------------------- |
+| **Task completion rate**      | % of runs that produce usable output | Manual review or automated validator                                  |
+| **Failure mode distribution** | What breaks and how often            | Categorize failures: hallucination, tool error, timeout, wrong format |
+| **Cost per success**          | Token usage / successful completions | Sum tokens across runs, divide by successes                           |
+| **Latency distribution**      | P50, P95, P99 response time          | Log timestamps, calculate percentiles                                 |
 
 These four metrics reveal whether an agent is fundamentally working (completion rate), what needs fixing (failure modes), whether it's affordable (cost), and whether it's fast enough (latency).
 
@@ -98,6 +110,7 @@ When outputs vary legitimately, evaluation shifts from exact matching to structu
 **Rubric-based scoring:** Define criteria and score each output. Rubrics make implicit quality standards explicit.
 
 **Example rubric for code refactoring agent:**
+
 ```markdown
 ## Refactoring Quality Rubric
 
@@ -123,19 +136,20 @@ Average performance (mean completion rate, median latency) hides critical failur
 
 Beyond slicing, four reliability dimensions provide a structured framework for production-readiness assessment:
 
-| Dimension | What It Measures | Why Average Completion Misses It |
-|-----------|------------------|----------------------------------|
-| **Consistency** | Whether identical inputs produce identical outcomes across repeated runs | High average success can mask high variance — agent may succeed 80% overall but only 40% on second attempts at the same task |
-| **Robustness** | Whether agents degrade gracefully under prompt paraphrases, format changes, and infrastructure faults | Agents can pass golden-path evals while failing on semantically equivalent prompt reformulations |
+| Dimension          | What It Measures                                                                                                       | Why Average Completion Misses It                                                                                                   |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Consistency**    | Whether identical inputs produce identical outcomes across repeated runs                                               | High average success can mask high variance — agent may succeed 80% overall but only 40% on second attempts at the same task       |
+| **Robustness**     | Whether agents degrade gracefully under prompt paraphrases, format changes, and infrastructure faults                  | Agents can pass golden-path evals while failing on semantically equivalent prompt reformulations                                   |
 | **Predictability** | Whether confidence aligns with actual performance (calibration) and separates successes from failures (discrimination) | Overconfident agents that fail unpredictably are harder to deploy safely than underconfident agents that reliably flag uncertainty |
-| **Safety** | Whether compliance with constraints and severity of violations remain within acceptable bounds | Safety is not a continuous tradeoff — the presence of any severe violation is a deployment blocker regardless of aggregate score |
+| **Safety**         | Whether compliance with constraints and severity of violations remain within acceptable bounds                         | Safety is not a continuous tradeoff — the presence of any severe violation is a deployment blocker regardless of aggregate score   |
 
 **Consistency** requires multi-run protocols. Run each eval case K≥5 times at identical settings (temperature=0 recommended). Measure not just mean success but variance across runs. An agent with 90% mean success and 60% consistency on second attempts fails differently than an agent with 80% mean success and 78% consistency. [Rabanser et al., 2026 — K=5 repetitions per task, temperature=0]
 
 **Robustness** requires deliberate perturbation testing:
-- *Prompt robustness*: Test 3-5 semantically equivalent reformulations of each eval case. "Cancel my subscription" and "end my plan" should produce equivalent outcomes. Prompt robustness is the most differentiating reliability dimension across models — agents that handle genuine technical failures gracefully often fail on surface-level instruction paraphrases. [Rabanser et al., 2026 — J=5 paraphrases per task]
-- *Environment robustness*: Test sensitivity to format changes that preserve semantics (reordered JSON fields, altered date formats, renamed parameters).
-- *Fault robustness*: Test behavior under infrastructure failures (API timeouts, malformed responses, unavailable services). Inject faults at realistic rates (p=0.2 is the paper's protocol) rather than testing only happy-path infrastructure.
+
+- _Prompt robustness_: Test 3-5 semantically equivalent reformulations of each eval case. "Cancel my subscription" and "end my plan" should produce equivalent outcomes. Prompt robustness is the most differentiating reliability dimension across models — agents that handle genuine technical failures gracefully often fail on surface-level instruction paraphrases. [Rabanser et al., 2026 — J=5 paraphrases per task]
+- _Environment robustness_: Test sensitivity to format changes that preserve semantics (reordered JSON fields, altered date formats, renamed parameters).
+- _Fault robustness_: Test behavior under infrastructure failures (API timeouts, malformed responses, unavailable services). Inject faults at realistic rates (p=0.2 is the paper's protocol) rather than testing only happy-path infrastructure.
 
 **Predictability** requires confidence reporting from agents. If the system under evaluation can report confidence, compute calibration error and discrimination (AUROC) across eval cases. If not, treat predictability as a qualitative assessment: does the agent signal uncertainty reliably, or does it proceed confidently into failures?
 
@@ -145,11 +159,11 @@ Beyond slicing, four reliability dimensions provide a structured framework for p
 
 Integrating the four dimensions into the three-tier evaluation strategy (Smoke / Core / Full) from above:
 
-| Eval Tier | Dimensions to Check |
-|-----------|---------------------|
-| **Smoke (3-10 cases)** | Consistency (2-3 runs per case); Safety (constraint compliance) |
-| **Core (20-50 cases)** | Consistency + Robustness (prompt variants for representative cases) |
-| **Full (all cases)** | All four dimensions; include fault injection; measure calibration if confidence is available |
+| Eval Tier              | Dimensions to Check                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| **Smoke (3-10 cases)** | Consistency (2-3 runs per case); Safety (constraint compliance)                              |
+| **Core (20-50 cases)** | Consistency + Robustness (prompt variants for representative cases)                          |
+| **Full (all cases)**   | All four dimensions; include fault injection; measure calibration if confidence is available |
 
 The four dimensions align with the book's existing open question "How do you evaluate agents that learn and adapt over time?" — consistency measurement across runs surfaces behavioral drift before it becomes a production incident.
 
@@ -183,24 +197,26 @@ Good evaluation sets come from production failures, not hypothetical examples. S
 
 ### How Many Cases?
 
-| Eval Type | # Cases | Purpose | When to Run |
-|-----------|---------|---------|-------------|
-| **Smoke test** | 3-5 | Catch broken changes | Every code change |
-| **Pre-deploy** | 30-50 | Confidence before shipping | Before production deploy |
-| **Regression suite** | 100+ | Prevent known failures | Daily or per commit |
-| **Benchmark** | 500+ | Measure absolute capability | Major version changes |
+| Eval Type            | # Cases | Purpose                     | When to Run              |
+| -------------------- | ------- | --------------------------- | ------------------------ |
+| **Smoke test**       | 3-5     | Catch broken changes        | Every code change        |
+| **Pre-deploy**       | 30-50   | Confidence before shipping  | Before production deploy |
+| **Regression suite** | 100+    | Prevent known failures      | Daily or per commit      |
+| **Benchmark**        | 500+    | Measure absolute capability | Major version changes    |
 
 Start small. Three well-chosen cases that cover common failures beat 50 random examples. Add cases when failures occur, not preemptively.
 
 ### Keeping Eval Sets Fresh
 
 **Staleness signals:**
+
 - Eval pass rate approaches 100% without prompt changes (cases are too easy)
 - Production failures occur that aren't in the eval set (coverage gaps)
 - Eval cases test deprecated features or outdated constraints
 - Cases pass but outputs are subtly wrong (criteria drifted from requirements)
 
 **Freshness practices:**
+
 - Retire cases when functionality is removed
 - Update expected outputs when requirements change
 - Add new cases from production incidents
@@ -220,6 +236,7 @@ How evaluation cases get labeled determines whether the evaluation set reflects 
 **Criteria drift is expected, not a failure.** Evaluation standards evolve as annotators see more outputs. This is productive: disagreement often reveals requirements that were ambiguous in the original specification. The correct response is to build realignment into the workflow—periodic calibration sessions and versioned rubrics that snapshot the current standard—rather than treating drift as an annotation failure. Academic research corroborates this: "Beyond Agreement: Rethinking Ground Truth in Educational AI Annotation" (arxiv.org/html/2508.00143v1, 2025) demonstrates that annotation disagreement can reflect legitimate interpretive diversity rather than annotator error.
 
 **Sources:**
+
 - Husain, H. "LLM Evals: Everything You Need to Know (FAQ)." hamel.dev/blog/posts/evals-faq/ (2025)
 - Husain, H. "Using LLM-as-a-Judge For Evaluation: A Complete Guide." hamel.dev/blog/posts/llm-judge/ (2024-10-29)
 - arxiv.org/html/2508.00143v1 — "Beyond Agreement: Rethinking Ground Truth in Educational AI Annotation" (2025)
@@ -229,6 +246,7 @@ How evaluation cases get labeled determines whether the evaluation set reflects 
 Open-ended tasks (write an essay, generate a product description, summarize research) resist exact-match evaluation. Decompose quality into measurable sub-criteria.
 
 **Decomposition approach:**
+
 ```markdown
 ## Essay Evaluation Criteria
 
@@ -251,7 +269,7 @@ Score each dimension independently.
 
 Husain identifies error analysis as the highest-ROI activity in AI product development—higher than prompt engineering, model selection, or infrastructure optimization—based on patterns across 50+ client engagements [Husain, 2024; 2025a; 2025b]. Where most teams design evaluation cases from upfront hypotheses about what might fail, error analysis inverts that sequence: the failure distribution discovered through systematic data inspection determines which cases to build.
 
-This placement matters. Error analysis happens *before* building the evaluation set, not after. The preceding section ("Building Evaluation Sets") describes the artifacts. Error analysis is the process that generates the most valuable ones.
+This placement matters. Error analysis happens _before_ building the evaluation set, not after. The preceding section ("Building Evaluation Sets") describes the artifacts. Error analysis is the process that generates the most valuable ones.
 
 ### The Four-Step Methodology
 
@@ -274,6 +292,7 @@ Teams that skip systematic error analysis tend to build evaluations measuring th
 Evaluation dashboards should be populated by failure categories discovered through error analysis, not constructed before data inspection begins.
 
 **Sources:**
+
 - Husain, H. "Your AI Product Needs Evals." hamel.dev/blog/posts/evals/ (2024-03-29)
 - Husain, H. "A Field Guide to Rapidly Improving AI Products." hamel.dev/blog/posts/field-guide/ (2025-03-24)
 - Husain, H. "LLM Evals: Everything You Need to Know (FAQ)." hamel.dev/blog/posts/evals-faq/ (2025)
@@ -288,11 +307,11 @@ Evaluation must fit into the development workflow. The right approach balances t
 
 ### Three-Tier Evaluation Strategy
 
-| Tier | Cases | Runtime | When to Run |
-|------|-------|---------|-------------|
-| **Smoke** | 3-10 | <1 min | Every prompt change |
-| **Core** | 20-50 | 3-10 min | Before committing |
-| **Full** | All cases | 30+ min | Nightly, pre-deploy |
+| Tier      | Cases     | Runtime  | When to Run         |
+| --------- | --------- | -------- | ------------------- |
+| **Smoke** | 3-10      | <1 min   | Every prompt change |
+| **Core**  | 20-50     | 3-10 min | Before committing   |
+| **Full**  | All cases | 30+ min  | Nightly, pre-deploy |
 
 **Smoke tests** run fast enough to check after every tweak. Catch catastrophic regressions immediately.
 
@@ -313,12 +332,14 @@ Evaluation must fit into the development workflow. The right approach balances t
 **Custom viewer infrastructure.** Generic log viewers fail for sustained evaluation because they lack domain-specific rendering. An agent handling customer support tickets needs to display conversation history, user metadata, and agent tool calls in a single view—not raw JSON. Husain's position is that domain-specific viewers are non-optional for teams doing systematic evaluation, and that the investment is smaller than it appears: custom tools can be built in hours using AI-assisted development. Essential features: all relevant context visible in a single screen, one-click feedback capture, open-ended annotation fields, and keyboard shortcuts for velocity. The infrastructure goal is to "remove all friction from the process of looking at data" [Husain, 2025b].
 
 **Sources:**
+
 - Husain, H. "Your AI Product Needs Evals." hamel.dev/blog/posts/evals/ (2024-03-29)
 - Husain, H. "LLM Evals: Everything You Need to Know (FAQ)." hamel.dev/blog/posts/evals-faq/ (2025)
 
 ### Automated Eval Patterns
 
 **Script-based eval runner:**
+
 ```python
 # eval_runner.py
 import json
@@ -388,6 +409,7 @@ if __name__ == "__main__":
 ```
 
 **LLM-as-judge practical tips:**
+
 - Use a more capable model than the agent being evaluated (judge with Opus, evaluate Haiku)
 - Provide specific scoring criteria in judge prompt, not vague "rate the quality"
 - Request structured output (JSON with score + reasoning) for automated processing
@@ -420,12 +442,12 @@ Evaluation results contain signal and noise. Distinguishing between them prevent
 
 ### Handling Variance
 
-| Source of Variance | Strategy |
-|--------------------|----------|
-| **Sampling randomness** | Run multiple times (3-5), report mean and std dev |
+| Source of Variance      | Strategy                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| **Sampling randomness** | Run multiple times (3-5), report mean and std dev                                    |
 | **Temperature effects** | Use temperature=0 for eval (deterministic), or run 10+ times and report distribution |
-| **Model updates** | Pin model version in eval (e.g., `claude-opus-4-6`, not `claude-opus-latest`) |
-| **Eval criteria drift** | Version rubrics, use same criteria across comparisons |
+| **Model updates**       | Pin model version in eval (e.g., `claude-opus-4-6`, not `claude-opus-latest`)        |
+| **Eval criteria drift** | Version rubrics, use same criteria across comparisons                                |
 
 **Majority voting:** For non-deterministic agents, run each case 5 times and take the majority outcome. Majority voting smooths variance and reveals consistent behavior.
 
@@ -434,12 +456,14 @@ Evaluation results contain signal and noise. Distinguishing between them prevent
 ### When to Trust vs Question the Eval
 
 **Trust the eval when:**
+
 - Sample size is adequate (30+ cases for meaningful statistics)
 - Results align with qualitative observations (metrics match vibes)
 - Failures are reproducible (same cases fail consistently)
 - Variance is low (tight confidence intervals, similar scores across runs)
 
 **Question the eval when:**
+
 - Results contradict manual inspection (90% pass rate but outputs look wrong)
 - Single outliers dominate metrics (one case fails badly, skews average)
 - Eval set is stale (all cases pass but production still fails)
@@ -479,12 +503,12 @@ Eval-first development prevents building in the dark. Eval cases serve as concre
 
 ### Evaluation Maturity Curve
 
-| Stage | Practices | Investment | Suitable For |
-|-------|-----------|------------|--------------|
-| **Manual** | Run agent, inspect output by hand | Minutes per eval | Prototypes, single developer |
-| **Scripted** | Automated test runner, pass/fail checks | Hours to build, seconds to run | Small teams, pre-production |
-| **Automated** | CI/CD integration, LLM-as-judge, metrics tracking | Days to build, automated execution | Production systems, multiple agents |
-| **Production-integrated** | Continuous eval on live traffic, alerting on metric degradation | Weeks to build, ongoing monitoring | High-scale production |
+| Stage                     | Practices                                                       | Investment                         | Suitable For                        |
+| ------------------------- | --------------------------------------------------------------- | ---------------------------------- | ----------------------------------- |
+| **Manual**                | Run agent, inspect output by hand                               | Minutes per eval                   | Prototypes, single developer        |
+| **Scripted**              | Automated test runner, pass/fail checks                         | Hours to build, seconds to run     | Small teams, pre-production         |
+| **Automated**             | CI/CD integration, LLM-as-judge, metrics tracking               | Days to build, automated execution | Production systems, multiple agents |
+| **Production-integrated** | Continuous eval on live traffic, alerting on metric degradation | Weeks to build, ongoing monitoring | High-scale production               |
 
 Most projects should target **Scripted** evaluation: automated enough for frequent use, simple enough to maintain. **Automated** and **Production-integrated** are worth the investment only for agents that run at scale or where failures are costly.
 

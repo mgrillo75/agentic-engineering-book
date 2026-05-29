@@ -3,7 +3,16 @@ title: Harness Engineering
 description: Hashimoto's methodology for iteratively improving the harness — the practice of making agent mistakes unrepeatable
 created: 2026-04-12
 last_updated: 2026-04-12
-tags: [foundations, harness, engineering, hashimoto, iteration, improvement, methodology]
+tags:
+  [
+    foundations,
+    harness,
+    engineering,
+    hashimoto,
+    iteration,
+    improvement,
+    methodology,
+  ]
 part: 1
 part_title: Foundations
 chapter: 6
@@ -33,12 +42,12 @@ This principle contains two non-obvious claims worth unpacking.
 
 Prompt patching is the dominant response to agent failure in the field because it is fast and because it sometimes works:
 
-| Scenario | Prompt Patch | Harness Engineering |
-|---------|-------------|-------------------|
-| Agent writes to /tmp instead of /workspace | Add "always write files to /workspace/" to system prompt | Permission filter: intercept all writes, enforce /workspace/ prefix |
-| Agent commits without linting | Add "always run linting before committing" to system prompt | Lint-before-commit hook: intercept commit tool call, run linter |
-| Agent includes redundant file reads | Add "avoid reading the same file twice" to system prompt | Deduplication: harness detects duplicate reads, returns cached content |
-| Agent produces inconsistent output format | Add format specification to system prompt | Schema validator: reject outputs that don't match required format |
+| Scenario                                   | Prompt Patch                                                | Harness Engineering                                                    |
+| ------------------------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Agent writes to /tmp instead of /workspace | Add "always write files to /workspace/" to system prompt    | Permission filter: intercept all writes, enforce /workspace/ prefix    |
+| Agent commits without linting              | Add "always run linting before committing" to system prompt | Lint-before-commit hook: intercept commit tool call, run linter        |
+| Agent includes redundant file reads        | Add "avoid reading the same file twice" to system prompt    | Deduplication: harness detects duplicate reads, returns cached content |
+| Agent produces inconsistent output format  | Add format specification to system prompt                   | Schema validator: reject outputs that don't match required format      |
 
 Prompt patches are fragile for a structural reason: they depend on the agent consistently following the instruction, in every context, across every turn. Instructions compete with each other for influence. Long system prompts with many warnings dilute each individual warning. And because the agent is a probabilistic system, consistent instruction-following is never guaranteed.
 
@@ -53,6 +62,7 @@ Systematic harness engineering follows a six-step cycle:
 ### Step 1: Observe
 
 An agent makes a mistake in production or evaluation. The observation captures:
+
 - What the agent did (the action taken)
 - What the agent should have done (the intended action)
 - The context in which the mistake occurred (task type, turn number, prior actions)
@@ -64,17 +74,18 @@ Observation quality determines the quality of the subsequent fix. Incomplete obs
 
 Not every agent failure is a harness failure. Accurate classification is the difference between a productive fix and wasted engineering effort.
 
-| Failure Type | Symptom | Correct Response |
-|-------------|---------|-----------------|
-| Model failure | Agent cannot reason about the task type regardless of harness quality | Model upgrade or task decomposition |
-| Context failure | Agent has the capability but lacks the information to apply it | Improve workspace context or context management |
-| Prompt failure | Agent misinterprets the instruction consistently and predictably | Prompt revision or additional examples |
-| Harness failure | Agent succeeds in isolated testing but fails in the execution environment | Harness engineering |
-| Tool failure | Agent reasons correctly but tool output is unreliable or malformed | Tool design revision |
+| Failure Type    | Symptom                                                                   | Correct Response                                |
+| --------------- | ------------------------------------------------------------------------- | ----------------------------------------------- |
+| Model failure   | Agent cannot reason about the task type regardless of harness quality     | Model upgrade or task decomposition             |
+| Context failure | Agent has the capability but lacks the information to apply it            | Improve workspace context or context management |
+| Prompt failure  | Agent misinterprets the instruction consistently and predictably          | Prompt revision or additional examples          |
+| Harness failure | Agent succeeds in isolated testing but fails in the execution environment | Harness engineering                             |
+| Tool failure    | Agent reasons correctly but tool output is unreliable or malformed        | Tool design revision                            |
 
 The classification requires honest assessment: practitioners who default to "model failure" for every mistake will over-invest in model upgrades. Practitioners who default to "harness failure" will over-engineer the harness for problems that belong at the prompt layer.
 
 **Classification heuristics:**
+
 - If the failure is consistent across different models → likely prompt or harness failure
 - If the failure disappears when the agent has more context → context failure
 - If the failure disappears when the tool output is manually simplified → tool failure
@@ -85,18 +96,19 @@ The classification requires honest assessment: practitioners who default to "mod
 
 Within the harness, identify which component is responsible. The [six-component taxonomy](2-harness-stack.md) provides the diagnostic framework:
 
-| Component | Failure Signature |
-|-----------|-----------------|
-| Workspace context | Agent acts on stale or incorrect environmental information |
-| Prompt shape | Cache invalidation errors; token costs higher than expected |
-| Tool access | Agent attempts to use tools outside its permission scope |
-| Context management | Context degradation across turns; agent "forgets" earlier decisions |
-| Session memory | Agent repeats completed work; working memory inconsistent with state |
-| Subagent delegation | Subagent outputs not properly integrated; scope violations |
+| Component           | Failure Signature                                                    |
+| ------------------- | -------------------------------------------------------------------- |
+| Workspace context   | Agent acts on stale or incorrect environmental information           |
+| Prompt shape        | Cache invalidation errors; token costs higher than expected          |
+| Tool access         | Agent attempts to use tools outside its permission scope             |
+| Context management  | Context degradation across turns; agent "forgets" earlier decisions  |
+| Session memory      | Agent repeats completed work; working memory inconsistent with state |
+| Subagent delegation | Subagent outputs not properly integrated; scope violations           |
 
 ### Step 4: Engineer
 
 With the component located, the engineering response maps to Fowler's guide/sensor framework:
+
 - If the mistake is an action the agent should not take → add a guide (prevent the action)
 - If the mistake is an error in reasoning after observing results → add a sensor (better feedback)
 - If the mistake is missing information → improve the relevant stack component
@@ -106,6 +118,7 @@ The engineering choice should address the classified failure type, not just the 
 ### Step 5: Verify
 
 Confirm that the fix eliminates the failure:
+
 - Reproduce the original failure case after the fix is applied
 - Run the evaluation suite that covers the task category
 - Check that the fix does not introduce new failure modes (regressions)
@@ -143,6 +156,7 @@ Generalization is what distinguishes systematic harness engineering from ad-hoc 
 **Prompt patch response:** "Periodically review your earlier decisions to ensure consistency."
 
 **Harness engineering response:** At 40% context fill, the harness triggers a context summarization step that:
+
 1. Extracts key decisions from the full transcript
 2. Produces a structured "decision log" summarizing decisions with their rationale
 3. Injects this decision log into working memory
@@ -178,14 +192,15 @@ Every agent session run through a harness produces trajectory data — sequences
 
 **Practical trajectory instrumentation:**
 
-| Instrumentation Layer | What to Capture | Storage |
-|--------------------|----------------|--------|
-| Tool call level | Every tool invocation: name, inputs, outputs, timestamp, success/failure | Append-only log |
-| Session level | Task specification, completion status, duration, turn count | Session metadata file |
-| Harness engineering level | Failure classifications, component diagnoses, engineering responses | Engineering log |
-| Evaluation level | Before/after performance on relevant task categories | Evaluation results |
+| Instrumentation Layer     | What to Capture                                                          | Storage               |
+| ------------------------- | ------------------------------------------------------------------------ | --------------------- |
+| Tool call level           | Every tool invocation: name, inputs, outputs, timestamp, success/failure | Append-only log       |
+| Session level             | Task specification, completion status, duration, turn count              | Session metadata file |
+| Harness engineering level | Failure classifications, component diagnoses, engineering responses      | Engineering log       |
+| Evaluation level          | Before/after performance on relevant task categories                     | Evaluation results    |
 
 **Minimum viable trajectory capture:**
+
 1. Log every tool call with inputs and outputs
 2. Log session-level success/failure outcome
 3. Tag trajectories with task type for later retrieval

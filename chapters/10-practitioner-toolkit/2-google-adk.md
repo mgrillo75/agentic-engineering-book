@@ -3,7 +3,16 @@ title: Google ADK
 description: Google's Agent Development Kit - multi-agent-first framework for production AI agents
 created: 2025-12-09
 last_updated: 2025-12-10
-tags: [tools, google-adk, multi-agent, orchestration, gemini, mcp, workflow-primitives]
+tags:
+  [
+    tools,
+    google-adk,
+    multi-agent,
+    orchestration,
+    gemini,
+    mcp,
+    workflow-primitives,
+  ]
 part: 3
 part_title: Perspectives
 chapter: 10
@@ -19,13 +28,14 @@ Google's open-source Agent Development Kit. A code-first framework for building 
 
 ## Multi-Agent First Design
 
-*[2025-12-09]*: ADK's defining characteristic is that multi-agent coordination is baked in, not bolted on. Where LangChain retrofitted multi-agent support and CrewAI added it as a specialized layer, ADK designed hierarchical agent systems from day one.
+_[2025-12-09]_: ADK's defining characteristic is that multi-agent coordination is baked in, not bolted on. Where LangChain retrofitted multi-agent support and CrewAI added it as a specialized layer, ADK designed hierarchical agent systems from day one.
 
 ### Agent Types
 
 **LlmAgent**: Dynamic, model-driven decision-making. The workhorse for tasks requiring reasoning and tool selection.
 
 **Workflow Agents**: Structured execution without LLM overhead per coordination decision:
+
 - **SequentialAgent**: Pipeline execution—agent A's output feeds agent B
 - **ParallelAgent**: Fan-out/gather—multiple agents run concurrently, results collected
 - **LoopAgent**: Iteration until completion condition met
@@ -52,16 +62,16 @@ This prevents circular dependencies and keeps architecture comprehensible. It's 
 
 ## State and Memory Architecture
 
-*[2025-12-09]*: ADK distinguishes what Claude Code's context management doesn't—persistent state vs. ephemeral context.
+_[2025-12-09]_: ADK distinguishes what Claude Code's context management doesn't—persistent state vs. ephemeral context.
 
 ### State Prefixes
 
-| Prefix | Lifetime | Use Case |
-|--------|----------|----------|
-| `session:` | Current conversation | Working memory, intermediate results |
-| `user:` | Across sessions for this user | Preferences, accumulated knowledge |
-| `app:` | Application-wide | Shared configuration, global state |
-| `temp:` | Single turn | Scratch space, discardable |
+| Prefix     | Lifetime                      | Use Case                             |
+| ---------- | ----------------------------- | ------------------------------------ |
+| `session:` | Current conversation          | Working memory, intermediate results |
+| `user:`    | Across sessions for this user | Preferences, accumulated knowledge   |
+| `app:`     | Application-wide              | Shared configuration, global state   |
+| `temp:`    | Single turn                   | Scratch space, discardable           |
 
 The elegance: prefix determines persistence lifetime without configuration overhead. Namespace by lifecycle, not by feature.
 
@@ -82,7 +92,7 @@ This is the persistent state layer that Claude Code's context management doesn't
 
 ## MCP Integration
 
-*[2025-12-09]*: ADK supports MCP in both directions—as client and server.
+_[2025-12-09]_: ADK supports MCP in both directions—as client and server.
 
 ### Two Integration Modes
 
@@ -99,11 +109,11 @@ mcp_toolset = McpToolset(
 
 ### Deployment Patterns
 
-| Pattern | Mechanism | Scaling Characteristics |
-|---------|-----------|------------------------|
-| **stdio** | Local server proxying remote services | Doesn't scale horizontally—single process |
-| **Streamable HTTP** | SSE-based, independent process | Stateless replication possible |
-| **Sidecar** | Kubernetes co-located container | Lifecycle-coupled with main app |
+| Pattern             | Mechanism                             | Scaling Characteristics                   |
+| ------------------- | ------------------------------------- | ----------------------------------------- |
+| **stdio**           | Local server proxying remote services | Doesn't scale horizontally—single process |
+| **Streamable HTTP** | SSE-based, independent process        | Stateless replication possible            |
+| **Sidecar**         | Kubernetes co-located container       | Lifecycle-coupled with main app           |
 
 Match deployment architecture to target environment. Stdio for local dev, HTTP for cloud services, sidecar for orchestrated containers.
 
@@ -114,6 +124,7 @@ MCP connections are stateful—session affinity required for load balancing at s
 ### Tool Filtering for Security
 
 `tool_filter` in McpToolset restricts exposed capabilities per agent:
+
 - Reduces model overwhelm during tool selection (fewer options = better decisions)
 - Implements least-privilege at the tool level
 - Dynamic filtering at runtime vs. static configuration
@@ -122,7 +133,7 @@ MCP connections are stateful—session affinity required for load balancing at s
 
 ## Production Lessons
 
-*[2025-12-09]*: Real deployment experiences from practitioners.
+_[2025-12-09]_: Real deployment experiences from practitioners.
 
 ### Common Gotchas
 
@@ -147,22 +158,22 @@ The agent executed on the local command line is the same one debugged in the web
 
 Official sources emphasize production-readiness ("powers Google's Agentspace"). Practitioners note early-stage developer experience outside Google's ecosystem.
 
-**Resolution**: ADK is production-ready *for Google Cloud users*. Outside that context, it's still maturing. The model-agnostic claims are accurate but friction increases outside Google's stack.
+**Resolution**: ADK is production-ready _for Google Cloud users_. Outside that context, it's still maturing. The model-agnostic claims are accurate but friction increases outside Google's stack.
 
 ---
 
 ## Framework Comparison Context
 
-*[2025-12-09]*: Practitioners don't evaluate frameworks in isolation—they compare.
+_[2025-12-09]_: Practitioners don't evaluate frameworks in isolation—they compare.
 
 ### Positioning
 
-| Framework | Strength | Trade-off |
-|-----------|----------|-----------|
-| **ADK** | Native multi-agent, Google Cloud integration | Smaller community, ecosystem lock-in risk |
-| **LangChain** | Massive community, flexibility | Production orchestration at scale is harder |
-| **CrewAI** | Rapid prototyping, role-playing abstraction | Less control for complex workflows |
-| **Claude Code SDK** | Deep Anthropic integration, subagent isolation | Single-vendor assumption |
+| Framework           | Strength                                       | Trade-off                                   |
+| ------------------- | ---------------------------------------------- | ------------------------------------------- |
+| **ADK**             | Native multi-agent, Google Cloud integration   | Smaller community, ecosystem lock-in risk   |
+| **LangChain**       | Massive community, flexibility                 | Production orchestration at scale is harder |
+| **CrewAI**          | Rapid prototyping, role-playing abstraction    | Less control for complex workflows          |
+| **Claude Code SDK** | Deep Anthropic integration, subagent isolation | Single-vendor assumption                    |
 
 ### Practitioner Pattern
 

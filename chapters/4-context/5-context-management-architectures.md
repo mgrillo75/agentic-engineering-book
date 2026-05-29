@@ -30,6 +30,7 @@ The choice among these approaches mirrors an older engineering debate. Manual me
 The passive accumulation model is what most deployed agent systems use today—Claude Code, Cursor, Windsurf, and similar tools all follow this pattern by default.
 
 **How it works:**
+
 1. Messages append to a flat list as the conversation progresses
 2. Context window fills linearly with each turn
 3. At some threshold (typically 90-95%), the system triggers emergency compaction: an LLM summarizes the entire conversation in one pass
@@ -41,6 +42,7 @@ The failure modes are well-characterized. Context rot—quality degradation corr
 The "boot fresh" default described in [Context Management Strategies](2-context-strategies.md) is a rational response to these failure modes. For short tasks, it remains the right answer. The passive model only becomes a liability for long-running sessions where the cost of repeated restarts is high.
 
 **Key problems with passive accumulation:**
+
 - Cliff-edge failure (no gradual degradation signal before quality drops sharply)
 - Emergency summarization is uncontrolled—important details can disappear without trace
 - No awareness of what is important vs. stale—all tokens treated equally
@@ -51,7 +53,7 @@ The "boot fresh" default described in [Context Management Strategies](2-context-
 
 ## Lossless Context Management (LCM)
 
-*[2026-03-09]*: Ehrlich and Blackman's Lossless Context Management (LCM) paper (February 2026, arXiv:submit/7269166) challenges the assumption that context compression inevitably loses signal. LCM introduces a deterministic, engine-managed architecture that makes compression viable by retaining pointers back to every original message.
+_[2026-03-09]_: Ehrlich and Blackman's Lossless Context Management (LCM) paper (February 2026, arXiv:submit/7269166) challenges the assumption that context compression inevitably loses signal. LCM introduces a deterministic, engine-managed architecture that makes compression viable by retaining pointers back to every original message.
 
 ### Architecture
 
@@ -64,6 +66,7 @@ LCM separates context into two distinct structures:
 Summary nodes form a **hierarchical DAG** (directed acyclic graph). When a block of messages is compacted, a summary node replaces it in the active context. If the summary node itself grows too large, it can be summarized into a higher-level node. The DAG structure means each summary traces back to source messages through stable identifiers.
 
 Two tools expose the lossless guarantee to the model:
+
 - `lcm_grep` — Full-text search across all messages in the immutable store, including compacted content
 - `lcm_expand` — Recover any compacted content by expanding a summary node back to its original messages
 
@@ -105,14 +108,14 @@ The benchmark results demonstrate a specific claim: LCM's compaction mechanism p
 
 ### Trade-offs
 
-| Dimension | LCM Characteristic |
-|-----------|-------------------|
-| Information loss | None — every message recoverable via `lcm_expand` |
-| Overhead (short tasks) | Zero — below soft threshold, no compaction occurs |
-| Infrastructure | PostgreSQL dependency for immutable store |
-| Summary nodes | Add indirection — model must reason about what's summarized |
-| Model autonomy | Reduced — deterministic primitives replace model-written memory scripts |
-| Best for | Long sessions, data-intensive aggregation, tasks with recall needs |
+| Dimension              | LCM Characteristic                                                      |
+| ---------------------- | ----------------------------------------------------------------------- |
+| Information loss       | None — every message recoverable via `lcm_expand`                       |
+| Overhead (short tasks) | Zero — below soft threshold, no compaction occurs                       |
+| Infrastructure         | PostgreSQL dependency for immutable store                               |
+| Summary nodes          | Add indirection — model must reason about what's summarized             |
+| Model autonomy         | Reduced — deterministic primitives replace model-written memory scripts |
+| Best for               | Long sessions, data-intensive aggregation, tasks with recall needs      |
 
 The infrastructure requirement is a real constraint. PostgreSQL means LCM is not a drop-in replacement for stateless agent deployments. The architecture is designed for persistent agent systems where session continuity has high value.
 
@@ -120,9 +123,9 @@ The infrastructure requirement is a real constraint. PostgreSQL means LCM is not
 
 ## Continuous Curation: Sapling
 
-*[2026-03-09]*: Sapling (`@os-eco/sapling-cli`, CLI: `sp`) takes a different starting position. Where LCM asks "how do we preserve everything while managing what's visible?", Sapling asks "how do we keep only what currently matters?"
+_[2026-03-09]_: Sapling (`@os-eco/sapling-cli`, CLI: `sp`) takes a different starting position. Where LCM asks "how do we preserve everything while managing what's visible?", Sapling asks "how do we keep only what currently matters?"
 
-The target metric is 50-60% context utilization at steady state. Not "don't fill up"—*actively stay at half capacity*. This is the garbage-collector mindset: don't wait for the heap to fill; reclaim continuously so it never gets close.
+The target metric is 50-60% context utilization at steady state. Not "don't fill up"—_actively stay at half capacity_. This is the garbage-collector mindset: don't wait for the heap to fill; reclaim continuously so it never gets close.
 
 Sapling is headless—it has no UI of its own and runs as a pipeline layer in front of the model. Inter-turn context management means the pipeline runs between every turn, not just when limits are hit.
 
@@ -132,12 +135,12 @@ Sapling's core abstraction is the **operation**: a group of semantically related
 
 Boundary detection uses a weighted heuristic applied at each turn boundary:
 
-| Signal | Weight |
-|--------|--------|
-| Tool-type transition (e.g., read → bash) | 0.35 |
-| File-scope change (different files accessed) | 0.30 |
-| Intent signal (from message content) | 0.20 |
-| Temporal gap between turns | 0.15 |
+| Signal                                       | Weight |
+| -------------------------------------------- | ------ |
+| Tool-type transition (e.g., read → bash)     | 0.35   |
+| File-scope change (different files accessed) | 0.30   |
+| Intent signal (from message content)         | 0.20   |
+| Temporal gap between turns                   | 0.15   |
 
 When the weighted sum exceeds threshold, Sapling opens a new operation. The active operation is always retained in full. Completed operations are scored and become candidates for compaction.
 
@@ -145,33 +148,33 @@ Each operation tracks: files touched, tools used, artifacts created, dependencie
 
 ### Five-Stage Pipeline
 
-| Stage | Purpose | Key Mechanism |
-|-------|---------|---------------|
-| **Ingest** | Parse messages into semantic units | Boundary detection via weighted heuristics |
-| **Evaluate** | Score each operation's relevance | Weighted signals across five dimensions |
-| **Compact** | Summarize low-scoring operations | Template-based summaries; tool output truncation by type |
-| **Budget** | Enforce token allocation by zone | Dynamic rebalancing across three zones |
-| **Render** | Assemble final message array | Working memory in system prompt, retained operations as messages |
+| Stage        | Purpose                            | Key Mechanism                                                    |
+| ------------ | ---------------------------------- | ---------------------------------------------------------------- |
+| **Ingest**   | Parse messages into semantic units | Boundary detection via weighted heuristics                       |
+| **Evaluate** | Score each operation's relevance   | Weighted signals across five dimensions                          |
+| **Compact**  | Summarize low-scoring operations   | Template-based summaries; tool output truncation by type         |
+| **Budget**   | Enforce token allocation by zone   | Dynamic rebalancing across three zones                           |
+| **Render**   | Assemble final message array       | Working memory in system prompt, retained operations as messages |
 
 **Evaluation signals** (applied to completed operations):
 
-| Signal | Weight | What it captures |
-|--------|--------|-----------------|
-| Recency | 0.25 | How recently the operation occurred |
-| File overlap | 0.25 | Whether the operation's files are still in active use |
-| Causal dependency | 0.25 | Whether later operations depend on this one |
-| Outcome significance | 0.15 | Whether the operation produced important artifacts |
-| Operation type | 0.10 | Inherent importance of the operation category |
+| Signal               | Weight | What it captures                                      |
+| -------------------- | ------ | ----------------------------------------------------- |
+| Recency              | 0.25   | How recently the operation occurred                   |
+| File overlap         | 0.25   | Whether the operation's files are still in active use |
+| Causal dependency    | 0.25   | Whether later operations depend on this one           |
+| Outcome significance | 0.15   | Whether the operation produced important artifacts    |
+| Operation type       | 0.10   | Inherent importance of the operation category         |
 
 Operations with low composite scores are compacted. High-scoring operations are retained in full. The active operation always scores maximum and is never compacted mid-operation.
 
 **Budget zones** allocate context by function:
 
-| Zone | Allocation | Contents |
-|------|-----------|---------|
-| System + archive | 25% | System prompt, long-term summaries, cross-session state |
-| Active operations | 25% | Full-fidelity retained operations |
-| Headroom | 50% | Target utilization ceiling; absorbs new turns |
+| Zone              | Allocation | Contents                                                |
+| ----------------- | ---------- | ------------------------------------------------------- |
+| System + archive  | 25%        | System prompt, long-term summaries, cross-session state |
+| Active operations | 25%        | Full-fidelity retained operations                       |
+| Headroom          | 50%        | Target utilization ceiling; absorbs new turns           |
 
 Dynamic rebalancing adjusts zone sizes when pressure exceeds allocation. The headroom zone exists to prevent the cliff-edge characteristic of passive accumulation: 50% headroom means no operation is ever added in a context that is more than half full.
 
@@ -193,17 +196,17 @@ The RPC interface over a Unix socket exposes pipeline state for external consume
 
 ### Trade-offs
 
-| Dimension | Sapling Characteristic |
-|-----------|----------------------|
-| Information loss | Intentional — compacted operations lose detail permanently |
-| Retrieval of old context | Not available — summary only, no `lcm_expand` equivalent |
-| Overhead (short tasks) | Minimal — pipeline runs but mostly no-ops |
-| External dependencies | None — all state in-memory operation registry |
-| Extra LLM calls | None (MVP: template-based; post-MVP: Haiku) |
-| Process restart | State does not survive restart (design doc addresses archive persistence) |
-| Best for | Medium-length coding sessions, workflows with clear operation boundaries |
+| Dimension                | Sapling Characteristic                                                    |
+| ------------------------ | ------------------------------------------------------------------------- |
+| Information loss         | Intentional — compacted operations lose detail permanently                |
+| Retrieval of old context | Not available — summary only, no `lcm_expand` equivalent                  |
+| Overhead (short tasks)   | Minimal — pipeline runs but mostly no-ops                                 |
+| External dependencies    | None — all state in-memory operation registry                             |
+| Extra LLM calls          | None (MVP: template-based; post-MVP: Haiku)                               |
+| Process restart          | State does not survive restart (design doc addresses archive persistence) |
+| Best for                 | Medium-length coding sessions, workflows with clear operation boundaries  |
 
-The lossy-by-design decision is the key philosophical difference from LCM. Sapling's premise is that a well-constructed 3-line summary of 15 stale turns is *more useful* than the 15 turns themselves—because the summary surfaces only what remains relevant, while the 15 turns require the model to re-read and re-evaluate. The information loss is controlled (template-based summaries follow a predictable structure) rather than uncontrolled (emergency compaction produces unpredictable results).
+The lossy-by-design decision is the key philosophical difference from LCM. Sapling's premise is that a well-constructed 3-line summary of 15 stale turns is _more useful_ than the 15 turns themselves—because the summary surfaces only what remains relevant, while the 15 turns require the model to re-read and re-evaluate. The information loss is controlled (template-based summaries follow a predictable structure) rather than uncontrolled (emergency compaction produces unpredictable results).
 
 ---
 
@@ -211,18 +214,18 @@ The lossy-by-design decision is the key philosophical difference from LCM. Sapli
 
 The three approaches form a coherent design spectrum with clear trade-off dimensions:
 
-| Dimension | Passive Accumulation | LCM (Lossless) | Sapling (Curated) |
-|-----------|---------------------|-----------------|-------------------|
-| **Philosophy** | Let it fill | Preserve everything, compress views | Keep only what matters |
-| **Compaction trigger** | 90-95% (emergency) | Soft/hard thresholds (proactive) | Every turn (continuous) |
-| **Information loss** | Uncontrolled at compaction | None (lossless pointers) | Controlled, intentional |
-| **Retrieval of old context** | Gone after compaction | Always recoverable via `lcm_expand` | Gone — summary only |
-| **Overhead (short tasks)** | None | None (zero-cost continuity) | Minimal (pipeline runs but no-ops) |
-| **Target utilization** | Fill to capacity | Managed via thresholds | 50-60% steady state |
-| **External dependencies** | None | PostgreSQL | None |
-| **Extra LLM calls** | 1 at compaction | Async summarization calls | None (template-based MVP) |
-| **Iteration model** | Model writes loops | Engine-managed (`llm_map`) | N/A (single-agent focus) |
-| **Best for** | Short tasks | Long sessions, data-heavy tasks | Medium sessions, coding tasks |
+| Dimension                    | Passive Accumulation       | LCM (Lossless)                      | Sapling (Curated)                  |
+| ---------------------------- | -------------------------- | ----------------------------------- | ---------------------------------- |
+| **Philosophy**               | Let it fill                | Preserve everything, compress views | Keep only what matters             |
+| **Compaction trigger**       | 90-95% (emergency)         | Soft/hard thresholds (proactive)    | Every turn (continuous)            |
+| **Information loss**         | Uncontrolled at compaction | None (lossless pointers)            | Controlled, intentional            |
+| **Retrieval of old context** | Gone after compaction      | Always recoverable via `lcm_expand` | Gone — summary only                |
+| **Overhead (short tasks)**   | None                       | None (zero-cost continuity)         | Minimal (pipeline runs but no-ops) |
+| **Target utilization**       | Fill to capacity           | Managed via thresholds              | 50-60% steady state                |
+| **External dependencies**    | None                       | PostgreSQL                          | None                               |
+| **Extra LLM calls**          | 1 at compaction            | Async summarization calls           | None (template-based MVP)          |
+| **Iteration model**          | Model writes loops         | Engine-managed (`llm_map`)          | N/A (single-agent focus)           |
+| **Best for**                 | Short tasks                | Long sessions, data-heavy tasks     | Medium sessions, coding tasks      |
 
 The Dijkstra analogy from the LCM paper maps cleanly onto the spectrum:
 
@@ -233,17 +236,20 @@ The Dijkstra analogy from the LCM paper maps cleanly onto the spectrum:
 ### When to Use Each Approach
 
 **Passive accumulation with "boot fresh":**
+
 - Short tasks (under 30 minutes) where context budget is unlikely to fill
 - Tasks with natural restart points where session continuity adds minimal value
 - Teams prioritizing simplicity over long-session performance
 
 **LCM (lossless preservation):**
+
 - Long sessions where recall of earlier conversation state may be required
 - Data-intensive tasks that process many items — `llm_map` handles unbounded datasets without accumulating history
 - Workflows where any information loss is unacceptable
 - Multi-day work where cross-session continuity matters
 
 **Sapling (continuous curation):**
+
 - Medium-length coding sessions (30 minutes to several hours)
 - Tasks with clear operation boundaries where completed operations have declining relevance
 - Deployments where infrastructure simplicity is a priority (no external store)
@@ -262,6 +268,7 @@ The approaches are not mutually exclusive. A system could apply Sapling-style co
 **The passive baseline has known failure modes with engineering solutions.** Cliff-edge compaction, invisible context rot, and uncontrolled information loss are not inherent properties of context windows. They are consequences of passive accumulation. Both LCM and Sapling address them through different architectural choices.
 
 **Choose the trade-off consciously:**
+
 - If recall of any prior state may be required, LCM's lossless architecture is the only option
 - If simplicity and sharp focus matter more than recall, Sapling's continuous curation delivers steady-state quality without infrastructure overhead
 - If tasks are short enough that context fill is not a concern, passive accumulation with "boot fresh" remains the pragmatic default

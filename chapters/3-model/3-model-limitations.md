@@ -20,31 +20,37 @@ Models have predictable failure modes. Recognition enables workarounds. Engineer
 ## Core Questions
 
 ### Mathematical Operations
+
 - Why do models fail at precise arithmetic?
 - When should calculation be delegated to tools?
 - How do you structure math-heavy workflows?
 
 ### Information Accuracy
+
 - What causes hallucination in agentic contexts?
 - How do verification tools reduce false information?
 - When should responses require citations?
 
 ### Context Management
+
 - How do context window limits affect reliability?
 - Why do early instructions fade in long conversations?
 - What's the optimal context utilization threshold?
 
 ### Instruction Adherence
+
 - Why do models drift from instructions over time?
 - How does reinforcement prevent degradation?
 - When should system prompts be repeated?
 
 ### Tool Interaction
+
 - What causes tool selection errors?
 - How do schemas reduce malformed parameters?
 - When should tool outputs be validated?
 
 ### Version Stability
+
 - Why do model upgrades break working implementations?
 - How does version pinning reduce risk?
 - What evaluation patterns catch behavioral changes?
@@ -96,16 +102,20 @@ Ground responses in retrieved sources. Require citations for factual claims. Str
 # Pattern: RAG with citation requirements
 
 ## Instructions
+
 When answering factual questions:
+
 1. Search available knowledge sources
 2. Quote relevant passages verbatim
 3. Cite sources for all factual claims
 4. Distinguish between retrieved facts and inferences
 
 ## Output Format
+
 **Answer**: [response based on sources]
 
 **Sources**:
+
 - [Source 1]: "exact quote"
 - [Source 2]: "exact quote"
 
@@ -118,14 +128,14 @@ When answering factual questions:
 
 ### Grounding Strategies
 
-| Approach | Use Case | Reliability Gain |
-|----------|----------|------------------|
-| **Citation required** | Factual claims | High—forces source grounding |
-| **Multi-source verification** | Critical facts | Very high—cross-reference detection |
-| **Structured retrieval** | Domain-specific knowledge | Medium—depends on source quality |
-| **Output validation** | Parseable results | High—catch formatting errors |
+| Approach                      | Use Case                  | Reliability Gain                    |
+| ----------------------------- | ------------------------- | ----------------------------------- |
+| **Citation required**         | Factual claims            | High—forces source grounding        |
+| **Multi-source verification** | Critical facts            | Very high—cross-reference detection |
+| **Structured retrieval**      | Domain-specific knowledge | Medium—depends on source quality    |
+| **Output validation**         | Parseable results         | High—catch formatting errors        |
 
-*[2025-12-10]*: HumanLayer's ACE research (2025) demonstrated that retrieval-augmented approaches reduce hallucination rates by 60-80% in knowledge-intensive tasks. The key is not just retrieving context, but structuring prompts to make citation mandatory rather than optional.
+_[2025-12-10]_: HumanLayer's ACE research (2025) demonstrated that retrieval-augmented approaches reduce hallucination rates by 60-80% in knowledge-intensive tasks. The key is not just retrieving context, but structuring prompts to make citation mandatory rather than optional.
 
 ---
 
@@ -137,7 +147,7 @@ Models advertise 200K-1M token context windows. This doesn't mean all tokens are
 
 ### The Capability-Capacity Tradeoff
 
-*[2025-12-10]*: Research across 50+ agent implementations shows consistent pattern: context fill inversely correlates with capability. A 60% full context window means 40% remaining capability, not 60% used resources.
+_[2025-12-10]_: Research across 50+ agent implementations shows consistent pattern: context fill inversely correlates with capability. A 60% full context window means 40% remaining capability, not 60% used resources.
 
 ```
 Context Utilization vs. Capability
@@ -159,12 +169,14 @@ Place critical instructions at both the beginning and end of context. Repeat ess
 
 ```markdown
 # System prompt (start of context)
+
 CRITICAL CONSTRAINT: All output must be valid JSON.
 Never include explanatory text outside the JSON structure.
 
 [... middle of context with tool outputs, file reads, etc. ...]
 
 # Reinforcement (before generation)
+
 REMINDER: Output must be valid JSON only.
 Format: {"status": "...", "result": "..."}
 ```
@@ -173,7 +185,7 @@ Repetition is not redundancy—it's strategic placement within the attention mec
 
 ### Frequent Intentional Compaction
 
-*[2025-12-10]*: The standard pattern is to compact at 90%+ utilization as emergency response. Effective pattern: compact deliberately at 40-60% utilization, before quality degrades.
+_[2025-12-10]_: The standard pattern is to compact at 90%+ utilization as emergency response. Effective pattern: compact deliberately at 40-60% utilization, before quality degrades.
 
 **Pattern: Proactive context management**
 
@@ -190,6 +202,7 @@ Effective (proactive):
 Boot fresh instances when context grows unwieldy. Attempting to salvage degraded context through compression rarely succeeds.
 
 **See Also**:
+
 - [Context Management Strategies](../4-context/2-context-strategies.md) — Detailed compaction patterns
 - [Context Fundamentals](../4-context/1-context-fundamentals.md) — Capability-capacity model
 
@@ -209,6 +222,7 @@ Restate critical instructions at regular intervals. Use system prompt anchoring 
 
 ```markdown
 ## Workflow
+
 1. Parse input and validate
 2. **CHECKPOINT**: Verify output format requirements
 3. Execute task
@@ -225,11 +239,13 @@ Place immutable constraints in system prompts rather than user messages. Most im
 
 ```markdown
 # System (high-attention position)
+
 ABSOLUTE CONSTRAINT: Output must be valid JSON.
 NEVER include text outside JSON structure.
 NEVER add explanatory preambles.
 
 # User message (task-specific)
+
 Analyze the file and return results.
 [specific task details...]
 ```
@@ -257,9 +273,9 @@ Define strict JSON schemas for tool parameters. Provide concrete examples demons
   "parameters": {
     "type": "object",
     "properties": {
-      "pattern": {"type": "string", "description": "Regex pattern to search"},
-      "file_type": {"type": "string", "enum": ["py", "js", "ts", "md"]},
-      "case_sensitive": {"type": "boolean", "default": false}
+      "pattern": { "type": "string", "description": "Regex pattern to search" },
+      "file_type": { "type": "string", "enum": ["py", "js", "ts", "md"] },
+      "case_sensitive": { "type": "boolean", "default": false }
     },
     "required": ["pattern"]
   },
@@ -311,6 +327,7 @@ def validate_tool_output(result: dict, schema: dict) -> bool:
 Validation catches errors before they cascade through multi-step workflows.
 
 **See Also**:
+
 - [Tool Design](../5-tool-use/1-tool-design.md) — Tool description patterns and examples
 - [Tool Selection](../5-tool-use/2-tool-selection.md) — How naming and descriptions affect selection accuracy
 
@@ -378,9 +395,10 @@ test_cases = [
 
 Regression tests don't prevent model changes—they surface the impact so informed decisions can be made about version upgrades.
 
-*[2025-12-10]*: Spotify's production agent infrastructure runs continuous regression testing against new model releases. Deployment decision: if new version scores >5% better on capability benchmarks but breaks <2% of existing workflows, upgrade proceeds with targeted prompt adjustments. If breakage exceeds 5%, upgrade deferred until prompts can be updated.
+_[2025-12-10]_: Spotify's production agent infrastructure runs continuous regression testing against new model releases. Deployment decision: if new version scores >5% better on capability benchmarks but breaks <2% of existing workflows, upgrade proceeds with targeted prompt adjustments. If breakage exceeds 5%, upgrade deferred until prompts can be updated.
 
 **See Also**:
+
 - [Evaluation](../8-practices/2-evaluation.md) — Building test suites for agent systems
 - [Model Selection](1-model-selection.md) — When to upgrade vs. stay pinned
 
@@ -388,7 +406,7 @@ Regression tests don't prevent model changes—they surface the impact so inform
 
 ## Limitations Practitioners Are Waiting to Overcome
 
-*[2025-12-10]*: Current pain points observed across production implementations. These are not universal model failures—they represent the edge of current capability where workarounds are costly or incomplete.
+_[2025-12-10]_: Current pain points observed across production implementations. These are not universal model failures—they represent the edge of current capability where workarounds are costly or incomplete.
 
 ### Reasoning Depth Limits
 
@@ -445,6 +463,7 @@ Beyond basic arithmetic (already solved by calculator tools), some tasks require
 **Better approach**: Target 40-60% context utilization. More headroom means better capability. If a task requires more context, restructure it—use retrieval tools, progressive disclosure, or multi-agent delegation.
 
 **See Also**:
+
 - [Context Management Strategies](../4-context/2-context-strategies.md#frequent-intentional-compaction) — Proactive compaction pattern
 - [Pit of Success](../9-mental-models/1-pit-of-success.md) — Designing context as probability landscape
 
@@ -469,6 +488,7 @@ Beyond basic arithmetic (already solved by calculator tools), some tasks require
 **Better approach**: Compact proactively at 40-60% utilization, before quality drops. Better yet: scope tasks to fit comfortably within context budgets. If a task balloons, boot a fresh instance with tighter scope.
 
 **See Also**:
+
 - [Context Management Strategies](../4-context/2-context-strategies.md#managing-context-window-limits) — When to boot vs. compact
 
 ---
@@ -482,6 +502,7 @@ Beyond basic arithmetic (already solved by calculator tools), some tasks require
 **Better approach**: Default to frontier models for initial development. When failures occur, debug systematically—check prompt clarity, context relevance, tool availability, output validation. Model upgrade is one possible solution, not the first resort.
 
 **See Also**:
+
 - [Debugging Agents](../8-practices/1-debugging-agents.md#anti-pattern-blame-the-model) — Systematic debugging patterns
 - [Model Selection](1-model-selection.md#when-to-downgrade) — When model changes actually help
 

@@ -3,7 +3,15 @@ title: "Multi-Agent Workspace Managers"
 description: "Tools for orchestrating large-scale agent swarms, with Gas Town and Overstory as primary examples"
 created: 2026-02-11
 last_updated: 2026-02-13
-tags: [toolkit, multi-agent, gastown, overstory, workspace-management, orchestration]
+tags:
+  [
+    toolkit,
+    multi-agent,
+    gastown,
+    overstory,
+    workspace-management,
+    orchestration,
+  ]
 part: 3
 part_title: Perspectives
 chapter: 10
@@ -33,18 +41,18 @@ This is the difference between a developer and a DevOps platform. The developer 
 
 Single-agent tools assume a model where one agent works in one repository at a time. This assumption creates cascading failures when agent count increases:
 
-| Problem | At 1-3 Agents | At 20-30 Agents |
-|---------|---------------|-----------------|
-| **Branch conflicts** | Rare, manually resolved | Constant, blocks all progress |
-| **Merge coordination** | Developer handles | Requires automated queue |
-| **Context loss** | Restart and re-explain | 20 agents lose context simultaneously |
-| **Work attribution** | Obvious (one agent did it) | Unclear which agent produced what |
-| **Failure recovery** | Restart the agent | Need supervision to detect and restart |
-| **Cost tracking** | Single billing stream | Dozens of parallel billing streams |
+| Problem                | At 1-3 Agents              | At 20-30 Agents                        |
+| ---------------------- | -------------------------- | -------------------------------------- |
+| **Branch conflicts**   | Rare, manually resolved    | Constant, blocks all progress          |
+| **Merge coordination** | Developer handles          | Requires automated queue               |
+| **Context loss**       | Restart and re-explain     | 20 agents lose context simultaneously  |
+| **Work attribution**   | Obvious (one agent did it) | Unclear which agent produced what      |
+| **Failure recovery**   | Restart the agent          | Need supervision to detect and restart |
+| **Cost tracking**      | Single billing stream      | Dozens of parallel billing streams     |
 
 ### The Coordination Tax
 
-*[2026-02-11]*: At small scale, coordination overhead is negligible. A developer managing 2-3 Claude Code subagents via Task tool spends minimal time on coordination. At 20+ agents, coordination becomes the dominant cost:
+_[2026-02-11]_: At small scale, coordination overhead is negligible. A developer managing 2-3 Claude Code subagents via Task tool spends minimal time on coordination. At 20+ agents, coordination becomes the dominant cost:
 
 ```
 Agent Count:     1    3    5    10    20    30
@@ -61,6 +69,7 @@ Workspace managers exist to invert this ratio—keeping useful work above 70% ev
 **Gas Town** is an open-source multi-agent workspace manager created by Steve Yegge (former Google, Amazon, Grab engineer). Released December 2025, MIT licensed, built in Go, with 9,000+ GitHub stars as of February 2026.
 
 Gas Town provides two CLI tools:
+
 - **`gt`** — Workspace and agent management (provisioning, assignment, completion, context priming)
 - **`bd`** — Git-backed issue tracking and workflow state (bead management, step progression)
 
@@ -105,6 +114,7 @@ gt done    # Complete work, push branch, submit to merge queue, cleanup
 ```
 
 `gt done` handles the entire completion sequence atomically:
+
 1. Stage and commit changes
 2. Push the agent's branch
 3. Submit to the merge queue (refinery)
@@ -140,6 +150,7 @@ Agent C completes ──>
 ```
 
 **How it works:**
+
 1. Completed branches queue in order of submission
 2. The refinery attempts automated merge against the canonical clone
 3. If conflicts arise, an AI agent resolves them (not the original worker)
@@ -200,7 +211,7 @@ This layered approach means a single agent failure does not cascade. The witness
 
 ## Overstory: TypeScript/Bun Workspace Manager
 
-*[2026-02-13]*: Overstory represents the session-as-orchestrator alternative to Gas Town's daemon-based architecture. Built in TypeScript using Bun runtime (~31K LOC, 912 tests), Overstory demonstrates that workspace management patterns transcend language ecosystems and coordination models.
+_[2026-02-13]_: Overstory represents the session-as-orchestrator alternative to Gas Town's daemon-based architecture. Built in TypeScript using Bun runtime (~31K LOC, 912 tests), Overstory demonstrates that workspace management patterns transcend language ecosystems and coordination models.
 
 ### Architecture Overview
 
@@ -269,23 +280,24 @@ overstory metrics      # Show metrics summary
 
 ### Comparison with Gas Town
 
-| Dimension | Overstory | Gas Town |
-|-----------|-----------|----------|
-| **Runtime** | TypeScript/Bun | Go |
-| **Orchestrator** | Session-as-orchestrator (your active Claude Code session) | External daemon (Mayor) |
-| **CLI** | overstory (17 commands) | gt/bd dual CLIs |
-| **Messaging** | Custom SQLite mail (~1-5ms) | Typed mail protocol |
-| **Cost Model** | Subscription (fixed monthly cost) | API tokens (~$100/hr) |
-| **Dependencies** | Zero (Bun built-ins only) | Go stdlib |
-| **Agent Definition** | Base .md + overlay CLAUDE.md | Similar pattern |
-| **Merge Resolution** | 4-tier (Clean/Auto/AI/Re-Imagine) | Refinery with AI resolution |
-| **Supervision** | Tiered (Daemon → Triage → Monitor → Supervisor) | Daemon → Boot → Deacon → Witness |
+| Dimension            | Overstory                                                 | Gas Town                         |
+| -------------------- | --------------------------------------------------------- | -------------------------------- |
+| **Runtime**          | TypeScript/Bun                                            | Go                               |
+| **Orchestrator**     | Session-as-orchestrator (your active Claude Code session) | External daemon (Mayor)          |
+| **CLI**              | overstory (17 commands)                                   | gt/bd dual CLIs                  |
+| **Messaging**        | Custom SQLite mail (~1-5ms)                               | Typed mail protocol              |
+| **Cost Model**       | Subscription (fixed monthly cost)                         | API tokens (~$100/hr)            |
+| **Dependencies**     | Zero (Bun built-ins only)                                 | Go stdlib                        |
+| **Agent Definition** | Base .md + overlay CLAUDE.md                              | Similar pattern                  |
+| **Merge Resolution** | 4-tier (Clean/Auto/AI/Re-Imagine)                         | Refinery with AI resolution      |
+| **Supervision**      | Tiered (Daemon → Triage → Monitor → Supervisor)           | Daemon → Boot → Deacon → Witness |
 
 **Convergence:** Both implement persistent identity, worktree isolation, typed messaging, tiered health monitoring, and merge queue infrastructure. The architectural alignment across different technology stacks (Go vs TypeScript) and coordination models (daemon vs session) validates these patterns as fundamental to swarm coordination.
 
 ### When to Choose Overstory
 
 **Good fit:**
+
 - TypeScript/Bun ecosystem preferred
 - Subscription cost model acceptable (fixed monthly vs per-token)
 - Session-based coordination workflow natural (human stays engaged)
@@ -293,6 +305,7 @@ overstory metrics      # Show metrics summary
 - Hook-based mechanical enforcement sufficient
 
 **Poor fit:**
+
 - Multi-language polyglot teams (Go ecosystem familiarity in Gas Town)
 - API token budget model required (pay-per-use vs subscription)
 - External daemon coordination preferred (orchestrator survives session crashes)
@@ -370,22 +383,22 @@ Agent Count Decision Framework:
 
 ## Comparison with Other Approaches
 
-| Dimension | Gas Town | Overstory | Claude Code Agent Teams | Google ADK | LangGraph |
-|-----------|----------|-----------|------------------------|------------|-----------|
-| **Scale target** | 20-30 agents | 10-15 agents | 2-8 agents | Varies | Varies |
-| **Primary abstraction** | Workspace/worktree | Worktree + session | Teammate session | Agent/workflow | Graph node |
-| **Persistence** | Git-backed beads | Filesystem + SQLite | Session-only | State store | Checkpoints |
-| **Agent identity** | Persistent (named CVs) | Persistent (identity.yaml) | Ephemeral | Configurable | Ephemeral |
-| **Coordination model** | Mail protocol + beads | SQLite mail (~1-5ms) | Message passing + tasks | Shared state | Graph edges |
-| **Orchestrator model** | External daemon (Mayor) | Session-as-orchestrator | Built-in (flat) | Configurable | Explicit graph |
-| **Merge strategy** | Automated AI refinery | 4-tier escalation | Manual | N/A | N/A |
-| **Supervision** | Deacon/Witness/Dogs | Daemon/Triage/Monitor/Supervisor | Flat (lead monitors) | Configurable | External |
-| **Failure recovery** | Automatic (supervisor chain) | Tiered (mechanical → AI) | Manual (respawn) | Configurable | Checkpoint restore |
-| **Cost profile** | ~$100/hr (20-30 agents) | Subscription (fixed monthly) | Lower (2-8 agents) | Lower | Lower |
-| **Maturity** | Early (December 2025) | Early (February 2026) | Experimental | Production | Production (v1.0) |
-| **Language** | Go (CLI tools) | TypeScript/Bun | TypeScript (SDK) | Python | Python |
-| **Dependencies** | Go stdlib | Zero (Bun built-ins) | Node + npm packages | Python + pip packages | Python + pip packages |
-| **License** | MIT | MIT | Proprietary | Apache 2.0 | MIT |
+| Dimension               | Gas Town                     | Overstory                        | Claude Code Agent Teams | Google ADK            | LangGraph             |
+| ----------------------- | ---------------------------- | -------------------------------- | ----------------------- | --------------------- | --------------------- |
+| **Scale target**        | 20-30 agents                 | 10-15 agents                     | 2-8 agents              | Varies                | Varies                |
+| **Primary abstraction** | Workspace/worktree           | Worktree + session               | Teammate session        | Agent/workflow        | Graph node            |
+| **Persistence**         | Git-backed beads             | Filesystem + SQLite              | Session-only            | State store           | Checkpoints           |
+| **Agent identity**      | Persistent (named CVs)       | Persistent (identity.yaml)       | Ephemeral               | Configurable          | Ephemeral             |
+| **Coordination model**  | Mail protocol + beads        | SQLite mail (~1-5ms)             | Message passing + tasks | Shared state          | Graph edges           |
+| **Orchestrator model**  | External daemon (Mayor)      | Session-as-orchestrator          | Built-in (flat)         | Configurable          | Explicit graph        |
+| **Merge strategy**      | Automated AI refinery        | 4-tier escalation                | Manual                  | N/A                   | N/A                   |
+| **Supervision**         | Deacon/Witness/Dogs          | Daemon/Triage/Monitor/Supervisor | Flat (lead monitors)    | Configurable          | External              |
+| **Failure recovery**    | Automatic (supervisor chain) | Tiered (mechanical → AI)         | Manual (respawn)        | Configurable          | Checkpoint restore    |
+| **Cost profile**        | ~$100/hr (20-30 agents)      | Subscription (fixed monthly)     | Lower (2-8 agents)      | Lower                 | Lower                 |
+| **Maturity**            | Early (December 2025)        | Early (February 2026)            | Experimental            | Production            | Production (v1.0)     |
+| **Language**            | Go (CLI tools)               | TypeScript/Bun                   | TypeScript (SDK)        | Python                | Python                |
+| **Dependencies**        | Go stdlib                    | Zero (Bun built-ins)             | Node + npm packages     | Python + pip packages | Python + pip packages |
+| **License**             | MIT                          | MIT                              | Proprietary             | Apache 2.0            | MIT                   |
 
 **Key differentiators:**
 
@@ -415,11 +428,11 @@ gt done     # Push, submit to refinery, cleanup
 
 For Claude Code specifically, these map to:
 
-| Gas Town Command | Claude Code Integration Point |
-|-----------------|-------------------------------|
-| `gt prime` | SessionStart hook |
-| `gt hook` | Agent prompt preamble |
-| `gt done` | Post-completion workflow step |
+| Gas Town Command | Claude Code Integration Point  |
+| ---------------- | ------------------------------ |
+| `gt prime`       | SessionStart hook              |
+| `gt hook`        | Agent prompt preamble          |
+| `gt done`        | Post-completion workflow step  |
 | `bd mol current` | Status check within agent loop |
 
 ### Bead-Based State Management
@@ -434,6 +447,7 @@ Beads are Gas Town's unit of persistent state. Every workflow step, task assignm
 ```
 
 **Properties of beads:**
+
 - **Versioned**: Every bead change is a Git commit
 - **Attributable**: Beads record which agent created or modified them
 - **Recoverable**: Git history enables rollback to any prior state
@@ -485,7 +499,7 @@ Deploying Gas Town for 2-3 agents introduces infrastructure overhead (deacon dae
 
 ### Anti-Pattern: Treating Workspace Managers as Frameworks
 
-Workspace managers and agent frameworks serve different layers. Attempting to use Gas Town as a replacement for LangGraph or CrewAI conflates infrastructure with logic. Gas Town manages *where* agents work; frameworks manage *how* agents reason.
+Workspace managers and agent frameworks serve different layers. Attempting to use Gas Town as a replacement for LangGraph or CrewAI conflates infrastructure with logic. Gas Town manages _where_ agents work; frameworks manage _how_ agents reason.
 
 **Better approach:** Use workspace managers alongside frameworks. Gas Town provisions the worktree; Claude Code (or another agent) operates within it.
 
@@ -507,12 +521,12 @@ Jumping directly to 20-agent workspace management without experience at lower sc
 
 Gas Town represents the first visible entry in what may become a recognized tool category. The pattern is familiar from infrastructure evolution:
 
-| Era | Problem | Category That Emerged |
-|-----|---------|----------------------|
-| 2000s | Managing many servers | Configuration management (Chef, Puppet, Ansible) |
-| 2010s | Managing many containers | Container orchestration (Docker, Kubernetes) |
-| 2020s | Managing many microservices | Service mesh (Istio, Linkerd) |
-| 2025+ | Managing many agents | Workspace management (Gas Town, ...) |
+| Era   | Problem                     | Category That Emerged                            |
+| ----- | --------------------------- | ------------------------------------------------ |
+| 2000s | Managing many servers       | Configuration management (Chef, Puppet, Ansible) |
+| 2010s | Managing many containers    | Container orchestration (Docker, Kubernetes)     |
+| 2020s | Managing many microservices | Service mesh (Istio, Linkerd)                    |
+| 2025+ | Managing many agents        | Workspace management (Gas Town, ...)             |
 
 **Signals this category is real:**
 
@@ -547,7 +561,7 @@ Gas Town represents the first visible entry in what may become a recognized tool
 ## Connections
 
 - **To [Claude Code](1-claude-code.md)**: Gas Town's polecats can run Claude Code as the underlying coding agent. Integration happens through SessionStart hooks (`gt prime`) and completion workflows (`gt done`). Claude Code agent teams operate at smaller scale (2-8 agents) compared to Gas Town's target (20-30).
-- **To [Agent Frameworks](4-agent-frameworks.md)**: Workspace managers operate at a different layer than frameworks. LangGraph coordinates agent *logic*; Gas Town coordinates agent *infrastructure*. The two are complementary, not competitive.
+- **To [Agent Frameworks](4-agent-frameworks.md)**: Workspace managers operate at a different layer than frameworks. LangGraph coordinates agent _logic_; Gas Town coordinates agent _infrastructure_. The two are complementary, not competitive.
 - **To [Orchestrator Pattern](../7-patterns/3-orchestrator-pattern.md)**: Gas Town's mayor implements an orchestrator pattern, but at infrastructure level rather than prompt level. The mayor assigns work and monitors completion; it does not reason about task decomposition.
 - **To [Expert Swarm Pattern](../7-patterns/8-expert-swarm-pattern.md)**: The expert swarm pattern describes agent coordination logic. Workspace managers provide the infrastructure substrate that makes swarms practical at scale—isolation, merge automation, supervision.
 - **To [Context Fundamentals](../4-context/1-context-fundamentals.md)**: Gas Town's bead system directly addresses the context vs. memory gap. Beads provide persistent memory that survives session boundaries, enabling agents to resume work without re-explanation.

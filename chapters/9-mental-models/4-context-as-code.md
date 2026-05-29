@@ -40,6 +40,7 @@ The ACE playbook format exemplifies context as code:
 ```
 
 Each line is:
+
 - **Uniquely identified** (`[prefix-ID]`) - enables precise references, easy refactoring
 - **Performance tested** (`helpful=X harmful=Y`) - like unit tests for knowledge
 - **Category-organized** (`str-`, `cal-`, `mis-`, `con-`, `too-`) - modular design
@@ -79,6 +80,7 @@ When agent behavior regresses, you can `git bisect` to find which knowledge chan
 ```
 
 The counters are like test pass/fail metrics:
+
 - `helpful > 0, harmful = 0` → Proven valuable, keep it
 - `helpful = 0, harmful > 0` → Causes problems, remove or refactor
 - `helpful > 0, harmful > 0` → Context-dependent, needs conditions
@@ -106,6 +108,7 @@ tools/
 ```
 
 Just like code modules, categories enable:
+
 - **Focused loading**: Only load relevant categories for specific tasks
 - **Dependency tracking**: `[str-00012]` references `[con-00003]` and `[too-00007]`
 - **Easier refactoring**: Move entries between categories without breaking references
@@ -179,7 +182,7 @@ You don't need to jump straight to the "code" end. The ACE playbook hits a sweet
 
 ## Agent-as-Code: Version-Controlled Agent Definitions
 
-*[2026-02-06]*: The "context as code" mental model extends to agent definitions themselves. BMAD-METHOD demonstrates treating agents as first-class version-controlled code artifacts—portable, reusable, and shareable like any code file.
+_[2026-02-06]_: The "context as code" mental model extends to agent definitions themselves. BMAD-METHOD demonstrates treating agents as first-class version-controlled code artifacts—portable, reusable, and shareable like any code file.
 
 ### The Pattern
 
@@ -187,27 +190,33 @@ Instead of runtime configurations or opaque API settings, agents are **self-cont
 
 ```markdown
 <!-- agent-definition.md -->
+
 # Security Expert Agent
 
 Specialized agent for security architecture, threat modeling, and vulnerability analysis.
 
 ## Role
+
 You are a security architect with expertise in authentication, authorization,
 and secure system design.
 
 ## Capabilities
+
 - OAuth2/OIDC protocol implementation
 - Threat modeling and risk assessment
 - Security audit and code review
 - Compliance requirements (SOC 2, HIPAA)
 
 ## Workflows
+
 - security-audit: Comprehensive security review
 - threat-model: Analyze attack surfaces
 - auth-design: Design authentication flows
 
 ---
+
 # Agent Configuration (YAML)
+
 name: security-expert
 type: specialist
 model: claude-sonnet-4.5
@@ -221,6 +230,7 @@ tools: [Read, Grep, Execute]
 A security expert's knowledge—how to think about threat models, what to check in audits, which patterns prevent vulnerabilities—becomes **portable code**. When team members change, the expertise remains.
 
 **Cross-project reusability:**
+
 ```bash
 # Copy agent definition to new project
 cp ~/agents/security-expert.md ./project-x/.agents/
@@ -229,6 +239,7 @@ cp ~/agents/security-expert.md ./project-x/.agents/
 ```
 
 **Transparent system composition:**
+
 ```
 agents/
 ├── security-expert.md         # 245 lines
@@ -251,6 +262,7 @@ bmm-002,Architect,System design and technical decisions,agents/architect.md,crea
 ```
 
 This provides:
+
 - **Complete inventory**: What agents exist?
 - **Capability mapping**: What can each agent do?
 - **Dependency tracking**: Which workflows require which agents?
@@ -281,17 +293,21 @@ When agent behavior regresses, version control enables diagnosis: "What changed 
 BMAD-METHOD (34.5k GitHub stars) implements agent-as-code across 26 agents:
 
 **Core orchestrator:**
+
 - BMad Master: Coordinates all 26 agents
 
 **Business Method Module (9 agents):**
+
 - Mary (Analyst), John (PM), Winston (Architect), Amelia (Developer)
 - Quinn (QA), Bob (Scrum Master), Barry (Quick Flow Dev)
 - Sally (UX), Paige (Technical Writer)
 
 **Builder Module (3 agents):**
+
 - Agents for creating custom agents, modules, workflows
 
 **Each agent:**
+
 - Self-contained markdown file
 - Embedded YAML configuration
 - Fuzzy-match triggers for activation
@@ -299,7 +315,7 @@ BMAD-METHOD (34.5k GitHub stars) implements agent-as-code across 26 agents:
 
 ### Framework Extension: BMB Module
 
-BMAD includes agents specifically for *creating* agents:
+BMAD includes agents specifically for _creating_ agents:
 
 ```
 /create-agent "API integration specialist"
@@ -310,28 +326,30 @@ Builder agent generates:
 - workflow templates for common tasks
 ```
 
-**Meta-pattern:** Agents as code enables agents that *generate* agents. The builder module creates new agent definitions following the same markdown + YAML pattern.
+**Meta-pattern:** Agents as code enables agents that _generate_ agents. The builder module creates new agent definitions following the same markdown + YAML pattern.
 
 ### Comparison to Runtime Configurations
 
-| Runtime Config | Agent-as-Code |
-|---------------|---------------|
-| JSON/YAML blob in API call | Markdown file with embedded config |
-| Exists only during execution | Persists as version-controlled file |
-| Opaque system composition | Transparent (read the files) |
-| Hard to share across projects | Copy file, instant reuse |
-| Manual documentation required | Self-documenting |
-| No change history | Full git history |
+| Runtime Config                | Agent-as-Code                       |
+| ----------------------------- | ----------------------------------- |
+| JSON/YAML blob in API call    | Markdown file with embedded config  |
+| Exists only during execution  | Persists as version-controlled file |
+| Opaque system composition     | Transparent (read the files)        |
+| Hard to share across projects | Copy file, instant reuse            |
+| Manual documentation required | Self-documenting                    |
+| No change history             | Full git history                    |
 
 ### When to Use Agent-as-Code
 
 **Good fit:**
+
 - Building reusable agent libraries for organization
 - Multi-project environments where agents should be consistent
 - Teams needing audit trail of agent behavior changes
 - Complex agent systems requiring transparency
 
 **Not necessary for:**
+
 - One-off agent uses
 - Simple single-agent systems
 - Exploratory prototyping (formalize later)
@@ -377,9 +395,11 @@ If implementing agent-as-code:
 # PR: Update authentication strategies
 
 Changes to knowledge/strategies/:
-  - [str-00042] helpful=2 harmful=5 :: Use basic auth
-  + [str-00042] helpful=8 harmful=0 :: Use OAuth2 with PKCE flow
-  + [str-00058] helpful=0 harmful=0 :: For mobile apps, use refresh token rotation
+
+- [str-00042] helpful=2 harmful=5 :: Use basic auth
+
+* [str-00042] helpful=8 harmful=0 :: Use OAuth2 with PKCE flow
+* [str-00058] helpful=0 harmful=0 :: For mobile apps, use refresh token rotation
 
 Reviewer: "str-00042 improvement looks good. For str-00058, have we tested
 harmful=0? Refresh token rotation can cause issues if not handled correctly."
@@ -438,6 +458,7 @@ Coverage by category:
 **Problem**: Applying heavy structure to ephemeral context that doesn't need it (one-off prompts, temporary instructions).
 
 **Solution**: Distinguish between:
+
 - **Core knowledge** (long-lived, reused, tested) → Treat as code
 - **Task-specific context** (one-off, temporary) → Keep lightweight
 - **Generated content** (can be regenerated) → Don't version control

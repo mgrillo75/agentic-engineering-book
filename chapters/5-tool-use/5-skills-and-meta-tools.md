@@ -19,9 +19,10 @@ Skills blur the boundary between tools and prompts. They're not actions an agent
 
 ## Skills as Meta-Tools
 
-*[2025-12-09]*: Skills blur the boundary between tools and prompts. They're not actions an agent can take, but temporary behavioral modifications that change how the agent reasons about specialized domains.
+_[2025-12-09]_: Skills blur the boundary between tools and prompts. They're not actions an agent can take, but temporary behavioral modifications that change how the agent reasons about specialized domains.
 
 **The Meta-Tool Pattern**: The "Skill" tool (capital S) acts as a dispatcher to individual skills. When invoked, a skill modifies two contexts simultaneously:
+
 - **Reasoning context**: Injects temporary behavioral instructions
 - **Execution context**: Applies tool permission overrides
 
@@ -29,16 +30,17 @@ This creates specialized agent modes without forking the entire agent configurat
 
 **Three Key Differences from Traditional Tools**:
 
-| Aspect | Traditional Tools | Skills |
-|--------|------------------|--------|
-| **Mechanism** | Direct actions (read file, call API) | Injected instructions + permission changes |
-| **Selection** | Algorithmic matching (name/parameters) | LLM reasoning about descriptions |
-| **Token Cost** | ~100 tokens per invocation | ~1,500+ tokens per invocation |
-| **Purpose** | Execute specific operations | Specialize agent behavior |
+| Aspect         | Traditional Tools                      | Skills                                     |
+| -------------- | -------------------------------------- | ------------------------------------------ |
+| **Mechanism**  | Direct actions (read file, call API)   | Injected instructions + permission changes |
+| **Selection**  | Algorithmic matching (name/parameters) | LLM reasoning about descriptions           |
+| **Token Cost** | ~100 tokens per invocation             | ~1,500+ tokens per invocation              |
+| **Purpose**    | Execute specific operations            | Specialize agent behavior                  |
 
 **The Trade**: Skills trade token overhead for contextual specialization. Instead of front-loading every possible skill instruction into the base prompt, skills use progressive disclosure—the agent discovers capabilities through metadata, then loads full instructions only when needed.
 
 **Generalization Beyond Claude**: The pattern isn't Claude-specific. Any agentic system can implement progressive disclosure:
+
 1. **Discovery layer**: Short metadata about available capabilities
 2. **Activation layer**: Full instructions loaded on-demand
 3. **Resource layer**: Detailed references and examples (optional)
@@ -46,6 +48,7 @@ This creates specialized agent modes without forking the entire agent configurat
 This balances discoverability (agent knows what's possible) with context efficiency (doesn't pay token cost until invoked).
 
 **Example Flow**:
+
 ```
 1. Agent sees skill metadata: "Python debugging skill available"
 2. Agent encounters Python bug, invokes Skill tool with "python-debugging"
@@ -55,13 +58,15 @@ This balances discoverability (agent knows what's possible) with context efficie
 ```
 
 **Why This Matters**: Skills represent a third category beyond "tools" and "prompts":
-- **Tools**: What the agent can *do* (read files, make API calls)
-- **Prompts**: How the agent *thinks* (general reasoning patterns)
-- **Skills**: Domain-specific *thinking modes* (temporary reasoning specialization)
+
+- **Tools**: What the agent can _do_ (read files, make API calls)
+- **Prompts**: How the agent _thinks_ (general reasoning patterns)
+- **Skills**: Domain-specific _thinking modes_ (temporary reasoning specialization)
 
 **In Practice**: Claude Code implements this with a skills library—data analysis, git operations, debugging, etc. Each skill packages domain expertise as injectable context rather than requiring separate specialized agents.
 
 **See Also**:
+
 - [Context: Progressive Disclosure](../4-context/3-context-patterns.md#progressive-disclosure-pattern) — Managing context window through layered information
 - [Claude Code: Skills System](../10-practitioner-toolkit/1-claude-code.md#skills-system) — Concrete implementation in production
 - [Prompt](../2-prompt/_index.md) — Model-invoked vs user-invoked patterns for skill activation
@@ -72,7 +77,7 @@ This balances discoverability (agent knows what's possible) with context efficie
 
 ## Context Contracts for Agent Capability Declaration
 
-*[2026-02-05]*: Advanced .claude/ implementations use declarative JSON schemas to declare agent input requirements and output scopes. This enables pre-spawn validation and scope enforcement, extending the progressive disclosure pattern from runtime to orchestration design.
+_[2026-02-05]_: Advanced .claude/ implementations use declarative JSON schemas to declare agent input requirements and output scopes. This enables pre-spawn validation and scope enforcement, extending the progressive disclosure pattern from runtime to orchestration design.
 
 ### The Pattern
 
@@ -95,16 +100,19 @@ Agents declare context contracts in structured metadata:
 ### Three Validation Gates
 
 **Pre-Spawn Validation:**
+
 - Verify required context (spec_file, expertise) exists before spawning agent
 - Prevents agent failures from missing inputs
 - Reduces wasted tokens on doomed agent invocations
 
 **Scope Enforcement:**
+
 - Hooks validate file modifications against `allowed_modifications` globs
 - Block writes outside declared scope
 - Creates machine-readable capability boundaries
 
 **Registry Generation:**
+
 - Auto-generate agent capability catalog from contracts
 - Enables programmatic agent discovery ("which agents can modify TypeScript files?")
 - Powers routing logic without manual maintenance
@@ -112,12 +120,14 @@ Agents declare context contracts in structured metadata:
 ### When to Use Context Contracts
 
 **Good fit:**
+
 - Multi-agent systems with 10+ specialized agents
 - Production environments requiring audit trails
 - Systems where agents coordinate through orchestrator routing
 - Domains with strict scope boundaries (microservices, security zones)
 
 **Poor fit:**
+
 - Simple single-agent workflows
 - Exploratory development without clear boundaries
 - Systems where flexibility > enforcement

@@ -31,29 +31,33 @@ A knowledge base isn't static. It grows, refines, and occasionally prunes. But n
 
 ## The Grow-and-Refine Principle
 
-*[2025-12-10]*
+_[2025-12-10]_
 
 **Balance expansion with consolidation.** A knowledge base that only grows becomes unwieldy. One that constantly condenses loses nuance. Sustainable evolution requires both phases.
 
 **Growth Phase:**
+
 - Accumulate new insights freely during active learning
 - Capture patterns as you discover them
 - Don't worry about redundancy or overlap initially
 - Let the knowledge base expand naturally as you build
 
 **Refinement Phase:**
+
 - Periodically deduplicate based on semantic similarity
 - Prune entries with low utility metrics
 - Consolidate overlapping patterns
 - Respect size constraints (context window limits)
 
 **Why this works:**
+
 - Prevents unbounded growth that exceeds context windows
 - Avoids premature compression that loses insights
 - Creates breathing room for exploration without chaos
 - Matches how humans learn: gather broadly, then synthesize
 
 **The parallel to PRESERVE/APPEND/DATE/REMOVE:**
+
 - PRESERVE and APPEND handle the growth phase
 - REMOVE handles refinement
 - DATE enables evidence-based decisions about what to refine
@@ -67,18 +71,22 @@ A knowledge base isn't static. It grows, refines, and occasionally prunes. But n
 **Default to keeping what's there.** If an existing pattern works in practice, new information extends it rather than replaces it.
 
 **What to preserve:**
+
 - Patterns that solved real problems in real projects
 - Concrete examples from actual implementations
 - Hard-won lessons that contradicted initial assumptions
 - Any content sourced from examples/ directories
 
 **Preservation signals:**
+
 ```markdown
 ## Structural Patterns
+
 ### The Canonical 7-Section Structure
+
 [Original pattern stays intact]
 
-*[2025-12-08]*: Extended with XML tag alternative for nested sections.
+_[2025-12-08]_: Extended with XML tag alternative for nested sections.
 ```
 
 ### APPEND: New Learnings Added
@@ -86,6 +94,7 @@ A knowledge base isn't static. It grows, refines, and occasionally prunes. But n
 **Add, don't rewrite.** New insights get their own sections, subsections, or inline dated annotations.
 
 **Append patterns:**
+
 - New examples in existing categories
 - Additional questions in "Core Questions"
 - Dated inline notes: `*[YYYY-MM-DD]*: New insight here`
@@ -94,11 +103,13 @@ A knowledge base isn't static. It grows, refines, and occasionally prunes. But n
 - New artifacts in "Artifacts & Examples"
 
 **Example of good appending:**
+
 ```markdown
 ### Output Template Categories
+
 [Existing table preserved]
 
-*[2025-12-08]*: Added "Streaming" category for real-time output scenarios where results must be shown incrementally rather than batched.
+_[2025-12-08]_: Added "Streaming" category for real-time output scenarios where results must be shown incrementally rather than batched.
 ```
 
 ### DATE: All New Entries Marked
@@ -106,23 +117,29 @@ A knowledge base isn't static. It grows, refines, and occasionally prunes. But n
 **Timestamp attribution enables future judgment.** Every new section, subsection, or inline addition should be dated.
 
 **Dating conventions:**
+
 ```markdown
 # New top-level section
+
 ## New Section Title
-*[2025-12-08]*
+
+_[2025-12-08]_
 
 Content here...
 
 ---
 
 # Existing section
-*[2025-12-08]*: Inline addition to existing paragraph.
+
+_[2025-12-08]_: Inline addition to existing paragraph.
 
 ### Existing subsection
-*[2025-12-08]*: New paragraph added to existing subsection.
+
+_[2025-12-08]_: New paragraph added to existing subsection.
 ```
 
 **What gets dated:**
+
 - Inline additions to existing content
 - New sections or subsections
 - New table rows (via inline note)
@@ -130,6 +147,7 @@ Content here...
 - New questions in "Core Questions"
 
 **What doesn't get dated:**
+
 - Typo fixes
 - Formatting improvements
 - Clarification of existing points without adding new information
@@ -146,7 +164,7 @@ Content here...
 
 ### Learning Separation in Multi-Agent Systems
 
-*[2026-02-05]*: Production multi-agent systems extend the learning separation principle to coordination boundaries. Teammates execute tasks only; learning happens post-hoc via dedicated improve-agents analyzing collective execution history.
+_[2026-02-05]_: Production multi-agent systems extend the learning separation principle to coordination boundaries. Teammates execute tasks only; learning happens post-hoc via dedicated improve-agents analyzing collective execution history.
 
 **The coordination constraint:**
 
@@ -163,18 +181,21 @@ Result: Agent 1's learnings lost
 **The clean separation:**
 
 **Execution Phase (teammates):**
+
 - Read expertise.yaml for guidance
 - Execute assigned tasks
 - Do NOT update expertise.yaml
 - Report completion to orchestrator
 
 **Learning Phase (improve-agent):**
+
 - Runs AFTER all teammates complete
 - Analyzes git history from collective execution
 - Updates expertise.yaml once with all learnings
 - Next team benefits from accumulated knowledge
 
 **Example workflow:**
+
 ```
 1. Orchestrator spawns 10 build agents (read expertise.yaml)
 2. Build agents execute tasks in parallel
@@ -185,6 +206,7 @@ Result: Agent 1's learnings lost
 ```
 
 **Why this works:**
+
 - No coordination overhead during execution (agents focus on tasks)
 - No race conditions (single writer in learning phase)
 - Expertise accumulates over time (improve-agent sees full context)
@@ -196,10 +218,11 @@ Learning separation determines WHEN updates happen (post-hoc), while PRESERVE/AP
 
 **Sources:** Expert Swarm Pattern production evidence (commit 20500f1), advanced .claude/ implementation analysis.
 
-*[2025-12-10]*: **Utility tracking makes removal evidence-based.** Rather than guessing which entries to prune, track metrics:
+_[2025-12-10]_: **Utility tracking makes removal evidence-based.** Rather than guessing which entries to prune, track metrics:
 
 ```markdown
 # Utility Tracking Pattern
+
 - Track helpful/harmful counters for each entry
 - Increment helpful when entry solves a problem
 - Increment harmful when entry leads to error or confusion
@@ -210,46 +233,53 @@ Learning separation determines WHEN updates happen (post-hoc), while PRESERVE/AP
 This shifts removal from subjective judgment to measured outcomes.
 
 **Removal process:**
+
 ```markdown
 # Before removal
+
 1. Check git history: When was this added? From which project?
 2. Search examples/: Does this still appear in any project?
 3. Search other entries: Is this referenced elsewhere?
 4. Consider archival: Should this move to a "Deprecated Patterns" section?
 
 # During removal
-- Add inline note explaining removal: *[2025-12-08]: Removed [pattern] - contradicted by X, Y, Z projects*
+
+- Add inline note explaining removal: _[2025-12-08]: Removed [pattern] - contradicted by X, Y, Z projects_
 - Update any cross-references in other files
 - Update CLAUDE.md if section structure changed
 ```
 
 **Example of justified removal:**
+
 ```markdown
-*[2025-12-08]*: Removed "Phase Polling with 5-second intervals" pattern. Contradicted by multiple recent projects (e.g., KotaDB) which standardized on 10-15 second intervals to reduce API load. Original pattern caused rate limiting issues.
+_[2025-12-08]_: Removed "Phase Polling with 5-second intervals" pattern. Contradicted by multiple recent projects (e.g., KotaDB) which standardized on 10-15 second intervals to reduce API load. Original pattern caused rate limiting issues.
 ```
 
 ---
 
 ## Delta-Based Updates vs Full Rewrites
 
-*[2025-12-10]*
+_[2025-12-10]_
 
 **Prefer incremental operations over complete regeneration.** When updating knowledge bases, the temptation is to rewrite everything "cleanly." This causes context collapse and brevity bias.
 
 ### The Three Delta Operations
 
 **ADD** - Append new entries to existing content
+
 - Parallelizable: Multiple agents can add simultaneously
 - Auditable: Clear diff shows what changed
 - Reversible: Easy to undo specific additions
 - Knowledge-preserving: Existing insights stay intact
 
 **UPDATE** - Modify specific entries in place
+
 - Surgical: Change only what needs changing
 - Traceable: Timestamps show evolution
 - Conservative: Defaults to preservation (see PRESERVE above)
 
 **REMOVE** - Prune low-value entries (see utility tracking)
+
 - Evidence-based: Remove only with metrics
 - Documented: Explain why in commit/timestamp
 - Rare: Deletion is the exception, not the norm
@@ -257,18 +287,22 @@ This shifts removal from subjective judgment to measured outcomes.
 ### The Anti-Pattern: Emergency Context Rewriting
 
 **What it looks like:**
+
 ```markdown
 # Agent receives: "Context is too large, rewrite more concisely"
+
 # Agent produces: Condensed version missing 40% of original insights
 ```
 
 **Why it fails:**
+
 - **Brevity bias**: AI models over-compress to satisfy length constraints
 - **Context collapse**: Nuance and examples get stripped out
 - **Knowledge loss**: Hard-won lessons disappear silently
 - **Non-reversible**: Can't easily restore what was removed
 
 **Measured impact:**
+
 - 75.1% fewer rollouts with delta-based updates vs full rewrites
 - 82.3% latency reduction (fewer tokens to process)
 - Preservation of edge case handling and anti-patterns
@@ -277,6 +311,7 @@ This shifts removal from subjective judgment to measured outcomes.
 ### When Full Rewrites Are Justified
 
 Rare cases where complete regeneration makes sense:
+
 - **Format migration**: Switching frontmatter schema or structural conventions
 - **Fundamental reorganization**: Moving from flat to hierarchical structure
 - **Consolidation of duplicates**: After identifying semantic overlap
@@ -288,12 +323,15 @@ Even then, prefer phased migration: rewrite one section at a time, verify qualit
 
 ```markdown
 # GOOD: Delta-based update
-*[2025-12-10]*: Added streaming output category for real-time scenarios.
+
+_[2025-12-10]_: Added streaming output category for real-time scenarios.
 
 [New content appended to existing section]
 
 # BAD: Full rewrite
+
 ## Output Categories
+
 [Completely regenerated list missing previous examples]
 ```
 
@@ -303,7 +341,7 @@ Even then, prefer phased migration: rewrite one section at a time, verify qualit
 
 ## When to Update vs Create New
 
-### Extend Existing Entry When:
+### Extend Existing Entry When
 
 - **Same domain, new example**: "Here's another way to structure validation"
 - **Refinement of existing pattern**: "We discovered edge case handling for this"
@@ -311,7 +349,7 @@ Even then, prefer phased migration: rewrite one section at a time, verify qualit
 - **Implementation details**: "Here's how this works in practice"
 - **Complementary insight**: "This also connects to..."
 
-### Create New Entry When:
+### Create New Entry When
 
 - **Different domain**: Prompt structuring vs cost optimization are separate concerns
 - **Contradictory approach**: If you can't reconcile it with existing content, it might be a different pattern
@@ -326,17 +364,22 @@ Even then, prefer phased migration: rewrite one section at a time, verify qualit
 1. **Verify the contradiction is real** - Are we comparing apples to apples? Different contexts might explain the difference.
 
 2. **Document both approaches** - Add a section comparing the patterns:
+
    ```markdown
    ### Approach A: [Original]
+
    - Context: Works well for...
    - Trade-offs: ...
 
    ### Approach B: [New]
-   *[2025-12-08]*
+
+   _[2025-12-08]_
+
    - Context: Works well for...
    - Trade-offs: ...
 
    ### When to Use Which
+
    - Use A when: ...
    - Use B when: ...
    ```
@@ -344,6 +387,7 @@ Even then, prefer phased migration: rewrite one section at a time, verify qualit
 3. **Seek synthesis** - Is there a higher-level pattern that encompasses both?
 
 4. **Mark for investigation** - If uncertain, add to "Core Questions":
+
    ```markdown
    - Why do project X use approach A while project Y uses approach B?
    - What context makes approach B superior to approach A?
@@ -360,17 +404,20 @@ Status reflects how battle-tested the content is, not how complete it feels.
 **What it means:** Fresh capture, minimal structure, lots of questions
 
 **Characteristics:**
+
 - Mostly questions in "Core Questions"
 - Minimal or empty "Your Mental Model"
 - Few concrete examples
 - May be incomplete sections
 
 **Stays seedling if:**
+
 - Not yet applied in a real project
 - Still exploring the problem space
 - Collecting initial thoughts
 
 **Promote to growing when:**
+
 - You've used the insight in at least one real project
 - "Your Mental Model" has concrete statements
 - At least one artifact or example exists
@@ -380,23 +427,27 @@ Status reflects how battle-tested the content is, not how complete it feels.
 **What it means:** Active refinement, patterns emerging, multiple examples
 
 **Characteristics:**
+
 - Clear "Your Mental Model" section
 - Multiple concrete examples or artifacts
 - Some questions answered, new questions emerging
 - Applied in 1-3 projects
 
 **Stays growing if:**
+
 - Still discovering edge cases
 - Patterns not fully generalized
 - Actively being refined with each project
 
 **Promote to mature when:**
+
 - Patterns proven across 3+ diverse projects
 - Most common failure modes documented
 - Clear guidance on when/how to apply
 - Anti-patterns identified
 
 **Demote to seedling if:**
+
 - Major contradictions discovered
 - Fundamental rethinking required
 
@@ -405,6 +456,7 @@ Status reflects how battle-tested the content is, not how complete it feels.
 **What it means:** Stable patterns, well-understood trade-offs, comprehensive
 
 **Characteristics:**
+
 - Comprehensive examples
 - Anti-patterns documented
 - Clear decision frameworks
@@ -412,17 +464,20 @@ Status reflects how battle-tested the content is, not how complete it feels.
 - Few updates needed
 
 **Stays mature if:**
+
 - Occasional refinement but no major changes
 - New projects confirm existing patterns
 - Edge cases being filled in, not core patterns changing
 
 **Promote to evergreen when:**
+
 - No significant changes in 6+ months
 - Proven across wide variety of contexts
 - Referenced frequently by other entries
 - Considered "settled wisdom"
 
 **Demote to growing if:**
+
 - Significant new patterns emerging
 - Multiple recent updates changing recommendations
 
@@ -431,16 +486,19 @@ Status reflects how battle-tested the content is, not how complete it feels.
 **What it means:** Foundational, stable, rarely changes
 
 **Characteristics:**
+
 - Core principles that transcend specific implementations
 - Minimal updates (typos, clarification, new examples)
 - High confidence in recommendations
 - Proven across many projects and contexts
 
 **Stays evergreen if:**
+
 - Only minor refinements
 - Principles remain sound as ecosystem evolves
 
 **Demote to mature if:**
+
 - Major paradigm shift requires reconsidering fundamentals
 - New information changes core recommendations
 

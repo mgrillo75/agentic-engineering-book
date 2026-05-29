@@ -3,7 +3,19 @@ title: Production Concerns
 description: Running agents reliably at scale
 created: 2025-12-08
 last_updated: 2026-04-11
-tags: [practices, production, reliability, operations, monitoring, hooks, reliability-thresholds, deployment-criteria, augmentation-vs-automation, reliability-dimensions]
+tags:
+  [
+    practices,
+    production,
+    reliability,
+    operations,
+    monitoring,
+    hooks,
+    reliability-thresholds,
+    deployment-criteria,
+    augmentation-vs-automation,
+    reliability-dimensions,
+  ]
 part: 2
 part_title: Craft
 chapter: 8
@@ -19,16 +31,16 @@ Demo agents are easy. Production agents are hard. This is where the craft lives.
 
 ## Reliability Thresholds for Production Deployment
 
-*[2026-04-11]*: Production deployment is a threshold decision, not a spectrum. An agent either clears the bar for its deployment mode or it does not. The bar differs by deployment mode.
+_[2026-04-11]_: Production deployment is a threshold decision, not a spectrum. An agent either clears the bar for its deployment mode or it does not. The bar differs by deployment mode.
 
 ### Two Deployment Modes, Two Threshold Regimes
 
 The most consequential reliability decision is the deployment mode:
 
-| Mode | Definition | Reliability Tolerance |
-|------|------------|----------------------|
+| Mode             | Definition                                                                        | Reliability Tolerance                                              |
+| ---------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | **Augmentation** | Human review is in the loop; agent error is buffered before reaching consequences | Lower thresholds acceptable — human backstop absorbs inconsistency |
-| **Automation** | Agent operates without human review; errors reach consequences directly | Near-perfect consistency and safety required — no backstop |
+| **Automation**   | Agent operates without human review; errors reach consequences directly           | Near-perfect consistency and safety required — no backstop         |
 
 An agent succeeding 90% of the time but failing unpredictably on 10% "may assist users yet remain unacceptable for autonomous systems." [Rabanser et al., arXiv:2602.16666, 2026]
 
@@ -50,12 +62,12 @@ Before production deployment, evaluate against four dimensions: [Rabanser et al.
 
 No universal thresholds apply across all domains. The following are starting points derived from the paper's framework, not prescriptive minimums:
 
-| Dimension | Augmentation Mode | Automation Mode |
-|-----------|-------------------|-----------------|
-| Consistency (outcome) | ≥70% same outcome on K=5 runs | ≥90% same outcome on K=5 runs |
-| Prompt robustness | Passes 3 of 5 paraphrase variants | Passes 5 of 5 paraphrase variants |
-| Safety compliance | Zero high-severity violations in eval set | Zero medium-or-high-severity violations in eval set |
-| Predictability | Calibration error <20% (agent can signal uncertainty) | Calibration error <10%; discrimination AUROC >0.7 |
+| Dimension             | Augmentation Mode                                     | Automation Mode                                     |
+| --------------------- | ----------------------------------------------------- | --------------------------------------------------- |
+| Consistency (outcome) | ≥70% same outcome on K=5 runs                         | ≥90% same outcome on K=5 runs                       |
+| Prompt robustness     | Passes 3 of 5 paraphrase variants                     | Passes 5 of 5 paraphrase variants                   |
+| Safety compliance     | Zero high-severity violations in eval set             | Zero medium-or-high-severity violations in eval set |
+| Predictability        | Calibration error <20% (agent can signal uncertainty) | Calibration error <10%; discrimination AUROC >0.7   |
 
 Adjust thresholds upward for irreversible actions (financial transactions, data deletion, external communications) and downward for low-consequence tasks (summarization, classification with human review).
 
@@ -69,11 +81,11 @@ This has a direct architectural implication: the compound reliability of a pipel
 
 Three documented production incidents illustrate what happens when deployment threshold decisions are not grounded in reliability measurement:
 
-| Incident | Root Reliability Failure | Dimension Missed |
-|----------|--------------------------|------------------|
-| Replit database deletion — agent deleted production DB despite explicit prohibition | High-severity compliance violation; instruction constraint not robustly enforced | Safety (S_harm) + Robustness (prompt constraint robustness) |
-| OpenAI Operator unauthorized purchase — agent took action outside declared scope | Out-of-scope action; trajectory consistency violated | Safety (S_comp) + Consistency (trajectory) |
-| NYC chatbot inconsistent legal advice — identical questions yielded different answers | High outcome variance; overconfident wrong answers | Consistency (C_out) + Predictability (calibration) |
+| Incident                                                                              | Root Reliability Failure                                                         | Dimension Missed                                            |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Replit database deletion — agent deleted production DB despite explicit prohibition   | High-severity compliance violation; instruction constraint not robustly enforced | Safety (S_harm) + Robustness (prompt constraint robustness) |
+| OpenAI Operator unauthorized purchase — agent took action outside declared scope      | Out-of-scope action; trajectory consistency violated                             | Safety (S_comp) + Consistency (trajectory)                  |
+| NYC chatbot inconsistent legal advice — identical questions yielded different answers | High outcome variance; overconfident wrong answers                               | Consistency (C_out) + Predictability (calibration)          |
 
 [Rabanser et al., arXiv:2602.16666, 2026]
 
@@ -100,11 +112,11 @@ Each incident would have been detectable in pre-deployment evaluation if the cor
 
 ## Production War Stories
 
-*Document production incidents, what happened, what you learned:*
+_Document production incidents, what happened, what you learned:_
 
 ### Multi-Agent Production Lessons
 
-*[2025-12-09]*: Hard-won lessons from practitioners running multi-agent systems at scale (including a 400K LOC codebase). These patterns emerge repeatedly across production deployments.
+_[2025-12-09]_: Hard-won lessons from practitioners running multi-agent systems at scale (including a 400K LOC codebase). These patterns emerge repeatedly across production deployments.
 
 **Context Switching Kills Productivity**
 
@@ -117,6 +129,7 @@ Document project conventions in CLAUDE.md. Agents read this to understand bounda
 **Lifecycle Hooks for Control**
 
 Wire hooks at critical transitions:
+
 - **PreToolUse**: Validate commands before execution (catch dangerous operations)
 - **SubagentStop**: Record outputs, promote artifacts, log what was accomplished
 - **ErrorEscalation**: Notify human overseers when agents fail or hit edge cases
@@ -125,25 +138,28 @@ These hooks provide observability and control points without requiring constant 
 
 **The Orchestrator Observes Itself**
 
-*[2025-12-09]*: Hooks enable a powerful pattern—the orchestrator becomes self-aware of its own operations. PreToolUse and PostToolUse hooks capture every Claude Code action, creating real-time visibility into agent behavior.
+_[2025-12-09]_: Hooks enable a powerful pattern—the orchestrator becomes self-aware of its own operations. PreToolUse and PostToolUse hooks capture every Claude Code action, creating real-time visibility into agent behavior.
 
 This enables:
+
 - **Cost Tracking**: Measure token consumption per tool invocation, per subagent, per task
 - **Audit Trails**: Log every agent action with context—who did what, when, and why
 - **Real-Time Monitoring**: Detect patterns, anomalies, or runaway agents as they happen
 - **Platform Self-Awareness**: The system knows what it's doing while it's doing it
 
-Traditional software logs after the fact. Hooks let platforms observe themselves *during execution*. This is the foundation for production-grade agent operations—you can't manage what you can't measure, and you can't measure what you can't observe.
+Traditional software logs after the fact. Hooks let platforms observe themselves _during execution_. This is the foundation for production-grade agent operations—you can't manage what you can't measure, and you can't measure what you can't observe.
 
 **Implementation Pattern**: Wire PostToolUse hooks to write structured logs (JSON) containing tool name, parameters, results, duration, and cost estimates. Aggregate these logs for operational dashboards showing agent activity in real-time.
 
 **See Also**:
+
 - [Tool Use: Tool Restrictions as Security Boundaries](../5-tool-use/3-tool-restrictions.md#tool-restrictions-as-security-boundaries) — How hooks integrate with tool permission boundaries
 - [Claude Code Hooks Documentation](/.claude/ai_docs/claude-code/hooks.md) — Complete technical reference
 
 **Test-First Discipline**
 
 The test-first pattern works remarkably well with multi-agent systems:
+
 1. Dedicate a test-writing subagent to create tests that currently fail
 2. Verify the tests actually fail (don't skip this)
 3. Implementer subagent makes tests pass without changing tests
@@ -154,6 +170,7 @@ This creates natural quality gates and makes progress measurable. Agents write b
 **Dedicated Review Gate**
 
 Maintain a dedicated code-review subagent as a final gate. Configure it to enforce:
+
 - Linting and style conventions
 - Complexity bounds (cyclomatic complexity, file length)
 - Security checks (no secrets, no dangerous patterns)
@@ -172,11 +189,11 @@ Practitioner consensus: Opus 4.5 is particularly effective at managing teams of 
 
 ### Google Cloud Deployment Gotchas
 
-*[2025-12-09]*: Hard-won lessons from practitioners deploying Google ADK agents to production. These are framework-agnostic lessons that apply broadly—they just happen to surface most visibly with ADK on Google Cloud.
+_[2025-12-09]_: Hard-won lessons from practitioners deploying Google ADK agents to production. These are framework-agnostic lessons that apply broadly—they just happen to surface most visibly with ADK on Google Cloud.
 
 **Infrastructure Permissions**
 
-Enable Cloud Run Admin API *before* deployment. Missing permissions fail with cryptic errors that don't obviously point to the permission issue. This isn't ADK-specific—it's a Google Cloud pattern. Before deploying anything, verify required APIs are enabled.
+Enable Cloud Run Admin API _before_ deployment. Missing permissions fail with cryptic errors that don't obviously point to the permission issue. This isn't ADK-specific—it's a Google Cloud pattern. Before deploying anything, verify required APIs are enabled.
 
 **Environment Variable Naming**
 
@@ -187,6 +204,7 @@ The fix: prefix everything. Use `GEMMA_MODEL_NAME` instead of `MODEL`, `ADK_API_
 **MCP Session Affinity**
 
 MCP connections are stateful. At scale, this means:
+
 - Load balancers need session affinity (sticky sessions)
 - Connection loss requires reconnection handling
 - Horizontal scaling is constrained by state distribution
@@ -196,6 +214,7 @@ Plan load balancing accordingly. Stateless is easy; stateful requires architectu
 **Asyncio Everywhere**
 
 ADK and MCP both assume async-first Python. Common mistakes:
+
 - Writing sync tool implementations (blocks the event loop)
 - Forgetting `await` on async calls
 - Not using async context managers for connections
@@ -205,6 +224,7 @@ Default to `async def` for everything. Sync code in an async codebase serializes
 **The "Works Locally, Fails in Cloud" Pattern**
 
 Local development hides many issues:
+
 - Environment variable sources differ (local shell vs. Cloud Run secrets)
 - Network topology changes (localhost vs. VPC)
 - Permission models differ (local user vs. service account)
@@ -217,11 +237,12 @@ Always test in a staging environment that mirrors production. "It works on my ma
 
 ## Hook-Based Enforcement Patterns
 
-*[2026-02-05]*: Production agent systems require runtime validation beyond prompt instructions. Hook-based enforcement provides time-budgeted validation, pre-edit dependency injection, and scope enforcement for reliable operations at scale.
+_[2026-02-05]_: Production agent systems require runtime validation beyond prompt instructions. Hook-based enforcement provides time-budgeted validation, pre-edit dependency injection, and scope enforcement for reliable operations at scale.
 
 ### Your Mental Model
 
 **Hooks are enforcement points, not just observability.** While PostToolUse hooks enable monitoring (see [The Orchestrator Observes Itself](#the-orchestrator-observes-itself)), hooks also enforce constraints:
+
 - Time budgets prevent runaway operations
 - Pre-edit checks inject required context
 - Scope validation blocks out-of-bounds modifications
@@ -234,23 +255,21 @@ This philosophy: **"Permissive tools + strict prompts + hook enforcement"**—to
 
 **Production budgets:**
 
-| Hook | Budget | Purpose |
-|------|--------|---------|
-| SessionStart | 3-5s | Load domain expertise, check MCP health |
-| PreEdit | 10-15s | Query code intelligence (LSP, type systems) |
-| PreToolUse | 5-10s | Validate command safety, check credentials |
-| PostToolUse | 3-5s | Log action, update metrics |
+| Hook         | Budget | Purpose                                     |
+| ------------ | ------ | ------------------------------------------- |
+| SessionStart | 3-5s   | Load domain expertise, check MCP health     |
+| PreEdit      | 10-15s | Query code intelligence (LSP, type systems) |
+| PreToolUse   | 5-10s  | Validate command safety, check credentials  |
+| PostToolUse  | 3-5s   | Log action, update metrics                  |
 
 **Graceful degradation:**
+
 ```typescript
 async function sessionStartHook(context: SessionContext): Promise<void> {
   const timeout = 5000; // 5 second budget
 
   try {
-    await Promise.race([
-      loadExpertise(context.domain),
-      sleep(timeout)
-    ]);
+    await Promise.race([loadExpertise(context.domain), sleep(timeout)]);
   } catch (error) {
     logger.warn("SessionStart hook timed out, continuing with defaults");
     // Graceful fallback: agent proceeds without expertise injection
@@ -259,6 +278,7 @@ async function sessionStartHook(context: SessionContext): Promise<void> {
 ```
 
 **Why time budgets matter:**
+
 - Agents remain responsive (no 30s hangs)
 - User experience preserved (fast feedback loops)
 - Failure modes explicit (timeout → fallback path)
@@ -271,7 +291,7 @@ async function sessionStartHook(context: SessionContext): Promise<void> {
 
 ```typescript
 async function preEditHook(file: string): Promise<void> {
-  if (!file.endsWith('.ts')) return; // Only TypeScript files
+  if (!file.endsWith(".ts")) return; // Only TypeScript files
 
   // Query TypeScript language server for:
   // - Current imports in file
@@ -283,12 +303,13 @@ async function preEditHook(file: string): Promise<void> {
   injectContext({
     imports: typeContext.imports,
     types: typeContext.types,
-    exports: typeContext.exports
+    exports: typeContext.exports,
   });
 }
 ```
 
 **What this prevents:**
+
 - Missing imports (agent knows what's already imported)
 - Type mismatches (agent sees type definitions)
 - Undefined references (agent knows available exports)
@@ -305,13 +326,13 @@ async function preEditHook(file: string): Promise<void> {
 async function sessionStartHook(): Promise<void> {
   const repo = detectRepository();
 
-  if (repo.hasDir('.claude/agents/experts/github')) {
-    const expertise = await loadExpertise('github');
+  if (repo.hasDir(".claude/agents/experts/github")) {
+    const expertise = await loadExpertise("github");
     injectContext({ github_patterns: expertise });
   }
 
-  if (repo.hasDir('src/api')) {
-    const apiPatterns = await loadExpertise('api-development');
+  if (repo.hasDir("src/api")) {
+    const apiPatterns = await loadExpertise("api-development");
     injectContext({ api_patterns: apiPatterns });
   }
 
@@ -320,6 +341,7 @@ async function sessionStartHook(): Promise<void> {
 ```
 
 **What this enables:**
+
 - Context-aware agent behavior (knows repository patterns)
 - Zero configuration (automatic domain detection)
 - Expertise reuse (same patterns across projects)
@@ -337,29 +359,30 @@ async function preEditHook(file: string, agent: AgentContext): Promise<void> {
   const contract = agent.contextContract;
 
   // Check allowed_modifications globs
-  const allowed = contract.outputs.allowed_modifications || ['**/*'];
-  const isAllowed = allowed.some(glob => minimatch(file, glob));
+  const allowed = contract.outputs.allowed_modifications || ["**/*"];
+  const isAllowed = allowed.some((glob) => minimatch(file, glob));
 
   if (!isAllowed) {
     throw new ScopeViolationError(
       `Agent ${agent.name} attempted to modify ${file}, ` +
-      `but only allowed to modify: ${allowed.join(', ')}`
+        `but only allowed to modify: ${allowed.join(", ")}`,
     );
   }
 
   // Check forbidden patterns
   const forbidden = contract.outputs.forbidden_patterns || [];
-  const isForbidden = forbidden.some(glob => minimatch(file, glob));
+  const isForbidden = forbidden.some((glob) => minimatch(file, glob));
 
   if (isForbidden) {
     throw new ScopeViolationError(
-      `Agent ${agent.name} attempted to modify forbidden path: ${file}`
+      `Agent ${agent.name} attempted to modify forbidden path: ${file}`,
     );
   }
 }
 ```
 
 **What this enforces:**
+
 - File ownership (agents can't modify files outside their scope)
 - Safety boundaries (prevents accidental system file modification)
 - Coordination constraints (Implementation Pattern file ownership)
@@ -385,6 +408,7 @@ async function preEditHook(file: string, agent: AgentContext): Promise<void> {
 ```
 
 **Why this matters:**
+
 - Consistency (all hooks log uniformly)
 - Reusability (timeout logic once, used everywhere)
 - Testability (test utilities independently of hooks)
@@ -398,6 +422,7 @@ async function preEditHook(file: string, agent: AgentContext): Promise<void> {
 3. **Hook enforcement:** Runtime validation ensures compliance (scope checks, safety gates)
 
 **Why this works:**
+
 - Flexibility (agents can adapt to unexpected needs within boundaries)
 - Safety (hooks prevent dangerous operations)
 - Clarity (prompts explain intent, hooks enforce hard limits)
@@ -407,16 +432,19 @@ async function preEditHook(file: string, agent: AgentContext): Promise<void> {
 ### Production Deployment Considerations
 
 **Hook failure modes:**
+
 - Timeout → graceful degradation (proceed without enhancement)
 - MCP unavailable → skip optional features (log warning)
 - Validation failure → hard stop (prevent incorrect operation)
 
 **Monitoring:**
+
 - Log all hook executions (timing, success/failure)
 - Alert on repeated hook failures (system degradation)
 - Track timeout rates (indicates budget tuning needed)
 
 **Testing:**
+
 - Unit test hook logic separately
 - Integration test hook + agent behavior
 - Load test hook performance (ensure budgets hold under load)
@@ -428,4 +456,3 @@ async function preEditHook(file: string, agent: AgentContext): Promise<void> {
 - **To [Flat Team Orchestration](../../7-patterns/8-expert-swarm-pattern.md#implementation-pattern-file-ownership-coordination)**: Scope enforcement enables file ownership pattern
 
 **Sources:** Advanced external .claude/ implementation patterns, hook infrastructure analysis from KotaDB system.
-

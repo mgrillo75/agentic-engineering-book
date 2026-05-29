@@ -19,9 +19,9 @@ The harness is everything around the model that makes it an agent.
 Agent = Model + Harness
 ```
 
-The four preceding foundational pillars — Prompt, Model, Context, Tool Use — answer what the agent says, what it can reason about, what it knows, and what it can do. The harness answers the fifth question: *what system orchestrates and constrains the agent's execution?* Without a harness, there is no agent — only a model being prompted. The harness is the connective tissue that makes multi-step, multi-tool, multi-session work possible.
+The four preceding foundational pillars — Prompt, Model, Context, Tool Use — answer what the agent says, what it can reason about, what it knows, and what it can do. The harness answers the fifth question: _what system orchestrates and constrains the agent's execution?_ Without a harness, there is no agent — only a model being prompted. The harness is the connective tissue that makes multi-step, multi-tool, multi-session work possible.
 
-*[2026-04-12]*: Practitioner consensus around this formula crystallized in early 2026. Martin Fowler, Ethan Mollick, Sebastian Raschka, Philipp Schmid, and Mitchell Hashimoto independently converged on the harness as the primary differentiator between model capability and product performance — not through coordination, but through simultaneous arrival at the same empirical observation.
+_[2026-04-12]_: Practitioner consensus around this formula crystallized in early 2026. Martin Fowler, Ethan Mollick, Sebastian Raschka, Philipp Schmid, and Mitchell Hashimoto independently converged on the harness as the primary differentiator between model capability and product performance — not through coordination, but through simultaneous arrival at the same empirical observation.
 
 ---
 
@@ -34,6 +34,7 @@ This chapter builds from definition through practical design guidance:
 The foundational definition, formula, and conceptual underpinnings. Establishes the horse harness metaphor (raw capability → useful work), presents definitions from five authoritative practitioners, distinguishes harness from scaffold, and traces the historical evolution from prompt engineering through context engineering to harness engineering.
 
 **Key concepts:**
+
 - Agent = Model + Harness formula
 - Scaffold (pre-runtime) vs. harness (runtime) distinction
 - The three eras: prompt engineering, context engineering, harness engineering
@@ -44,6 +45,7 @@ The foundational definition, formula, and conceptual underpinnings. Establishes 
 Raschka's six-component taxonomy of the execution environment. Each component has distinct responsibilities, failure modes, and optimization targets. Understanding the stack enables practitioners to audit agent failures at the right layer rather than defaulting to model blame.
 
 **Key concepts:**
+
 - Workspace context (stable facts, repo map)
 - Prompt shape and cache reuse (stable/dynamic split)
 - Tool access (bounded inventories, permission filtering)
@@ -56,6 +58,7 @@ Raschka's six-component taxonomy of the execution environment. Each component ha
 The taxonomy of harness types from raw coding agents to full workspace managers. Includes Mollick's three-axis Model/App/Harness stack, capability tier comparison, and the distinction between frameworks (build-time) and harnesses (runtime with defaults). Provides a decision table linking problem characteristics to harness category.
 
 **Key concepts:**
+
 - Model/App/Harness as independent axes
 - Harness capability tiers (full agentic / web-based / constrained)
 - Framework vs. runtime vs. harness vocabulary
@@ -67,6 +70,7 @@ The taxonomy of harness types from raw coding agents to full workspace managers.
 Fowler's guides-and-sensors decomposition treats the harness as an active control system, not passive scaffolding. Guides intervene before agent actions (feedforward); sensors observe results and steer subsequent behavior (feedback). Each mechanism can be computational (deterministic) or inferential (model-based).
 
 **Key concepts:**
+
 - Guides (feedforward control) — computational and inferential
 - Sensors (feedback control) — computational and inferential
 - The cost tradeoff: computational vs. inferential mechanisms
@@ -77,6 +81,7 @@ Fowler's guides-and-sensors decomposition treats the harness as an active contro
 Hashimoto's methodology for systematic harness improvement — coined February 5, 2026. The core discipline: when an agent makes a mistake, engineer the surrounding system so that mistake cannot recur. Covers the six-step engineering loop, failure classification taxonomy, and Schmid's trajectory-capture competitive advantage thesis.
 
 **Key concepts:**
+
 - Harness engineering vs. prompt patching
 - The six-step improvement loop
 - Failure classification (model / context / prompt / harness / tool)
@@ -88,6 +93,7 @@ Hashimoto's methodology for systematic harness improvement — coined February 5
 The harness is the primary security boundary in an agentic system. The model does not enforce permissions — the harness does. Covers permission models (scope/operation/session dimensions), sandbox architecture, token-level vs. session-level access control, trust hierarchies in multi-agent systems, and observability requirements.
 
 **Key concepts:**
+
 - Harness enforcement vs. model enforcement
 - Sandbox dimensions (filesystem, network, process, resource)
 - Token-level vs. session-level access control
@@ -99,6 +105,7 @@ The harness is the primary security boundary in an agentic system. The model doe
 Translates the conceptual framework into actionable decisions. Presents the four design questions (time horizon, agent count, security requirements, trajectory volume), a decision tree for harness selection, the incremental build sequence, and the compound advantage that trajectory capture creates over time.
 
 **Key concepts:**
+
 - Four design questions for harness selection
 - Decision tree: exploratory → workflow → workspace manager → custom
 - Incremental build sequence starting from existing harnesses

@@ -3,7 +3,22 @@ title: "Design as Bottleneck"
 description: "Mental models for multi-agent systems at scale — when implementation is automated, design becomes the constraint"
 created: 2026-02-11
 last_updated: 2026-04-11
-tags: [mental-models, multi-agent, scale, design, gastown, theory-of-constraints, interface-design, capability-overhang, user-experience, external-validation, mollick, rsi, organizational-design]
+tags:
+  [
+    mental-models,
+    multi-agent,
+    scale,
+    design,
+    gastown,
+    theory-of-constraints,
+    interface-design,
+    capability-overhang,
+    user-experience,
+    external-validation,
+    mollick,
+    rsi,
+    organizational-design,
+  ]
 part: 3
 part_title: Perspectives
 chapter: 9
@@ -20,16 +35,19 @@ When 20-30 agents churn through implementation in minutes, the constraint moves 
 ## Core Questions
 
 ### Constraint Identification
+
 - Where does the bottleneck actually sit when implementation is automated?
 - What happens to traditional software roles when coding is no longer the slow part?
 - How does Theory of Constraints apply to agentic workflows?
 
 ### Execution Models
+
 - Are agents conversational partners or execution units?
 - What execution contract eliminates idle-agent overhead?
 - How does persistent identity coexist with ephemeral sessions?
 
 ### Scale and Accountability
+
 - When does a "workshop" become a "factory floor"?
 - What infrastructure appears at each scale transition?
 - How does attribution change system behavior over time?
@@ -73,13 +91,13 @@ The implementation rectangle shrank by orders of magnitude. But design didn't sh
 
 ### What This Replaces
 
-| Old Model | New Model |
-|-----------|-----------|
-| "The hard part is coding" | "The hard part is decomposition" |
+| Old Model                            | New Model                                               |
+| ------------------------------------ | ------------------------------------------------------- |
+| "The hard part is coding"            | "The hard part is decomposition"                        |
 | Invest in faster typing, better IDEs | Invest in specification quality, architectural thinking |
-| Developer productivity = lines/hour | Developer productivity = specifications/hour |
-| Junior devs bottleneck on syntax | Junior devs bottleneck on design clarity |
-| "Ship faster" = more developers | "Ship faster" = better decomposition |
+| Developer productivity = lines/hour  | Developer productivity = specifications/hour            |
+| Junior devs bottleneck on syntax     | Junior devs bottleneck on design clarity                |
+| "Ship faster" = more developers      | "Ship faster" = better decomposition                    |
 
 ### Why This Happens
 
@@ -93,9 +111,9 @@ Three properties of multi-agent implementation create the shift:
 
 ### Evidence
 
-*[2026-02-11]*: Gas Town (multi-agent orchestration platform) users report that issue decomposition quality directly determines swarm output quality. The system churns through implementation so quickly that design and planning become the dominant time cost. Teams that invest in decomposition skills consistently outperform those optimizing implementation speed.
+_[2026-02-11]_: Gas Town (multi-agent orchestration platform) users report that issue decomposition quality directly determines swarm output quality. The system churns through implementation so quickly that design and planning become the dominant time cost. Teams that invest in decomposition skills consistently outperform those optimizing implementation speed.
 
-*[2026-04-11]*: Ethan Mollick's practitioner-research synthesis reaches the same conclusion from a different evidentiary tradition. Drawing on the BCG 758-consultant study, METR Long Tasks benchmarks, and the StrongDM software factory case, Mollick argues that in agent-managed organizations, "the window to shape the Thing" — the design and organizational configuration work done before agents execute — is the scarce practitioner resource (Mollick, "The Shape of the Thing," 2026). The book's Model 1 derives this from Theory of Constraints and Gas Town production data (engineering and production-observation traditions). Mollick derives it from organizational research and team-scale production cases. Two independent evidentiary paths reaching identical structural conclusions increase confidence in the model's generality.
+_[2026-04-11]_: Ethan Mollick's practitioner-research synthesis reaches the same conclusion from a different evidentiary tradition. Drawing on the BCG 758-consultant study, METR Long Tasks benchmarks, and the StrongDM software factory case, Mollick argues that in agent-managed organizations, "the window to shape the Thing" — the design and organizational configuration work done before agents execute — is the scarce practitioner resource (Mollick, "The Shape of the Thing," 2026). The book's Model 1 derives this from Theory of Constraints and Gas Town production data (engineering and production-observation traditions). Mollick derives it from organizational research and team-scale production cases. Two independent evidentiary paths reaching identical structural conclusions increase confidence in the model's generality.
 
 **Source:** Mollick, E. "The Shape of the Thing." One Useful Thing, ~2026-03-12. https://www.oneusefulthing.org/p/the-shape-of-the-thing
 
@@ -159,14 +177,14 @@ This contract has three properties:
 
 ### What This Replaces
 
-| Conversational Model | Piston Model |
-|---------------------|--------------|
-| Agents announce readiness | Agents are always ready |
-| Orchestrator assigns tasks via messages | Hook fires, agent runs |
-| Progress updates flow continuously | Completion is the only signal |
-| Agents negotiate scope | Scope is defined by the hook payload |
-| Idle agents wait for instructions | No idle state exists |
-| Multi-turn assignment protocol | Zero-turn assignment |
+| Conversational Model                    | Piston Model                         |
+| --------------------------------------- | ------------------------------------ |
+| Agents announce readiness               | Agents are always ready              |
+| Orchestrator assigns tasks via messages | Hook fires, agent runs               |
+| Progress updates flow continuously      | Completion is the only signal        |
+| Agents negotiate scope                  | Scope is defined by the hook payload |
+| Idle agents wait for instructions       | No idle state exists                 |
+| Multi-turn assignment protocol          | Zero-turn assignment                 |
 
 ### The Idle Agent Anti-Pattern
 
@@ -191,12 +209,14 @@ In the piston model, this scenario cannot occur. There is no "ready" state. Ther
 ### When This Model Applies
 
 **Good fit:**
+
 - High-throughput systems with many agents
 - Tasks with clear, complete specifications
 - Workflows where coordination overhead dominates
 - Systems where agent count exceeds 5-10
 
 **Poor fit:**
+
 - Exploratory tasks requiring clarification
 - Creative work needing iterative refinement
 - Tasks where the specification is genuinely incomplete
@@ -204,7 +224,7 @@ In the piston model, this scenario cannot occur. There is no "ready" state. Ther
 
 ### Evidence
 
-*[2026-02-11]*: Gas Town's architecture embodies the piston model through its "propulsion principle"—GUPP (Gas Town Universal Propulsion Principle): if there is work on your hook, you must run it. This principle drives the entire system architecture, eliminating idle-agent overhead and enabling predictable throughput scaling. The absence of negotiation reduces per-task token overhead to near zero.
+_[2026-02-11]_: Gas Town's architecture embodies the piston model through its "propulsion principle"—GUPP (Gas Town Universal Propulsion Principle): if there is work on your hook, you must run it. This principle drives the entire system architecture, eliminating idle-agent overhead and enabling predictable throughput scaling. The absence of negotiation reduces per-task token overhead to near zero.
 
 ---
 
@@ -250,11 +270,11 @@ The persistent layer holds identity, skills, track record, and accumulated exper
 
 ### The Three Layers
 
-| Layer | Persists Across Sessions | Contains | Size |
-|-------|------------------------|----------|------|
-| **Identity** | Always | Name, role, skills, configuration | Small (~500 tokens) |
-| **History** | Always (append-only) | Past session summaries, decisions, outcomes | Growing (compressed) |
-| **Session** | Never | Current context, working files, tool state | Large (fills context window) |
+| Layer        | Persists Across Sessions | Contains                                    | Size                         |
+| ------------ | ------------------------ | ------------------------------------------- | ---------------------------- |
+| **Identity** | Always                   | Name, role, skills, configuration           | Small (~500 tokens)          |
+| **History**  | Always (append-only)     | Past session summaries, decisions, outcomes | Growing (compressed)         |
+| **Session**  | Never                    | Current context, working files, tool state  | Large (fills context window) |
 
 ### Seancing: Querying the Past
 
@@ -283,11 +303,11 @@ Seancing differs from loading full session history. It is targeted retrieval—s
 
 ### What This Replaces
 
-| Failing Model | Problem | Middle Path |
-|--------------|---------|-------------|
-| **Persistent sessions** | Context bloat, degraded performance after 10+ interactions | Sessions are ephemeral; dispose after task |
-| **Stateless agents** | Cannot learn, repeats mistakes, no institutional memory | Identity and history persist; sessions query them |
-| **Full history replay** | Prohibitive token cost, irrelevant context dilution | Seancing retrieves targeted decisions only |
+| Failing Model           | Problem                                                    | Middle Path                                       |
+| ----------------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| **Persistent sessions** | Context bloat, degraded performance after 10+ interactions | Sessions are ephemeral; dispose after task        |
+| **Stateless agents**    | Cannot learn, repeats mistakes, no institutional memory    | Identity and history persist; sessions query them |
+| **Full history replay** | Prohibitive token cost, irrelevant context dilution        | Seancing retrieves targeted decisions only        |
 
 ### Identity Accumulation in Practice
 
@@ -315,7 +335,7 @@ Each session adds to the CV. New sessions restore context by reading the CV, not
 
 ### Evidence
 
-*[2026-02-11]*: Gas Town implements this model through "polecats"—agents with persistent CVs that accumulate track records across sessions. New sessions restore context via hook-based initialization that loads identity and queries relevant history. The CV structure enables capability-based routing: the orchestrator assigns security reviews to agents with demonstrated security expertise, not to the next available agent.
+_[2026-02-11]_: Gas Town implements this model through "polecats"—agents with persistent CVs that accumulate track records across sessions. New sessions restore context via hook-based initialization that loads identity and queries relevant history. The CV structure enables capability-based routing: the orchestrator assigns security reviews to agents with demonstrated security expertise, not to the next available agent.
 
 ### Implications for Practitioners
 
@@ -364,14 +384,14 @@ Task → Agent → Result             Task → Agent → Result
 
 Attribution is not a compliance afterthought—it is system intelligence. The ledger enables capabilities that fire-and-forget systems cannot support:
 
-| Capability | How the Ledger Enables It |
-|-----------|--------------------------|
-| **Debugging** | Trace failures to specific agent actions and decisions |
-| **Capability routing** | Route tasks to agents with proven track records |
-| **Performance management** | Identify agents that consistently produce quality vs. rework |
-| **Model comparison** | Compare output quality across models (opus vs. sonnet) for the same task type |
-| **Cost attribution** | Know which agents and tasks consume the most tokens |
-| **Regression detection** | Detect when agent performance degrades over time |
+| Capability                 | How the Ledger Enables It                                                     |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| **Debugging**              | Trace failures to specific agent actions and decisions                        |
+| **Capability routing**     | Route tasks to agents with proven track records                               |
+| **Performance management** | Identify agents that consistently produce quality vs. rework                  |
+| **Model comparison**       | Compare output quality across models (opus vs. sonnet) for the same task type |
+| **Cost attribution**       | Know which agents and tasks consume the most tokens                           |
+| **Regression detection**   | Detect when agent performance degrades over time                              |
 
 ### The Batch-Closure Heresy
 
@@ -397,24 +417,26 @@ Batch closure is tempting because it reduces logging overhead. But it destroys t
 
 The ledger model is not simply "add logging." Logs are diagnostic artifacts—searched when something breaks. The ledger is an operational artifact—queried continuously for routing, attribution, and improvement.
 
-| Property | Logging | Ledger |
-|----------|---------|--------|
-| **Purpose** | Diagnosis after failure | Continuous system intelligence |
-| **Queried** | When something breaks | Every task assignment, every review |
-| **Retention** | Rotated, compressed, archived | Permanent, append-only |
-| **Structure** | Free-form text | Structured entries with agent, action, outcome |
-| **Attribution** | Optional | Required for every entry |
-| **Consumers** | Humans debugging | Orchestrators, agents, and humans |
+| Property        | Logging                       | Ledger                                         |
+| --------------- | ----------------------------- | ---------------------------------------------- |
+| **Purpose**     | Diagnosis after failure       | Continuous system intelligence                 |
+| **Queried**     | When something breaks         | Every task assignment, every review            |
+| **Retention**   | Rotated, compressed, archived | Permanent, append-only                         |
+| **Structure**   | Free-form text                | Structured entries with agent, action, outcome |
+| **Attribution** | Optional                      | Required for every entry                       |
+| **Consumers**   | Humans debugging              | Orchestrators, agents, and humans              |
 
 ### When This Model Applies
 
 **Good fit:**
+
 - Multi-agent systems where multiple agents contribute to outcomes
 - Systems requiring auditability or compliance
 - Long-running projects where agent performance must improve over time
 - Environments comparing multiple models or agent configurations
 
 **Poor fit:**
+
 - Single-agent, single-session interactions
 - Prototyping where overhead must be minimal
 - Tasks where the process is less important than the result
@@ -422,7 +444,7 @@ The ledger model is not simply "add logging." Logs are diagnostic artifacts—se
 
 ### Evidence
 
-*[2026-02-11]*: Gas Town implements the ledger model through its "Bead" system—a permanent work record where every agent action is a timestamped, attributed entry. The Bead system enables capability routing (assigning tasks based on past performance), regression detection (flagging agents whose quality has declined), and cost attribution (tracking token spend per agent and task type). The "Batch-Closure Heresy"—closing entries retroactively—is explicitly forbidden because it corrupts the causal ordering that makes the ledger useful.
+_[2026-02-11]_: Gas Town implements the ledger model through its "Bead" system—a permanent work record where every agent action is a timestamped, attributed entry. The Bead system enables capability routing (assigning tasks based on past performance), regression detection (flagging agents whose quality has declined), and cost attribution (tracking token spend per agent and task type). The "Batch-Closure Heresy"—closing entries retroactively—is explicitly forbidden because it corrupts the causal ordering that makes the ledger useful.
 
 ### Implications for Practitioners
 
@@ -496,14 +518,14 @@ Infrastructure needed at each level:
 
 ### Scale Infrastructure Table
 
-| Agent Count | Infrastructure Required | Why |
-|-------------|------------------------|-----|
-| 1-3 | None | Human directly manages each agent |
-| 4-7 | **Merge strategy** | Multiple agents editing overlapping files |
-| 8-12 | **Supervisors** | Human cannot track status of all agents simultaneously |
-| 13-20 | **Health monitoring** | Silent agent failures go undetected without automated checks |
-| 20-30 | **Full orchestration** | Attribution, queuing, conflict resolution, automated routing |
-| 30+ | **Hierarchical management** | Single orchestrator cannot manage all agents; sub-orchestrators needed |
+| Agent Count | Infrastructure Required     | Why                                                                    |
+| ----------- | --------------------------- | ---------------------------------------------------------------------- |
+| 1-3         | None                        | Human directly manages each agent                                      |
+| 4-7         | **Merge strategy**          | Multiple agents editing overlapping files                              |
+| 8-12        | **Supervisors**             | Human cannot track status of all agents simultaneously                 |
+| 13-20       | **Health monitoring**       | Silent agent failures go undetected without automated checks           |
+| 20-30       | **Full orchestration**      | Attribution, queuing, conflict resolution, automated routing           |
+| 30+         | **Hierarchical management** | Single orchestrator cannot manage all agents; sub-orchestrators needed |
 
 ### Two Failure Modes
 
@@ -517,27 +539,27 @@ Running 15 agents with workshop-style direct management. Merge conflicts multipl
 
 Steve Yegge's framework for AI-assisted development describes a spectrum from Level 1 (AI as autocomplete) to Level 8 (AI-first development). Most practitioners operate at Levels 1-4 (workshop). Factory-floor systems like Gas Town target Levels 7-8, where the development model fundamentally changes.
 
-| Level Range | Mode | Agent Relationship |
-|-------------|------|-------------------|
-| 1-2 | Autocomplete, chat | AI assists human coding |
-| 3-4 | Pair programming, delegation | AI handles defined subtasks |
-| 5-6 | Supervised autonomy | AI works independently with checkpoints |
-| 7-8 | Factory floor | Human designs, AI swarm implements |
+| Level Range | Mode                         | Agent Relationship                      |
+| ----------- | ---------------------------- | --------------------------------------- |
+| 1-2         | Autocomplete, chat           | AI assists human coding                 |
+| 3-4         | Pair programming, delegation | AI handles defined subtasks             |
+| 5-6         | Supervised autonomy          | AI works independently with checkpoints |
+| 7-8         | Factory floor                | Human designs, AI swarm implements      |
 
 The levels are not a maturity model where everyone should reach Level 8. They describe different modes suitable for different contexts. Most tasks are well-served at Levels 3-4. Factory-floor orchestration is necessary only when the task scope genuinely demands 10+ concurrent agents.
 
 ### What This Replaces
 
-| Workshop Assumption | Factory Floor Reality |
-|--------------------|----------------------|
-| "Add more agents to go faster" | More agents without infrastructure causes chaos |
-| "I can manage 10 agents like I manage 2" | Cognitive load grows superlinearly with agent count |
-| "Infrastructure is premature optimization" | Infrastructure becomes necessary at ~8 agents |
-| "Scaling is linear" | Scaling has phase transitions requiring new architecture |
+| Workshop Assumption                        | Factory Floor Reality                                    |
+| ------------------------------------------ | -------------------------------------------------------- |
+| "Add more agents to go faster"             | More agents without infrastructure causes chaos          |
+| "I can manage 10 agents like I manage 2"   | Cognitive load grows superlinearly with agent count      |
+| "Infrastructure is premature optimization" | Infrastructure becomes necessary at ~8 agents            |
+| "Scaling is linear"                        | Scaling has phase transitions requiring new architecture |
 
 ### Evidence
 
-*[2026-02-11]*: Gas Town's entire architecture is factory-floor infrastructure—supervisors, health monitoring, merge queues, work attribution, and automated routing. The system targets Yegge's Level 7-8 operations, where 20-30 agents execute in parallel. Teams that attempt Gas Town's scale without its infrastructure (or equivalent) consistently encounter the chaos zone: merge conflicts, silent failures, and human bottlenecks. The architecture itself is evidence that the phase transition is real and requires deliberate infrastructure investment.
+_[2026-02-11]_: Gas Town's entire architecture is factory-floor infrastructure—supervisors, health monitoring, merge queues, work attribution, and automated routing. The system targets Yegge's Level 7-8 operations, where 20-30 agents execute in parallel. Teams that attempt Gas Town's scale without its infrastructure (or equivalent) consistently encounter the chaos zone: merge conflicts, silent failures, and human bottlenecks. The architecture itself is evidence that the phase transition is real and requires deliberate infrastructure investment.
 
 ### When to Transition
 
@@ -567,7 +589,7 @@ Each symptom maps to specific infrastructure. Build only what the symptoms deman
 
 ### The Core Idea
 
-The five preceding models address bottlenecks in multi-agent *execution*: design quality, agent coordination, state management, accountability, and infrastructure scale. Each operates on the developer/orchestrator side of the system. A complementary bottleneck operates at the human-facing layer: even when AI capability is ample, users can only access what the interface makes thinkable.
+The five preceding models address bottlenecks in multi-agent _execution_: design quality, agent coordination, state management, accountability, and infrastructure scale. Each operates on the developer/orchestrator side of the system. A complementary bottleneck operates at the human-facing layer: even when AI capability is ample, users can only access what the interface makes thinkable.
 
 Ethan Mollick frames this as "capability overhang" — the gap between what AI can do and what users actually request. The cause is not model capability; it is interface design:
 
@@ -607,25 +629,25 @@ Three mechanisms explain why the interface determines the effective capability c
 
 ### Evidence
 
-*[2026-03-31]*: Mollick's "Claude Dispatch and the Power of Interfaces" (One Useful Thing) demonstrates the interface bottleneck via Claude Dispatch: the same model accessed through a task-dispatch interface enables qualitatively different work than through chat. Primary practitioner evidence for the capability-overhang framing.
+_[2026-03-31]_: Mollick's "Claude Dispatch and the Power of Interfaces" (One Useful Thing) demonstrates the interface bottleneck via Claude Dispatch: the same model accessed through a task-dispatch interface enables qualitatively different work than through chat. Primary practitioner evidence for the capability-overhang framing.
 
-*[2026-03-19]*: Anthropic's Claude Cowork product page: "Unlike Chat, Cowork lets Claude complete work on its own. Describe the outcome and cadence, and it takes action." Anthropic's own positioning confirms the paradigm distinction between conversational interaction and asynchronous delegation.
+_[2026-03-19]_: Anthropic's Claude Cowork product page: "Unlike Chat, Cowork lets Claude complete work on its own. Describe the outcome and cadence, and it takes action." Anthropic's own positioning confirms the paradigm distinction between conversational interaction and asynchronous delegation.
 
-*[January 2025]*: Caetano et al., "Agentic Workflows for Conversational Human-AI Interaction Design" (arxiv:2501.18002): research-through-design study with 10 participants documenting that users lack clarity about AI capabilities and that conversational interfaces fail to surface affordances. Provides academic grounding for the capability discovery problem.
+_[January 2025]_: Caetano et al., "Agentic Workflows for Conversational Human-AI Interaction Design" (arxiv:2501.18002): research-through-design study with 10 participants documenting that users lack clarity about AI capabilities and that conversational interfaces fail to surface affordances. Provides academic grounding for the capability discovery problem.
 
-*[February 2026]*: Andru & Saksena, "Interface Framework for Human-AI Collaboration" (arxiv:2602.22343): three-factor framework (workflow complexity, AI autonomy, AI reasoning) mapping to interface pattern selection. Describes interfaces as "necessary affordances bridging legacy SaaS tools with autonomous systems" and identifies "progressive user control" as a design principle for graduated human oversight as AI autonomy increases.
+_[February 2026]_: Andru & Saksena, "Interface Framework for Human-AI Collaboration" (arxiv:2602.22343): three-factor framework (workflow complexity, AI autonomy, AI reasoning) mapping to interface pattern selection. Describes interfaces as "necessary affordances bridging legacy SaaS tools with autonomous systems" and identifies "progressive user control" as a design principle for graduated human oversight as AI autonomy increases.
 
 ### The Three-Layer Bottleneck Stack
 
 All three layers have distinct bottlenecks. Resolving one does not resolve the others:
 
-| Layer | Bottleneck | What It Controls |
-|-------|-----------|-----------------|
-| **Developer/Specification** | Design quality, decomposition precision | What the agent system can do |
-| **Interface Design** | Affordance clarity, interaction paradigm | What users think to request |
-| **Model Capability** | Reasoning quality, context handling | Execution quality for a given request |
+| Layer                       | Bottleneck                               | What It Controls                      |
+| --------------------------- | ---------------------------------------- | ------------------------------------- |
+| **Developer/Specification** | Design quality, decomposition precision  | What the agent system can do          |
+| **Interface Design**        | Affordance clarity, interaction paradigm | What users think to request           |
+| **Model Capability**        | Reasoning quality, context handling      | Execution quality for a given request |
 
-Most capability-overhang conversations conflate the interface layer with the model layer ("the AI isn't good enough"). Mollick's argument is that the interface layer is the binding constraint *before* model capability for most users.
+Most capability-overhang conversations conflate the interface layer with the model layer ("the AI isn't good enough"). Mollick's argument is that the interface layer is the binding constraint _before_ model capability for most users.
 
 ### Implications for Practitioners
 
@@ -637,11 +659,13 @@ Most capability-overhang conversations conflate the interface layer with the mod
 ### When This Model Applies
 
 **Most relevant:**
+
 - User-facing agentic products where non-expert users interact with AI systems
 - Internal tooling where adoption is below expectations despite model capability
 - Situations where "the AI isn't good enough" feedback may actually be "the interface doesn't surface what the AI can do"
 
 **Less relevant:**
+
 - Developer-to-developer tooling where users have high model familiarity
 - CLI-first tools where affordance discovery is expected to require documentation
 - Pure orchestration systems where no human interacts with the interface at runtime
@@ -779,7 +803,7 @@ Each model is useful independently. Together, they describe a coherent philosoph
 
 ## Connections
 
-- **[Execution Topologies](5-execution-topologies.md):** The five topologies describe *shapes* of agent work; these models describe *principles* for operating agent systems at scale. Factory floor infrastructure enables wider and deeper topologies. The piston model reduces friction in the measurement framework.
+- **[Execution Topologies](5-execution-topologies.md):** The five topologies describe _shapes_ of agent work; these models describe _principles_ for operating agent systems at scale. Factory floor infrastructure enables wider and deeper topologies. The piston model reduces friction in the measurement framework.
 
 - **[Specs as Source Code](3-specs-as-source-code.md):** Design as Bottleneck is the logical consequence of treating specs as source code. If specifications are the primary programming surface, and implementation is automated, then specification quality is the constraint.
 
@@ -799,13 +823,13 @@ Each model is useful independently. Together, they describe a coherent philosoph
 
 - **[Claude Code](../10-practitioner-toolkit/1-claude-code.md):** Claude Cowork/Dispatch (documented there) is the production instantiation of the interface bottleneck model — Anthropic's own product acknowledges the paradigm gap between chat and asynchronous delegation. See the Cowork entry in the Tips & Tricks section.
 
-- **[Human-in-the-Loop](../7-patterns/6-human-in-the-loop.md):** Human-in-the-Loop patterns address *developer*-designed approval gates; the interface bottleneck model addresses *user-facing* affordance design. These are complementary concerns at different system layers.
+- **[Human-in-the-Loop](../7-patterns/6-human-in-the-loop.md):** Human-in-the-Loop patterns address _developer_-designed approval gates; the interface bottleneck model addresses _user-facing_ affordance design. These are complementary concerns at different system layers.
 
 ---
 
 ## Sources
 
-- Eliyahu M. Goldratt, *The Goal* (1984) — Theory of Constraints: every system has exactly one bottleneck limiting throughput
+- Eliyahu M. Goldratt, _The Goal_ (1984) — Theory of Constraints: every system has exactly one bottleneck limiting throughput
 - Gas Town multi-agent orchestration platform — production evidence for piston model, persistent identity, ledger system, and factory-floor infrastructure
 - Steve Yegge, "Eight Levels of AI-Assisted Development" — framework for classifying human-AI development modes
 - Rico Mariani, .NET Framework design — original "Pit of Success" concept, applied here to agent execution contracts

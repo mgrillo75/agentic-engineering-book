@@ -19,7 +19,7 @@ How context management changes in multi-agent systems: isolation patterns that p
 
 ## Multi-Agent Context Isolation
 
-*[2025-12-09]*: In multi-agent systems, context isolation is a deliberate architectural choice that fundamentally differs from single-agent context management.
+_[2025-12-09]_: In multi-agent systems, context isolation is a deliberate architectural choice that fundamentally differs from single-agent context management.
 
 **The Pattern**: Each subagent maintains its own separate context window. Rather than sharing a massive context, subagents work in isolation and return only synthesized, relevant information to the orchestrator. The orchestrator's context stays clean because it receives summaries and conclusions, not raw data.
 
@@ -34,11 +34,12 @@ How context management changes in multi-agent systems: isolation patterns that p
 
 This approach uses significantly more tokens—research shows ~15× more than single-agent approaches for complex multi-tool tasks. However, token usage explains 80% of performance variance in multi-agent systems. The architectural value lies in deterministic quality, not speed (both single and multi-agent achieve similar ~40s latency for complex tasks).
 
-*[2025-12-10]*: The 15× token multiplier and 80% variance explanation come from analysis of multi-agent orchestration for decision support tasks. See [Sources](#sources) for the multi-agent orchestration research paper.
+_[2025-12-10]_: The 15× token multiplier and 80% variance explanation come from analysis of multi-agent orchestration for decision support tasks. See [Sources](#sources) for the multi-agent orchestration research paper.
 
 ### When to Use
 
 Multi-agent context isolation excels in specific scenarios:
+
 - **Complex tasks** benefiting from parallel analysis by specialized experts
 - **High-reliability requirements** where near-zero quality variance matters
 - **Research synthesis** where multiple sources need independent analysis
@@ -48,9 +49,10 @@ For simple tasks, multi-agent context isolation introduces unnecessary overhead.
 
 ### Agent Teams vs Subagents
 
-*[2026-02-05]*: Context isolation differs significantly between subagents and agent teams (TeammateTool), reflecting different coordination models.
+_[2026-02-05]_: Context isolation differs significantly between subagents and agent teams (TeammateTool), reflecting different coordination models.
 
 **Subagents (Traditional Pattern):**
+
 - Isolated context windows (no parent conversation history)
 - Return summaries to orchestrator
 - No inter-subagent communication (coordination via orchestrator)
@@ -58,6 +60,7 @@ For simple tasks, multi-agent context isolation introduces unnecessary overhead.
 - Pattern: Hub-and-spoke architecture
 
 **Agent Teams (Experimental):**
+
 - Isolated context windows (independent sessions for each teammate)
 - Peer-to-peer messaging without orchestrator mediation
 - Shared task list and message queue (observable at `~/.claude/teams/<team_id>/`)
@@ -67,6 +70,7 @@ For simple tasks, multi-agent context isolation introduces unnecessary overhead.
 **Key Distinction:** Subagents isolate context to prevent pollution and enable parallelism. Agent teams isolate context while adding direct communication channels—teammates coordinate through messages, not through shared context.
 
 **When Context Isolation Matters:**
+
 - **Subagents**: Prevents orchestrator context pollution from worker search/analysis operations
 - **Agent teams**: Prevents peer context pollution while enabling coordination messages
 
@@ -84,7 +88,7 @@ Single-agent approaches accumulate everything in one context window. Context com
 
 ### Sub-Agent Forking
 
-*[2026-01-11]*: Claude Code 2.1.0 introduced explicit sub-agent forking via `context: fork` in agent, skill, or slash command frontmatter. This provides a declarative mechanism for context isolation without relying on the implicit isolation of Task tool spawning.
+_[2026-01-11]_: Claude Code 2.1.0 introduced explicit sub-agent forking via `context: fork` in agent, skill, or slash command frontmatter. This provides a declarative mechanism for context isolation without relying on the implicit isolation of Task tool spawning.
 
 **Syntax:**
 
@@ -95,11 +99,11 @@ description: Research task with fresh context
 context: fork
 tools: Read, Grep, Glob, WebFetch
 ---
-
 [Agent instructions...]
 ```
 
 **When `context: fork` activates:**
+
 - The sub-agent starts with a fresh context window
 - No conversation history from the parent carries over
 - Results return to the parent as a synthesized summary
@@ -107,21 +111,21 @@ tools: Read, Grep, Glob, WebFetch
 
 **Use Cases:**
 
-| Scenario | Benefit of Forking |
-|----------|-------------------|
-| Research tasks | Fresh context prevents existing knowledge from biasing investigation |
-| Skill testing | Test skill behavior without polluting main conversation |
-| Parallel analysis | Multiple forks analyze independently, results aggregate cleanly |
-| Sensitive operations | Isolate potentially context-polluting operations |
+| Scenario             | Benefit of Forking                                                   |
+| -------------------- | -------------------------------------------------------------------- |
+| Research tasks       | Fresh context prevents existing knowledge from biasing investigation |
+| Skill testing        | Test skill behavior without polluting main conversation              |
+| Parallel analysis    | Multiple forks analyze independently, results aggregate cleanly      |
+| Sensitive operations | Isolate potentially context-polluting operations                     |
 
 **Contrast with Implicit Isolation:**
 
 The Task tool already provides context isolation—subagents maintain separate context windows. `context: fork` makes this explicit at the definition level:
 
-| Approach | Isolation Timing | Declaration |
-|----------|------------------|-------------|
-| Task tool | At spawn time | Implicit in Task invocation |
-| `context: fork` | At definition time | Explicit in frontmatter |
+| Approach        | Isolation Timing   | Declaration                 |
+| --------------- | ------------------ | --------------------------- |
+| Task tool       | At spawn time      | Implicit in Task invocation |
+| `context: fork` | At definition time | Explicit in frontmatter     |
 
 **When to Use:**
 
@@ -134,18 +138,18 @@ The Task tool already provides context isolation—subagents maintain separate c
 
 ## Persistent State vs. Ephemeral Context
 
-*[2025-12-09]*: Context is ephemeral—it lives in the active window and dies with the session. State is persistent—it survives across sessions, agents, and even application restarts. The distinction matters for production systems.
+_[2025-12-09]_: Context is ephemeral—it lives in the active window and dies with the session. State is persistent—it survives across sessions, agents, and even application restarts. The distinction matters for production systems.
 
 ### The Confusion
 
 Most discussions conflate context and state. "Give the agent more context" often means "persist information across sessions." But these are fundamentally different:
 
-| Aspect | Ephemeral Context | Persistent State |
-|--------|-------------------|------------------|
-| **Lifetime** | Single session/conversation | Survives restarts |
-| **Scope** | One agent's working memory | Shared across agents/sessions |
-| **Cost** | Tokens in context window | Storage + retrieval |
-| **Failure Mode** | Context rot, capacity limits | Stale data, sync issues |
+| Aspect           | Ephemeral Context            | Persistent State              |
+| ---------------- | ---------------------------- | ----------------------------- |
+| **Lifetime**     | Single session/conversation  | Survives restarts             |
+| **Scope**        | One agent's working memory   | Shared across agents/sessions |
+| **Cost**         | Tokens in context window     | Storage + retrieval           |
+| **Failure Mode** | Context rot, capacity limits | Stale data, sync issues       |
 
 ### What Belongs Where
 
@@ -158,12 +162,12 @@ Trying to reconstruct state from context each session is expensive and error-pro
 
 ADK demonstrates elegant scoping with prefixes that determine persistence lifetime:
 
-| Prefix | Lifetime | Use Case |
-|--------|----------|----------|
-| `session:` | Current conversation | Working memory, intermediate results |
-| `user:` | Across sessions for this user | Preferences, accumulated knowledge |
-| `app:` | Application-wide | Shared configuration, global state |
-| `temp:` | Single turn | Scratch space, discardable |
+| Prefix     | Lifetime                      | Use Case                             |
+| ---------- | ----------------------------- | ------------------------------------ |
+| `session:` | Current conversation          | Working memory, intermediate results |
+| `user:`    | Across sessions for this user | Preferences, accumulated knowledge   |
+| `app:`     | Application-wide              | Shared configuration, global state   |
+| `temp:`    | Single turn                   | Scratch space, discardable           |
 
 The elegance: namespace by lifecycle, not by feature. No configuration overhead—the prefix declares intent.
 
@@ -212,7 +216,7 @@ This is a real gap. When an agent learns something valuable mid-session, how doe
 
 ## Memory Architectures for Multi-Agent Systems
 
-*[2026-02-11]*: As multi-agent systems mature beyond single-session interactions, memory architecture becomes a defining design choice. Three models appear in production systems, each with distinct trade-off profiles.
+_[2026-02-11]_: As multi-agent systems mature beyond single-session interactions, memory architecture becomes a defining design choice. Three models appear in production systems, each with distinct trade-off profiles.
 
 ### Three Production Models
 
@@ -222,11 +226,11 @@ This is a real gap. When an agent learns something valuable mid-session, how doe
 
 **Event Bus** — Agents maintain private state and communicate asynchronously via structured events. Maximum decoupling, but requires disciplined event schema governance. Best suited for systems where agents operate on fundamentally different timescales or data domains.
 
-| Model | Isolation | Reuse Speed | Contamination Risk | Scaling |
-|-------|-----------|-------------|-------------------|---------|
-| Shared Pool | None | Immediate | High | Limited by contention |
-| Local + Sync | Default | Sync interval | Low (contained) | Horizontal |
-| Event Bus | Full | Event latency | Minimal | Independent |
+| Model        | Isolation | Reuse Speed   | Contamination Risk | Scaling               |
+| ------------ | --------- | ------------- | ------------------ | --------------------- |
+| Shared Pool  | None      | Immediate     | High               | Limited by contention |
+| Local + Sync | Default   | Sync interval | Low (contained)    | Horizontal            |
+| Event Bus    | Full      | Event latency | Minimal            | Independent           |
 
 ### The Two-Tier Pattern
 
@@ -240,22 +244,23 @@ The convergence is notable: all three separate short-lived operational context f
 
 ### Virtual Memory for Cognition
 
-*[2026-02-11]*: OpenClaw's architecture treats the LLM context window as cache and disk/database as source of truth — a "virtual memory for cognition" model. The implication: context management shifts from "fitting everything in the window" to "managing a memory hierarchy" with different tiers serving different access patterns and durability guarantees.
+_[2026-02-11]_: OpenClaw's architecture treats the LLM context window as cache and disk/database as source of truth — a "virtual memory for cognition" model. The implication: context management shifts from "fitting everything in the window" to "managing a memory hierarchy" with different tiers serving different access patterns and durability guarantees.
 
 This reframes context strategy. Rather than optimizing a single flat window, effective multi-agent systems design memory hierarchies:
 
-| Tier | Analog | Access Pattern | Durability |
-|------|--------|---------------|------------|
-| Context window | CPU cache | Immediate, capacity-limited | Session-scoped |
-| Session logs | RAM | Fast retrieval, structured | Session or daily |
-| Curated memory | Disk | Selective loading | Persistent |
-| External database | Cold storage | Query-based | Permanent |
+| Tier              | Analog       | Access Pattern              | Durability       |
+| ----------------- | ------------ | --------------------------- | ---------------- |
+| Context window    | CPU cache    | Immediate, capacity-limited | Session-scoped   |
+| Session logs      | RAM          | Fast retrieval, structured  | Session or daily |
+| Curated memory    | Disk         | Selective loading           | Persistent       |
+| External database | Cold storage | Query-based                 | Permanent        |
 
 ### Memory Contamination
 
 When agents share memory, incorrect information spreads across the system. A single agent's hallucination written to shared state becomes "ground truth" for every subsequent agent that reads it. The trend in production systems is toward fine-grained access control — private by default with selective, explicit sharing — rather than all-or-nothing memory pools.
 
 Mitigation strategies observed in production:
+
 - **Write validation gates** — verify outputs before committing to shared state
 - **Source attribution** — tag memory entries with authoring agent and confidence
 - **Read isolation** — agents read snapshots rather than live state
@@ -263,7 +268,7 @@ Mitigation strategies observed in production:
 
 ### Fresh Context as Strategy
 
-*[2026-02-11]*: AutoForge's approach of starting every session with an empty context window represents a deliberate design choice, not a limitation. Fresh context prevents the accumulation of stale assumptions, outdated instructions, and hallucinated context that degrades long-running sessions. When paired with reliable external state (SQLite, git), each session operates on clean data rather than inherited noise.
+_[2026-02-11]_: AutoForge's approach of starting every session with an empty context window represents a deliberate design choice, not a limitation. Fresh context prevents the accumulation of stale assumptions, outdated instructions, and hallucinated context that degrades long-running sessions. When paired with reliable external state (SQLite, git), each session operates on clean data rather than inherited noise.
 
 This aligns with the token economics of multi-agent systems: spending tokens on fresh context loading is cheaper than debugging degraded reasoning from context contamination. The pattern works best when external state is well-structured and queryable — unstructured state dumps negate the benefits of starting fresh.
 

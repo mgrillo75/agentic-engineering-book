@@ -19,17 +19,19 @@ Patterns for managing large numbers of tools without overwhelming context or deg
 
 ## Dynamic Tool Discovery
 
-*[2025-12-09]*: When tool definitions consume significant tokens (>10K), dynamic discovery trades search overhead for context efficiency.
+_[2025-12-09]_: When tool definitions consume significant tokens (>10K), dynamic discovery trades search overhead for context efficiency.
 
 **The Problem**: Tool definitions create substantial token overhead before conversation even begins. A typical MCP setup with GitHub, Slack, Sentry, Grafana, and Splunk consumes ~55K tokens in tool schemas alone—and can exceed 100K+ with additional services.
 
 **The Solution**: Mark rarely-used tools with `defer_loading: true`. The agent searches for relevant tools dynamically, receiving references that expand into full definitions only when discovered.
 
 **Results** (Anthropic internal testing):
+
 - 85% reduction in token usage while maintaining full tool library access
 - Improved selection accuracy: Opus 4 from 49% → 74%, Opus 4.5 from 79.5% → 88.1%
 
 **Best Practices**:
+
 - Use when tool definitions consume >10K tokens total
 - Employ clear, descriptive tool names and descriptions (discovery depends on search)
 - Keep 3-5 most-used tools always loaded (no discovery overhead for common operations)
@@ -38,6 +40,7 @@ Patterns for managing large numbers of tools without overwhelming context or deg
 **Decision Point**: If you're managing <20 simple tools, eager loading is fine. If you're connecting MCP servers with dozens of endpoints each, dynamic discovery becomes essential.
 
 **See Also**:
+
 - [Context: Progressive Disclosure](../4-context/3-context-patterns.md#progressive-disclosure-pattern) — The underlying pattern for tiered information loading
 - [Cost and Latency](../8-practices/3-cost-and-latency.md) — Token cost implications of discovery vs. eager loading
 
@@ -47,33 +50,38 @@ Patterns for managing large numbers of tools without overwhelming context or deg
 
 ## Programmatic Tool Orchestration
 
-*[2025-12-09]*: For complex workflows, let the agent write orchestration code instead of calling tools directly.
+_[2025-12-09]_: For complex workflows, let the agent write orchestration code instead of calling tools directly.
 
 **The Problem**: Traditional tool calling creates context pollution. Processing 2,000+ expense line items requires results to re-enter the agent's context, consuming 50KB+ and requiring a full inference pass per tool invocation.
 
 **The Inversion**: Instead of agent → tool → agent → tool sequences, the agent writes Python code that orchestrates multiple tool calls. Results process in-place within a sandboxed environment, never re-entering the agent's context until final output.
 
 **Implementation Pattern**:
+
 - Mark tools with `allowed_callers: ["code_execution_20250825"]`
 - Agent generates async Python using `asyncio.gather()` for parallel execution
 - Code pauses at tool calls, processes results, continues without model intervention
 - Only final output appears in agent's view
 
 **Results** (Anthropic internal testing):
+
 - 37% token reduction (43,588 → 27,297 average)
 - Eliminates 19+ inference passes in 20-tool workflows
 - Improved accuracy on knowledge retrieval: 25.6% → 28.5%
 
 **When to Use**:
+
 - Multi-step workflows with 3+ dependent tool calls
 - Parallel operations where results need filtering/transforming
 - Large result sets that would bloat context if returned directly
 
 **When NOT to Use**:
+
 - Simple single-tool invocations (overhead isn't worth it)
 - Tasks requiring agent reasoning between each tool call
 
 **See Also**:
+
 - [Context: Multi-Agent Context Isolation](../4-context/4-multi-agent-context.md#multi-agent-context-isolation) — Related pattern for preventing context pollution through agent boundaries
 - [Cost and Latency: Token Cost Models](../8-practices/3-cost-and-latency.md#token-cost-models-by-feature-type) — How programmatic orchestration compares to other approaches
 
@@ -83,19 +91,20 @@ Patterns for managing large numbers of tools without overwhelming context or deg
 
 ## MCP Deployment Architecture
 
-*[2025-12-09]*: MCP deployment isn't one-size-fits-all. The transport mechanism determines scaling characteristics and operational constraints.
+_[2025-12-09]_: MCP deployment isn't one-size-fits-all. The transport mechanism determines scaling characteristics and operational constraints.
 
 **Three Deployment Patterns**
 
-| Pattern | Mechanism | Scaling | Best For |
-|---------|-----------|---------|----------|
-| **stdio** | Local server proxying remote services | Doesn't scale horizontally—single process | Local development, simple integrations |
-| **Streamable HTTP** | SSE-based, independent process | Stateless replication possible | Cloud services, production APIs |
-| **Sidecar** | Kubernetes co-located container | Lifecycle-coupled with main app | Orchestrated container environments |
+| Pattern             | Mechanism                             | Scaling                                   | Best For                               |
+| ------------------- | ------------------------------------- | ----------------------------------------- | -------------------------------------- |
+| **stdio**           | Local server proxying remote services | Doesn't scale horizontally—single process | Local development, simple integrations |
+| **Streamable HTTP** | SSE-based, independent process        | Stateless replication possible            | Cloud services, production APIs        |
+| **Sidecar**         | Kubernetes co-located container       | Lifecycle-coupled with main app           | Orchestrated container environments    |
 
 **The Statefulness Challenge**
 
 MCP connections are stateful. This creates real constraints:
+
 - Load balancing requires session affinity
 - Horizontal scaling needs sticky sessions or connection migration
 - Failure handling must account for lost connection state
@@ -116,6 +125,7 @@ Local dev only?
 **Google ADK's MCP Integration**
 
 ADK supports both directions:
+
 - **Client mode**: ADK agents consume tools from external MCP servers via `McpToolset`
 - **Server mode**: Expose ADK tools as MCP servers for other clients (Claude Code, Cursor)
 
@@ -133,6 +143,7 @@ mcp_toolset = McpToolset(
 ```
 
 This serves two purposes:
+
 1. **Security**: Expose only needed capabilities per agent
 2. **Model focus**: Fewer tools means better tool selection (less overwhelm)
 
@@ -142,11 +153,12 @@ This serves two purposes:
 
 ## MCP Auto-Selection Mode
 
-*[2026-01-17]*: Claude Code 2.1.7 introduced automatic MCP tool selection, enabled by default. This changes how tools surface in agent workflows.
+_[2026-01-17]_: Claude Code 2.1.7 introduced automatic MCP tool selection, enabled by default. This changes how tools surface in agent workflows.
 
 **Default Behavior**
 
 Starting with version 2.1.7:
+
 - MCP tools auto-discover based on task context relevance
 - Tool descriptions load automatically without explicit configuration
 - System uses keyword matching against tool names and descriptions
@@ -159,12 +171,13 @@ Control when tool descriptions defer vs. load upfront:
 // In .claude/settings.json or project config
 {
   "mcpConfig": {
-    "toolSearch": "auto:15"  // Defer when >15% of context window
+    "toolSearch": "auto:15" // Defer when >15% of context window
   }
 }
 ```
 
 **Threshold values:**
+
 - `auto:5` — Conservative: defer early, preserve context
 - `auto:10` — Default: balanced approach
 - `auto:15-20` — Aggressive: load more tools upfront
@@ -172,21 +185,23 @@ Control when tool descriptions defer vs. load upfront:
 
 **When to Adjust Threshold**
 
-| Scenario | Recommended Threshold |
-|----------|----------------------|
-| Few MCP servers, small descriptions | Default (`auto:10`) |
-| Many servers, large descriptions | Lower (`auto:5`) |
-| Context-constrained workflows | Lower (`auto:5`) |
-| Discovery-heavy exploration | Higher (`auto:20`) |
+| Scenario                            | Recommended Threshold |
+| ----------------------------------- | --------------------- |
+| Few MCP servers, small descriptions | Default (`auto:10`)   |
+| Many servers, large descriptions    | Lower (`auto:5`)      |
+| Context-constrained workflows       | Lower (`auto:5`)      |
+| Discovery-heavy exploration         | Higher (`auto:20`)    |
 
 **Trade-offs**
 
 Benefits of auto mode:
+
 - Fewer "tool not available" errors
 - Reduced manual configuration burden
 - Dynamic tool discovery adapts to task
 
 Costs:
+
 - Slower startup if many tools load unnecessarily
 - Context overhead for tool descriptions
 - Less predictable tool availability
@@ -206,6 +221,7 @@ For deterministic workflows where tool availability must be explicit:
 Manual mode requires explicit tool declarations in prompts or configuration. Use this when reproducibility matters more than convenience.
 
 **See Also**:
+
 - [Dynamic Tool Discovery](#dynamic-tool-discovery) — The underlying pattern auto mode builds on
 - [Tool Selection](2-tool-selection.md) — How selection accuracy changes with auto-discovery
 

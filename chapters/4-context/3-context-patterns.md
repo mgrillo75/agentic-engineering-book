@@ -19,9 +19,10 @@ Sophisticated patterns for managing context in complex scenarios: progressive di
 
 ## Progressive Disclosure Pattern
 
-*[2025-12-09]*: Progressive disclosure addresses context window limits by loading information in tiers based on relevance, enabling effectively unlimited expertise within fixed context budgets.
+_[2025-12-09]_: Progressive disclosure addresses context window limits by loading information in tiers based on relevance, enabling effectively unlimited expertise within fixed context budgets.
 
 **The Pattern**: Information loads in three tiers:
+
 1. **Metadata first** — Names, descriptions, summaries (~50-200 characters per item)
 2. **Full content on selection** — Complete documentation when explicitly chosen (~500-5,000 words)
 3. **Detailed resources on-demand** — Supporting files, source code, references (unbounded)
@@ -31,6 +32,7 @@ This creates a semantic index in the initial context, allowing the agent to navi
 ### Concrete Example: Claude Skills
 
 Claude Skills demonstrate this pattern in production:
+
 - Initial load: ~50-200 chars per skill (description and when to use it)
 - Activation: 500-5,000 words of expertise per selected skill
 - References: Unlimited supporting files via Read tool when skill is active
@@ -43,11 +45,11 @@ Humans don't memorize encyclopedias. We build indexing systems—file systems, b
 
 ### Contrast with Alternatives
 
-| Approach | Upfront Cost | Discoverability | Capacity |
-|----------|--------------|-----------------|----------|
-| **Eager Loading** | Massive (tens of thousands of tokens) | Perfect | Limited by context window |
-| **Lazy Loading** | Zero | Poor (agent doesn't know what exists) | Theoretically unlimited |
-| **Progressive Disclosure** | Small (metadata only) | Good (semantic index) | Effectively unlimited |
+| Approach                   | Upfront Cost                          | Discoverability                       | Capacity                  |
+| -------------------------- | ------------------------------------- | ------------------------------------- | ------------------------- |
+| **Eager Loading**          | Massive (tens of thousands of tokens) | Perfect                               | Limited by context window |
+| **Lazy Loading**           | Zero                                  | Poor (agent doesn't know what exists) | Theoretically unlimited   |
+| **Progressive Disclosure** | Small (metadata only)                 | Good (semantic index)                 | Effectively unlimited     |
 
 Anthropic's GitHub MCP integration illustrates the eager loading trap: "tens of thousands of tokens" consumed just to make repositories and issues accessible. Progressive disclosure would load repo names/descriptions first, then fetch specific repos on-demand.
 
@@ -75,13 +77,13 @@ Slight latency on selection (additional tool call to fetch full content) for dra
 - Structured indices with `description` fields (see [MCP Tool Declarations](../5-tool-use/3-tool-restrictions.md#mcp-tool-declarations-in-frontmatter))
 - Skills systems (see [Claude Code: Skills](../10-practitioner-toolkit/1-claude-code.md))
 
-*[2026-02-06]*: Federated knowledge architecture uses progressive disclosure to navigate multi-repository contexts. Instead of loading all repos upfront, load source metadata first (repo names, descriptions), then expand specific repos on-demand. See [Federated Knowledge Architecture](2-context-strategies.md#federated-knowledge-architecture) for distributed context management patterns.
+_[2026-02-06]_: Federated knowledge architecture uses progressive disclosure to navigate multi-repository contexts. Instead of loading all repos upfront, load source metadata first (repo names, descriptions), then expand specific repos on-demand. See [Federated Knowledge Architecture](2-context-strategies.md#federated-knowledge-architecture) for distributed context management patterns.
 
 ---
 
 ## Context Loading vs. Context Accumulation
 
-*[2025-12-09]*: Most LLM interaction patterns treat context as **accumulated**—chat history grows, tool results append, context fills passively until you hit limits. Context loading flips this: context is **curated**, deliberately constructed for each call.
+_[2025-12-09]_: Most LLM interaction patterns treat context as **accumulated**—chat history grows, tool results append, context fills passively until you hit limits. Context loading flips this: context is **curated**, deliberately constructed for each call.
 
 ### The Default Mental Model (Accumulation)
 
@@ -111,6 +113,7 @@ The precision is the point. You're not asking "what has accumulated?" You're ask
 Standard patterns assume context is a **log**—append-only, grows over time, summarize when full. Context loading treats context as a **payload**—constructed fresh, minimal, purpose-built.
 
 This flips the default question:
+
 - **Log model**: "What can I remove to fit?"
 - **Payload model**: "What must I include to succeed?"
 
@@ -149,7 +152,7 @@ See [Model Selection: Small Models Are RAG](../3-model/1-model-selection.md#smal
 
 ## Agentic Context Engineering (ACE)
 
-*[2025-12-10]*: The ACE framework from Stanford/SambaNova challenges a core assumption in agent design: that context should shrink over time. Instead, ACE argues contexts should **grow**—comprehensive evolving playbooks outperform compressed prompts in complex domains.
+_[2025-12-10]_: The ACE framework from Stanford/SambaNova challenges a core assumption in agent design: that context should shrink over time. Instead, ACE argues contexts should **grow**—comprehensive evolving playbooks outperform compressed prompts in complex domains.
 
 ### The Core Insight
 
@@ -159,10 +162,10 @@ Traditional optimization creates "brevity bias"—the assumption that shorter co
 
 This creates an interesting contrast with frequent intentional compaction. Both approaches reject **reactive** emergency compaction (waiting until 95% capacity). But they differ in philosophy:
 
-| Approach | Philosophy | When to Use |
-|----------|-----------|-------------|
-| **Frequent Intentional Compaction** | Compress proactively at 40-60% | General-purpose coding, bounded tasks |
-| **ACE (Growing Contexts)** | Expand deliberately with learned patterns | Knowledge-intensive domains, tool-heavy tasks |
+| Approach                            | Philosophy                                | When to Use                                   |
+| ----------------------------------- | ----------------------------------------- | --------------------------------------------- |
+| **Frequent Intentional Compaction** | Compress proactively at 40-60%            | General-purpose coding, bounded tasks         |
+| **ACE (Growing Contexts)**          | Expand deliberately with learned patterns | Knowledge-intensive domains, tool-heavy tasks |
 
 The key: both are **proactive** strategies that beat reactive summarization. Choose based on task type, not as universal defaults.
 
@@ -244,18 +247,22 @@ A simplified ACE cycle for coding:
 
 ```markdown
 ## Session Start
+
 Load: Base playbook (accumulated patterns from previous sessions)
 
 ## During Task Execution (Generator)
+
 Agent executes using playbook guidance
 Logs decisions and outcomes
 
 ## After Each Subtask (Reflector)
+
 Analyze: What worked? What didn't?
 Extract: New patterns worth capturing
 Tag: Which tools, which contexts, which outcomes
 
 ## End of Session (Curator)
+
 Review: All extracted patterns
 Add: New items to playbook with IDs
 Update: Helpful/harmful counts based on outcomes

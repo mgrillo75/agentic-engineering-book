@@ -3,7 +3,17 @@ title: "Operating Agent Swarms"
 description: "Practices for running multi-agent systems at production scale, from cost management to incident response"
 created: 2026-02-11
 last_updated: 2026-02-13
-tags: [practices, multi-agent, production, operations, cost, scale, gastown, overstory]
+tags:
+  [
+    practices,
+    multi-agent,
+    production,
+    operations,
+    cost,
+    scale,
+    gastown,
+    overstory,
+  ]
 part: 2
 part_title: Craft
 chapter: 8
@@ -20,16 +30,19 @@ Running one agent is engineering. Running thirty is operations. The shift from s
 ## Core Questions
 
 ### Economics
+
 - What does it actually cost to run a multi-agent swarm in production?
 - How does cost scale with agent count, and where are the optimization levers?
 - At what point does the investment pay for itself?
 
 ### Operations
+
 - What breaks when scaling from 1 agent to 30?
 - How does incident response differ for agent failures vs. traditional software failures?
 - What infrastructure emerges at each scale level?
 
 ### Human Factors
+
 - What becomes the bottleneck when agents can implement faster than humans can design?
 - How does a practitioner's role change when operating swarms?
 - What cognitive load limits exist, and how are they managed?
@@ -48,29 +61,29 @@ Running one agent is engineering. Running thirty is operations. The shift from s
 
 ### What Swarms Actually Cost
 
-*[2026-02-11]*: Production evidence from Gas Town, a multi-agent development system running 20-30 concurrent agents on real codebases:
+_[2026-02-11]_: Production evidence from Gas Town, a multi-agent development system running 20-30 concurrent agents on real codebases:
 
-| Metric | Value | Context |
-|--------|-------|---------|
-| Hourly token cost | ~$100/hour | 20-30 agents running Claude models |
-| Monthly sustainable budget | $1,000-$3,000 | Typical practitioner spend |
-| Cost scaling | Linear with agent count | Each agent consumes tokens independently |
-| Cost per agent-hour | ~$3-5 | Varies by model and task complexity |
+| Metric                     | Value                   | Context                                  |
+| -------------------------- | ----------------------- | ---------------------------------------- |
+| Hourly token cost          | ~$100/hour              | 20-30 agents running Claude models       |
+| Monthly sustainable budget | $1,000-$3,000           | Typical practitioner spend               |
+| Cost scaling               | Linear with agent count | Each agent consumes tokens independently |
+| Cost per agent-hour        | ~$3-5                   | Varies by model and task complexity      |
 
 **Linear scaling is the key constraint.** Unlike traditional compute where parallelism introduces sublinear cost growth through shared resources, agent swarms scale linearly. Agent 30 costs as much as agent 1. There are no economies of scale at the token level.
 
-*[2026-02-13]*: Overstory's subscription-based cost model (Claude Code Pro subscription, fixed monthly cost) contrasts with Gas Town's API token model (~$100/hr for 20-30 agents). The fixed-cost approach changes economic incentives: practitioners optimize for throughput (maximize agents within subscription limits) rather than per-token efficiency. This shifts the bottleneck from token budget to subscription tier limits and human design capacity. The divergence suggests cost model choice (subscription vs pay-per-use) fundamentally shapes operational strategy.
+_[2026-02-13]_: Overstory's subscription-based cost model (Claude Code Pro subscription, fixed monthly cost) contrasts with Gas Town's API token model (~$100/hr for 20-30 agents). The fixed-cost approach changes economic incentives: practitioners optimize for throughput (maximize agents within subscription limits) rather than per-token efficiency. This shifts the bottleneck from token budget to subscription tier limits and human design capacity. The divergence suggests cost model choice (subscription vs pay-per-use) fundamentally shapes operational strategy.
 
 ### Cost Optimization Levers
 
 Not all agents need the same model. Production swarms use **model selection per worker** to optimize cost without sacrificing quality where it matters.
 
-| Task Type | Model Tier | Rationale |
-|-----------|-----------|-----------|
-| Orchestration, synthesis | Frontier (Opus-class) | Requires planning, judgment, coordination |
-| Code implementation | Mid-tier (Sonnet-class) | Follows specs, doesn't need deep reasoning |
-| Linting, formatting, migration | Fast/cheap (Haiku-class) | Mechanical transforms, pattern matching |
-| Code review, security audit | Frontier | Requires nuanced analysis |
+| Task Type                      | Model Tier               | Rationale                                  |
+| ------------------------------ | ------------------------ | ------------------------------------------ |
+| Orchestration, synthesis       | Frontier (Opus-class)    | Requires planning, judgment, coordination  |
+| Code implementation            | Mid-tier (Sonnet-class)  | Follows specs, doesn't need deep reasoning |
+| Linting, formatting, migration | Fast/cheap (Haiku-class) | Mechanical transforms, pattern matching    |
+| Code review, security audit    | Frontier                 | Requires nuanced analysis                  |
 
 **Agent CVs enable model A/B testing.** When agents maintain work histories (see [Attribution and Accountability](#attribution-and-accountability)), deploying different models through different workers produces objective comparison data. Run half the implementation agents on Sonnet and half on a newer model, then compare completion rates, rework frequency, and quality gate pass rates.
 
@@ -78,11 +91,11 @@ Not all agents need the same model. Production swarms use **model selection per 
 
 At $100/hour, a swarm of 25 agents costs roughly $800 for a full workday. Compare this against the alternative:
 
-| Approach | Daily Cost | Daily Output |
-|----------|-----------|-------------|
-| 25-agent swarm | ~$800 | 25 parallel implementation streams |
-| 1 senior engineer | ~$600-800 (loaded) | 1 sequential implementation stream |
-| 5 engineers | ~$3,000-4,000 (loaded) | 5 parallel streams + coordination overhead |
+| Approach          | Daily Cost             | Daily Output                               |
+| ----------------- | ---------------------- | ------------------------------------------ |
+| 25-agent swarm    | ~$800                  | 25 parallel implementation streams         |
+| 1 senior engineer | ~$600-800 (loaded)     | 1 sequential implementation stream         |
+| 5 engineers       | ~$3,000-4,000 (loaded) | 5 parallel streams + coordination overhead |
 
 The swarm matches a senior engineer's daily cost while delivering 25× the parallel throughput—if the work is decomposable. The "if" matters. Poorly decomposed work produces 25 agents stepping on each other, not 25× throughput.
 
@@ -108,11 +121,12 @@ Swarm Bottleneck:
   Human designs and decomposes work
 ```
 
-*[2026-02-11]*: Gas Town production experience confirms this pattern: "The system churns through implementation so quickly that design and planning become the bottleneck." A swarm of 25 agents can consume well-specified issues faster than a single practitioner can create them.
+_[2026-02-11]_: Gas Town production experience confirms this pattern: "The system churns through implementation so quickly that design and planning become the bottleneck." A swarm of 25 agents can consume well-specified issues faster than a single practitioner can create them.
 
 ### Issue Decomposition Quality Drives Throughput
 
 The quality of issue decomposition directly determines swarm throughput. Poorly specified issues cause agents to:
+
 - Block on ambiguous requirements
 - Produce work that conflicts with other agents
 - Require rework that consumes more tokens than the original implementation
@@ -129,13 +143,13 @@ The quality of issue decomposition directly determines swarm throughput. Poorly 
 
 The shift changes what skills matter:
 
-| Traditional Engineering | Swarm Operations |
-|------------------------|------------------|
-| Writing code | Decomposing work into parallel streams |
-| Debugging implementations | Debugging specifications |
-| Code review | Research and plan review |
-| Individual productivity | System throughput optimization |
-| Technical depth | Architectural breadth |
+| Traditional Engineering   | Swarm Operations                       |
+| ------------------------- | -------------------------------------- |
+| Writing code              | Decomposing work into parallel streams |
+| Debugging implementations | Debugging specifications               |
+| Code review               | Research and plan review               |
+| Individual productivity   | System throughput optimization         |
+| Technical depth           | Architectural breadth                  |
 
 **Invest in decomposition skills, not just prompt engineering.** The highest-leverage skill for swarm operators is breaking complex work into well-specified, independent units. A practitioner who can decompose a feature into 15 non-overlapping issues keeps 15 agents productive. A practitioner who writes brilliant prompts but produces tangled specifications keeps 15 agents blocked.
 
@@ -171,18 +185,18 @@ Every agent action includes structured identity metadata:
 
 **Agent CVs** accumulate work history over time:
 
-| Metric | Purpose |
-|--------|---------|
-| Tasks completed | Volume indicator |
-| Quality gate pass rate | First-pass quality |
-| Rework frequency | How often output needs correction |
-| Average tokens per task | Efficiency indicator |
-| Model version | Track behavior changes across model updates |
-| Domain distribution | What types of work this agent handles |
+| Metric                  | Purpose                                     |
+| ----------------------- | ------------------------------------------- |
+| Tasks completed         | Volume indicator                            |
+| Quality gate pass rate  | First-pass quality                          |
+| Rework frequency        | How often output needs correction           |
+| Average tokens per task | Efficiency indicator                        |
+| Model version           | Track behavior changes across model updates |
+| Domain distribution     | What types of work this agent handles       |
 
 These records enable objective performance evaluation. Instead of guessing which model or configuration works best, compare actual production data across agents.
 
-*[2026-02-13]*: Overstory implements attribution through SQLite metrics store (`.overstory/metrics.db`) with per-agent session tracking. Agent CVs accumulate in `.overstory/agents/{name}/identity.yaml` with structured work history. The TypeScript implementation demonstrates that attribution infrastructure is language-agnostic—both Go (Gas Town) and TypeScript (Overstory) converge on persistent identity + structured logging as foundation for capability routing and performance analysis.
+_[2026-02-13]_: Overstory implements attribution through SQLite metrics store (`.overstory/metrics.db`) with per-agent session tracking. Agent CVs accumulate in `.overstory/agents/{name}/identity.yaml` with structured work history. The TypeScript implementation demonstrates that attribution infrastructure is language-agnostic—both Go (Gas Town) and TypeScript (Overstory) converge on persistent identity + structured logging as foundation for capability routing and performance analysis.
 
 ### Attribution Enables Capability Routing
 
@@ -236,18 +250,18 @@ Agent Work → Quality Gate → Merge Queue → Main Branch
 
 **Workers never push directly to main.** Every change flows through a merge queue with automated validation. This is non-negotiable at scale—30 agents pushing directly to main produces merge conflicts, broken builds, and untraceable regressions.
 
-*[2026-02-13]*: Overstory's merge queue implements 4-tier resolution escalation (Clean → Auto-Resolve → AI-Resolve → Re-Imagine) as a quality gate. Each tier validates correctness before advancing: Tier 1-2 validate syntactically (clean merge), Tier 3 validates semantically (AI understands intent), Tier 4 reimplements against current state (quality over merge archaeology). The escalation structure demonstrates that quality gates at scale require multiple resolution strategies, not binary pass/fail.
+_[2026-02-13]_: Overstory's merge queue implements 4-tier resolution escalation (Clean → Auto-Resolve → AI-Resolve → Re-Imagine) as a quality gate. Each tier validates correctness before advancing: Tier 1-2 validate syntactically (clean merge), Tier 3 validates semantically (AI understands intent), Tier 4 reimplements against current state (quality over merge archaeology). The escalation structure demonstrates that quality gates at scale require multiple resolution strategies, not binary pass/fail.
 
 ### Human Review at Scale: Sampling-Based
 
 At 30 concurrent agents, reviewing every PR in detail is physically impossible. Production practice shifts to **sampling-based review**:
 
-| Review Strategy | When to Apply |
-|----------------|---------------|
-| Full review | Architectural changes, security-sensitive code, new abstractions |
-| Spot-check | Routine implementations that passed all quality gates |
-| Skip (trust gates) | Mechanical transforms: formatting, imports, renames |
-| Statistical sampling | Review 20-30% of PRs randomly to calibrate gate accuracy |
+| Review Strategy      | When to Apply                                                    |
+| -------------------- | ---------------------------------------------------------------- |
+| Full review          | Architectural changes, security-sensitive code, new abstractions |
+| Spot-check           | Routine implementations that passed all quality gates            |
+| Skip (trust gates)   | Mechanical transforms: formatting, imports, renames              |
+| Statistical sampling | Review 20-30% of PRs randomly to calibrate gate accuracy         |
 
 The goal of sampling isn't catching every defect—it's calibrating the automated gates. If sampled reviews consistently find issues that gates miss, the gates need tightening.
 
@@ -287,15 +301,15 @@ Resist this. Quality gates exist for the failure mode, not the success mode.
 
 ### Defense-in-Depth as Baseline
 
-*[2026-02-11]*: Production multi-agent systems in early 2026 converge on layered security rather than single-point controls. Each layer catches what the layer above misses:
+_[2026-02-11]_: Production multi-agent systems in early 2026 converge on layered security rather than single-point controls. Each layer catches what the layer above misses:
 
-| Layer | Mechanism | What It Catches |
-|-------|-----------|-----------------|
-| OS-level sandbox | gVisor, Kata containers, macOS Seatbelt | Syscall-level violations, arbitrary code execution |
-| Filesystem restrictions | Tiered access (none / read-only / read-write) | Unauthorized file modification |
-| Command allowlists | Only permitted commands execute | Shell injection, unauthorized tooling |
-| Agent config protection | Block writes to CLAUDE.md, .cursorrules, MCP configs | Configuration tampering by agents |
-| Credential injection | Minimal at start, task-required only, short-lived tokens | Credential sprawl, persistent access |
+| Layer                   | Mechanism                                                | What It Catches                                    |
+| ----------------------- | -------------------------------------------------------- | -------------------------------------------------- |
+| OS-level sandbox        | gVisor, Kata containers, macOS Seatbelt                  | Syscall-level violations, arbitrary code execution |
+| Filesystem restrictions | Tiered access (none / read-only / read-write)            | Unauthorized file modification                     |
+| Command allowlists      | Only permitted commands execute                          | Shell injection, unauthorized tooling              |
+| Agent config protection | Block writes to CLAUDE.md, .cursorrules, MCP configs     | Configuration tampering by agents                  |
+| Credential injection    | Minimal at start, task-required only, short-lived tokens | Credential sprawl, persistent access               |
 
 **Application-level controls are insufficient alone.** Attackers use indirection—calling restricted tools through approved ones. An agent denied direct shell access might invoke a build tool that shells out internally. OS-level enforcement (intercepting syscalls before they reach the host kernel) catches these indirection attacks regardless of the execution path.
 
@@ -307,7 +321,7 @@ The pattern generalizes beyond AutoForge. Any multi-agent system benefits from a
 
 ### Opt-In Communication as a Safeguard
 
-*[2026-02-11]*: OpenClaw defaults agent-to-agent communication to OFF. Cross-talk requires explicit allowlisting per agent pair via configuration (`tools.agentToAgent: { enabled: false, allow: ['home', 'work'] }`). This treats inter-agent communication as a capability to be granted rather than a default to be restricted—a meaningful philosophical difference that prevents uncontrolled coordination between agents.
+_[2026-02-11]_: OpenClaw defaults agent-to-agent communication to OFF. Cross-talk requires explicit allowlisting per agent pair via configuration (`tools.agentToAgent: { enabled: false, allow: ['home', 'work'] }`). This treats inter-agent communication as a capability to be granted rather than a default to be restricted—a meaningful philosophical difference that prevents uncontrolled coordination between agents.
 
 The principle extends beyond communication. Every capability an agent possesses—file access, network access, tool invocation, peer messaging—represents a potential attack surface or failure mode. Defaulting to off and requiring explicit enablement produces systems where the blast radius of any single compromise is bounded by the permissions actually granted.
 
@@ -327,11 +341,11 @@ This has operational implications for swarm operators. Quality gates (see [Quali
 
 Agent failures don't look like traditional software crashes. Three distinct states require different responses:
 
-| State | Symptoms | Diagnosis Challenge |
-|-------|----------|-------------------|
-| **Working** | Producing output, making progress | No issue (but verify quality) |
-| **Stalled** | No output, but process is alive | Thinking deeply? Stuck in a loop? Waiting on input? |
-| **Zombie** | Process alive, producing tokens, but output is meaningless | Appears active but context is degraded or hallucinating |
+| State       | Symptoms                                                   | Diagnosis Challenge                                     |
+| ----------- | ---------------------------------------------------------- | ------------------------------------------------------- |
+| **Working** | Producing output, making progress                          | No issue (but verify quality)                           |
+| **Stalled** | No output, but process is alive                            | Thinking deeply? Stuck in a loop? Waiting on input?     |
+| **Zombie**  | Process alive, producing tokens, but output is meaningless | Appears active but context is degraded or hallucinating |
 
 The **Stalled vs. Thinking** distinction is the hardest. An agent that has been silent for 3 minutes might be processing a complex task or might be stuck in an infinite reasoning loop. Mechanical checks ("is the process alive?") can't distinguish these cases. Intelligent checks ("has the agent made progress on its stated goal?") require understanding the task.
 
@@ -396,24 +410,31 @@ After significant agent failures, structured analysis prevents recurrence:
 
 ```markdown
 ## Incident: [Brief description]
+
 **Date:** YYYY-MM-DD
 **Agent(s):** [agent IDs]
 **Duration:** [time from detection to resolution]
 
 ### What Happened
+
 [Observable symptoms]
 
 ### Detection
+
 [How was it caught? Which watchdog tier?]
 
 ### Root Cause
+
 [What actually went wrong?]
 
 ### Resolution
+
 [What fixed it?]
 
 ### Prevention
+
 [What changes prevent recurrence?]
+
 - [ ] Watchdog threshold adjustment
 - [ ] Specification clarification
 - [ ] Quality gate addition
@@ -428,12 +449,12 @@ After significant agent failures, structured analysis prevents recurrence:
 
 Each scale jump requires new infrastructure, not just more agents. Adding agents without the corresponding infrastructure produces chaos, not throughput.
 
-| Level | Agents | Human Role | Required Infrastructure |
-|-------|--------|-----------|------------------------|
-| **1-3** | 1 | Direct monitoring | Terminal, manual review |
-| **4-6** | 3-5 | Active supervision | Basic logging, shared branch strategy |
-| **7-8** | 5-10 | Supervisor pattern | Quality gates, merge queue, attribution |
-| **9-10** | 10-30 | Factory operator | Watchdog tiers, automated routing, mail protocols |
+| Level    | Agents | Human Role         | Required Infrastructure                           |
+| -------- | ------ | ------------------ | ------------------------------------------------- |
+| **1-3**  | 1      | Direct monitoring  | Terminal, manual review                           |
+| **4-6**  | 3-5    | Active supervision | Basic logging, shared branch strategy             |
+| **7-8**  | 5-10   | Supervisor pattern | Quality gates, merge queue, attribution           |
+| **9-10** | 10-30  | Factory operator   | Watchdog tiers, automated routing, mail protocols |
 
 ### Level 1-3: Single Agent, Direct Monitoring
 
@@ -456,6 +477,7 @@ At 3-5 agents, direct monitoring becomes impractical. The **supervisor pattern**
 - Agents work on separate files to avoid merge conflicts
 
 **New infrastructure required:**
+
 - Branch strategy (feature branches per agent)
 - Merge process (PRs with basic CI checks)
 - Task tracking (issues or structured task lists)
@@ -473,6 +495,7 @@ At 5-10 agents, the shift from "engineering team" to "operations" becomes real:
 - Structured logging enables after-the-fact debugging
 
 **New infrastructure required:**
+
 - Merge queue with automated validation
 - Structured agent identity and work logging
 - Time-bound task execution (kill stalled agents)
@@ -489,31 +512,35 @@ At 10-30 agents, the practitioner operates more like a factory floor manager tha
 - Automated escalation chains handle routine failures without human intervention
 
 **New infrastructure required:**
+
 - Watchdog tiers (mechanical → AI triage → human escalation)
 - Inter-agent communication protocols
 - Cost monitoring and budget enforcement
 - Automated context-window handoff
 - Performance dashboards showing swarm throughput
 
-*[2026-02-11]*: Gas Town production experience at this scale: cognitive load becomes "palpable stress" at 20+ parallel streams. Even with full infrastructure, the practitioner tracks active tasks, reviews escalations, queues new work, and monitors cost simultaneously. The infrastructure doesn't eliminate cognitive load—it makes it manageable.
+_[2026-02-11]_: Gas Town production experience at this scale: cognitive load becomes "palpable stress" at 20+ parallel streams. Even with full infrastructure, the practitioner tracks active tasks, reviews escalations, queues new work, and monitors cost simultaneously. The infrastructure doesn't eliminate cognitive load—it makes it manageable.
 
 ### Scale Transition Checklist
 
 Before adding agents beyond the current level, verify the infrastructure supports it:
 
 **Moving from 1-3 to 4-6 agents:**
+
 - [ ] Branch strategy defined and documented
 - [ ] Basic CI pipeline running (lint, type check, tests)
 - [ ] Task tracking system in use (issues, task list)
 - [ ] Convention documentation exists (CLAUDE.md or equivalent)
 
 **Moving from 4-6 to 7-10 agents:**
+
 - [ ] Merge queue operational with automated validation
 - [ ] Agent attribution logging in place
 - [ ] Quality gates catching common issues automatically
 - [ ] Human review strategy defined (what gets full review vs. spot-check)
 
 **Moving from 7-10 to 10-30 agents:**
+
 - [ ] Three-tier watchdog monitoring active
 - [ ] Context-window handoff protocol implemented
 - [ ] Cost monitoring with budget alerts
@@ -584,12 +611,12 @@ End of day:
 
 **The practitioner's role is primarily operational.** The coding happens in the design phase (writing specifications) and the review phase (sampling output). The implementation phase is delegated to agents. Time allocation at production scale:
 
-| Activity | Time Allocation |
-|----------|----------------|
-| Design and decomposition | 40% |
-| Monitoring and escalation handling | 25% |
-| Review and quality calibration | 20% |
-| Infrastructure and tooling | 15% |
+| Activity                           | Time Allocation |
+| ---------------------------------- | --------------- |
+| Design and decomposition           | 40%             |
+| Monitoring and escalation handling | 25%             |
+| Review and quality calibration     | 20%             |
+| Infrastructure and tooling         | 15%             |
 
 ---
 
@@ -599,12 +626,12 @@ End of day:
 
 At 10+ agents, agents occasionally need to coordinate beyond the orchestrator. Direct agent-to-agent communication introduces complexity but solves problems that purely hierarchical coordination cannot:
 
-| Protocol | Mechanism | Use Case |
-|----------|-----------|----------|
-| **Mail-based** | Agents read/write to shared message files | Asynchronous coordination, status updates |
-| **Convoy tracking** | Groups of related tasks share a tracking ID | Multi-step features spanning multiple agents |
-| **Broadcast** | One-to-many notification | "Build X is ready for integration" |
-| **Point-to-point** | Direct agent-to-agent message | "Agent-12: I need the interface definition from your module" |
+| Protocol            | Mechanism                                   | Use Case                                                     |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| **Mail-based**      | Agents read/write to shared message files   | Asynchronous coordination, status updates                    |
+| **Convoy tracking** | Groups of related tasks share a tracking ID | Multi-step features spanning multiple agents                 |
+| **Broadcast**       | One-to-many notification                    | "Build X is ready for integration"                           |
+| **Point-to-point**  | Direct agent-to-agent message               | "Agent-12: I need the interface definition from your module" |
 
 **Mail protocols** work well because they're asynchronous and persistent. An agent writes a message; the recipient reads it when ready. No real-time coordination required. The message persists if the recipient restarts.
 

@@ -3,7 +3,15 @@ title: Designing for Your Context
 description: Decision frameworks for harness design — when to use each category and how to build compound advantage
 created: 2026-04-12
 last_updated: 2026-04-12
-tags: [foundations, harness, design, decision-framework, compound-advantage, trajectories]
+tags:
+  [
+    foundations,
+    harness,
+    design,
+    decision-framework,
+    compound-advantage,
+    trajectories,
+  ]
 part: 1
 part_title: Foundations
 chapter: 6
@@ -30,6 +38,7 @@ Single-session work (a research query, a code review, a draft document) does not
 Multi-session work (a software project spanning days or weeks, an ongoing research program, a recurring automated workflow) requires persistent state, context discipline, and a harness that survives session boundaries.
 
 The time horizon determines the minimum memory architecture required:
+
 - Single session → in-context working memory (no persistence required)
 - Multi-session, defined lifecycle → workflow harness with explicit state files
 - Multi-session, ongoing relationship → persistent personal runtime or full agentic harness with auto-memory
@@ -51,6 +60,7 @@ Write access to production code, credentials, configuration files, or sensitive 
 Network access requirements add a third dimension: a harness that can make arbitrary outbound network calls is a data exfiltration risk for sensitive codebases. Network egress filtering becomes a requirement.
 
 The security requirement level maps directly to the required harness complexity:
+
 - Read-only, non-sensitive → minimal sandbox (directory jail sufficient)
 - Write access to project files → full sandbox + permission hooks + observability
 - Network access with sensitive code → whitelist egress + full sandbox + audit logs
@@ -63,7 +73,7 @@ Low volume (occasional, ad-hoc agentic sessions) — trajectory capture is optio
 
 High volume (regular sustained production use, 10+ sessions per day, 100+ sessions per week) — trajectory capture is competitive infrastructure. The data accumulates into a proprietary dataset of the organization's specific tasks, failure modes, and improvement history. This dataset cannot be purchased; it must be grown.
 
-*[2026-04-12]*: The trajectory capture question is frequently deferred because instrumentation feels like overhead. Schmid's framing — "The Harness is the Dataset" — reframes this as a strategic decision. Organizations that instrument from the beginning compound advantage; organizations that add instrumentation later lose the early trajectory data that often contains the most valuable failure cases.
+_[2026-04-12]_: The trajectory capture question is frequently deferred because instrumentation feels like overhead. Schmid's framing — "The Harness is the Dataset" — reframes this as a strategic decision. Organizations that instrument from the beginning compound advantage; organizations that add instrumentation later lose the early trajectory data that often contains the most valuable failure cases.
 
 ---
 
@@ -119,14 +129,14 @@ This sequence applies Hashimoto's methodology operationally: the harness grows f
 
 For practitioners joining a team with an existing harness, or evaluating harnesses in the marketplace, the six-component audit sequence provides a structured evaluation framework:
 
-| Component | Evaluation Question | Red Flag |
-|-----------|-------------------|---------|
-| Workspace context | Does the harness inject stable environmental facts at session start? | Agent discovers project structure through repeated tool calls |
-| Prompt shape | Is the stable/dynamic split explicit? Is caching enabled? | All context treated as dynamic; no caching |
-| Tool access | Is the tool inventory bounded and documented? Are permissions enforced at the harness layer? | Unbounded tool access; permission enforcement only in prompts |
-| Context management | Does the harness proactively compress context before degradation? | No compression until context is nearly full |
-| Session memory | Is working memory explicitly maintained separate from the transcript? | Single accumulating log used for both purposes |
-| Subagent delegation | Are subagents spawned with explicit scope and context boundaries? | Subagents inherit full parent context |
+| Component           | Evaluation Question                                                                          | Red Flag                                                      |
+| ------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Workspace context   | Does the harness inject stable environmental facts at session start?                         | Agent discovers project structure through repeated tool calls |
+| Prompt shape        | Is the stable/dynamic split explicit? Is caching enabled?                                    | All context treated as dynamic; no caching                    |
+| Tool access         | Is the tool inventory bounded and documented? Are permissions enforced at the harness layer? | Unbounded tool access; permission enforcement only in prompts |
+| Context management  | Does the harness proactively compress context before degradation?                            | No compression until context is nearly full                   |
+| Session memory      | Is working memory explicitly maintained separate from the transcript?                        | Single accumulating log used for both purposes                |
+| Subagent delegation | Are subagents spawned with explicit scope and context boundaries?                            | Subagents inherit full parent context                         |
 
 Harnesses with red flags in multiple components require either configuration changes (if the harness supports them) or harness engineering (adding the missing components). A harness with no workspace context injection, no context management, and unbounded subagent delegation is a harness in name only — it is a raw API call with coordination logic.
 
@@ -140,21 +150,22 @@ A trajectory is a sequence: task specification → agent observations → agent 
 
 **What trajectories enable:**
 
-*Harness improvement:* Trajectories reveal systematic failure modes. A practitioner who reviews 100 trajectories from the past month will identify the 3–5 failure patterns that account for most failures — and can engineer targeted fixes for each. Without trajectory data, harness improvement is reactive (fix whatever the most recent complaint was) rather than systematic (fix the most common failure mode).
+_Harness improvement:_ Trajectories reveal systematic failure modes. A practitioner who reviews 100 trajectories from the past month will identify the 3–5 failure patterns that account for most failures — and can engineer targeted fixes for each. Without trajectory data, harness improvement is reactive (fix whatever the most recent complaint was) rather than systematic (fix the most common failure mode).
 
-*Model fine-tuning:* Trajectories are training data in the format models understand: context → reasoning → action → outcome. A dataset of 1,000 high-quality trajectories from domain-specific work is more valuable for fine-tuning than a generic benchmark — because it represents the actual distribution of tasks the fine-tuned model will encounter.
+_Model fine-tuning:_ Trajectories are training data in the format models understand: context → reasoning → action → outcome. A dataset of 1,000 high-quality trajectories from domain-specific work is more valuable for fine-tuning than a generic benchmark — because it represents the actual distribution of tasks the fine-tuned model will encounter.
 
-*Capability measurement:* Before-and-after trajectory comparison measures harness improvement quantitatively. Run the same set of benchmark tasks before and after a harness engineering cycle; compare success rates and failure modes. Without trajectories, harness improvement is unmeasurable.
+_Capability measurement:_ Before-and-after trajectory comparison measures harness improvement quantitatively. Run the same set of benchmark tasks before and after a harness engineering cycle; compare success rates and failure modes. Without trajectories, harness improvement is unmeasurable.
 
 **Practical minimum for trajectory capture:**
 
-| What to Log | Format | Retention |
-|------------|--------|----------|
-| Every tool call: name, inputs, outputs, timestamp | Append-only NDJSON | Indefinite (these are training data) |
-| Session outcome: success/failure, task type, duration | Session metadata file | Indefinite |
-| Harness engineering events: failure observed, component diagnosed, fix applied | Engineering log | Indefinite |
+| What to Log                                                                    | Format                | Retention                            |
+| ------------------------------------------------------------------------------ | --------------------- | ------------------------------------ |
+| Every tool call: name, inputs, outputs, timestamp                              | Append-only NDJSON    | Indefinite (these are training data) |
+| Session outcome: success/failure, task type, duration                          | Session metadata file | Indefinite                           |
+| Harness engineering events: failure observed, component diagnosed, fix applied | Engineering log       | Indefinite                           |
 
 Adding trajectory instrumentation to an existing harness typically requires:
+
 1. Pre/post hooks on all tool calls (write log entry on each invocation)
 2. Session close handler (write session metadata on session end)
 3. Storage that persists across sessions (local files, SQLite, or cloud storage)
@@ -167,13 +178,13 @@ The cost is low; the long-term value is high. The trajectory dataset is the orga
 
 The five pillars now form a complete picture of what determines agent capability in production:
 
-| Pillar | What It Determines | Primary Lever |
-|--------|-------------------|--------------|
-| Prompt | What instruction the agent receives | Prompt engineering |
-| Model | What reasoning the agent can perform | Model selection |
-| Context | What information the agent can access | Context engineering |
-| Tool Use | What actions the agent can execute | Tool design |
-| Harness | What system orchestrates, constrains, and improves execution | Harness engineering |
+| Pillar   | What It Determines                                           | Primary Lever       |
+| -------- | ------------------------------------------------------------ | ------------------- |
+| Prompt   | What instruction the agent receives                          | Prompt engineering  |
+| Model    | What reasoning the agent can perform                         | Model selection     |
+| Context  | What information the agent can access                        | Context engineering |
+| Tool Use | What actions the agent can execute                           | Tool design         |
+| Harness  | What system orchestrates, constrains, and improves execution | Harness engineering |
 
 No single pillar determines outcomes in isolation. The harness is the connective tissue: it manages context, enforces tool access, shapes prompts, creates feedback loops, and accumulates the trajectory data that drives improvement.
 
@@ -186,6 +197,7 @@ This compounding property is the foundational argument for treating harness as a
 ## Summary
 
 Harness design decisions in order:
+
 1. Answer the four design questions (time horizon, parallelism, security, trajectory volume)
 2. Use the decision tree to select the harness category
 3. Start with an existing harness rather than building from scratch where possible

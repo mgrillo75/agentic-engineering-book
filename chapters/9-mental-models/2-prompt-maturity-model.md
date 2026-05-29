@@ -3,7 +3,15 @@ title: Prompt Maturity Model
 description: Seven levels of prompt sophistication from static to meta-cognitive
 created: 2025-12-08
 last_updated: 2026-04-11
-tags: [prompts, mental-models, maturity, engineer-leverage, workflow-integration, practitioner-progression]
+tags:
+  [
+    prompts,
+    mental-models,
+    maturity,
+    engineer-leverage,
+    workflow-integration,
+    practitioner-progression,
+  ]
 part: 3
 part_title: Perspectives
 chapter: 9
@@ -27,10 +35,12 @@ A framework for understanding and designing prompts at different levels of sophi
 
 ```markdown
 # format-code.md
+
 Run prettier on all TypeScript files in src/
 ```
 
 **Trade-offs**:
+
 - Pros: Simplest to write and understand. No state to manage.
 - Cons: Inflexible. Requires creating new commands for variations.
 
@@ -46,10 +56,12 @@ Run prettier on all TypeScript files in src/
 
 ```markdown
 # review-file.md
+
 Review the file at $ARGUMENTS for clarity and completeness.
 ```
 
 **Trade-offs**:
+
 - Pros: Reusable across different inputs. Still straightforward logic.
 - Cons: Limited to simple substitution. No branching behavior.
 
@@ -65,15 +77,18 @@ Review the file at $ARGUMENTS for clarity and completeness.
 
 ```markdown
 # analyze.md
+
 If $ARGUMENTS contains .ts or .js:
-  - Check for type safety issues
-Else if $ARGUMENTS contains .md:
-  - Check for broken links
-Else:
-  - Provide general analysis
+
+- Check for type safety issues
+  Else if $ARGUMENTS contains .md:
+- Check for broken links
+  Else:
+- Provide general analysis
 ```
 
 **Trade-offs**:
+
 - Pros: One command handles multiple scenarios. More intelligent.
 - Cons: Logic can become complex. Harder to predict behavior.
 
@@ -89,6 +104,7 @@ Else:
 
 ```markdown
 # contextualized-review.md
+
 1. Read CLAUDE.md to understand project conventions
 2. Read the file at $ARGUMENTS
 3. Review against project standards
@@ -96,6 +112,7 @@ Else:
 ```
 
 **Trade-offs**:
+
 - Pros: Decisions informed by actual project state. More intelligent.
 - Cons: Slower due to file reads. Can fail if context is missing.
 
@@ -111,6 +128,7 @@ Else:
 
 ```markdown
 # feature-workflow.md
+
 1. Call /research:gather-requirements $ARGUMENTS
 2. Call /plan:design-architecture
 3. Call /implement:build
@@ -118,6 +136,7 @@ Else:
 ```
 
 **Trade-offs**:
+
 - Pros: Compose complex behaviors from simpler parts. DRY.
 - Cons: Dependencies between commands. Harder to debug failures.
 
@@ -133,17 +152,20 @@ Else:
 
 ```markdown
 # adaptive-analyzer.md
+
 [CURRENT TEMPLATE]
 Analyze code for: ${FOCUS_AREAS}
 
 [IMPROVEMENT MECHANISM]
 After each run:
+
 - If analysis missed issues: add to FOCUS_AREAS
 - If too verbose: add to SUPPRESS_PATTERNS
 - Update this template
 ```
 
 **Trade-offs**:
+
 - Pros: Commands get better with use. Adapt to project needs.
 - Cons: Non-deterministic. Can drift from original intent. Needs safeguards.
 
@@ -159,6 +181,7 @@ After each run:
 
 ```markdown
 # command-optimizer.md
+
 1. Scan all .md commands in .claude/
 2. Identify patterns:
    - Duplicated logic
@@ -169,6 +192,7 @@ After each run:
 ```
 
 **Trade-offs**:
+
 - Pros: System-wide optimization. Maintains command quality.
 - Cons: Highest complexity. Requires understanding of entire system. Risk of breaking changes.
 
@@ -186,18 +210,21 @@ After each run:
 - **Level 7**: Rare. Usually for tooling teams or advanced automation.
 
 **Signals you need a higher level:**
+
 - Creating many similar commands → Move from 1 to 2
 - Copy-pasting logic between commands → Move to 5
 - Manually tweaking commands after each use → Consider 6
 - Spending more time maintaining commands than using them → Consider 7
 
 **Signals you're at too high a level:**
+
 - Can't predict what the command will do
 - Debugging takes longer than the command saves
 - Other developers avoid using it
 - You're the only one who understands it
 
 **The maturity sweet spot**: Most systems should have a pyramid distribution:
+
 - Many Level 1-2 commands (foundation)
 - Some Level 3-4 commands (core workflows)
 - Few Level 5 commands (orchestration)
@@ -207,7 +234,7 @@ After each run:
 
 ## Engineer Leverage Progression
 
-*[2026-04-11]*: The seven levels above describe prompt artifact sophistication. A complementary dimension describes practitioner workflow sophistication — how an individual engineer's *framing* of AI use changes as leverage increases. This axis is orthogonal: an engineer can write a structurally sophisticated L4-L5 prompt while still operating in a low-leverage framing. Liu's central observation names the gap precisely: "One engineer treats AI like a better search engine. The other treats AI like an entire engineering team working in concert."
+_[2026-04-11]_: The seven levels above describe prompt artifact sophistication. A complementary dimension describes practitioner workflow sophistication — how an individual engineer's _framing_ of AI use changes as leverage increases. This axis is orthogonal: an engineer can write a structurally sophisticated L4-L5 prompt while still operating in a low-leverage framing. Liu's central observation names the gap precisely: "One engineer treats AI like a better search engine. The other treats AI like an entire engineering team working in concert."
 
 Three stages characterize the progression, observed independently by multiple practitioners:
 
@@ -249,11 +276,11 @@ Three stages characterize the progression, observed independently by multiple pr
 
 ---
 
-| Stage | Framing | Typical Prompt Level | Compounding Returns |
-|-------|---------|---------------------|---------------------|
-| Search-Engine | Query-response | L1-L3 | None — each query begins fresh |
-| Integrated Workflow | Pipeline stage | L4-L5 | Moderate — context accumulates across stages |
-| System Designer | Designed system with feedback | L5-L7 | High — measurement enables systematic improvement |
+| Stage               | Framing                       | Typical Prompt Level | Compounding Returns                               |
+| ------------------- | ----------------------------- | -------------------- | ------------------------------------------------- |
+| Search-Engine       | Query-response                | L1-L3                | None — each query begins fresh                    |
+| Integrated Workflow | Pipeline stage                | L4-L5                | Moderate — context accumulates across stages      |
+| System Designer     | Designed system with feedback | L5-L7                | High — measurement enables systematic improvement |
 
 The stages correlate with but do not determine prompt level. An engineer can reach Stage 2 while using only L3-L4 prompts — the workflow framing will pull prompt sophistication upward as the engineer encounters the structural requirements of pipeline stages. Hamel's principle applies to the transition from Stage 2 to Stage 3: manual engagement precedes effective automation. Stage 3 cannot be reached by automating Stage 1 behaviors; the judgment about what to measure must be developed manually before measurement can compound.
 

@@ -19,9 +19,10 @@ Strategic insertion of human approval checkpoints in agentic workflows to manage
 
 ## Core Insight
 
-*[2026-01-30]*: **Not all agent actions carry equal risk.** The human-in-the-loop pattern recognizes that some operations (reading files, running tests) are safe to automate fully, while others (deploying to production, deleting data, sending communications) warrant human review. The key is placing approval gates at the right points—too few gates and you risk costly mistakes; too many and you've just built an expensive chatbot.
+_[2026-01-30]_: **Not all agent actions carry equal risk.** The human-in-the-loop pattern recognizes that some operations (reading files, running tests) are safe to automate fully, while others (deploying to production, deleting data, sending communications) warrant human review. The key is placing approval gates at the right points—too few gates and you risk costly mistakes; too many and you've just built an expensive chatbot.
 
 The pattern answers three questions:
+
 1. **When** should an agent pause for human approval?
 2. **Where** in the workflow should gates be placed?
 3. **How** should the approval interaction be structured?
@@ -34,13 +35,13 @@ The pattern answers three questions:
 
 Not every action needs a gate. Use these criteria to decide:
 
-| Risk Factor | Low (Auto-proceed) | Medium (Notify) | High (Require Approval) |
-|-------------|-------------------|-----------------|------------------------|
-| **Reversibility** | Git commit (revertible) | Config change | Database migration |
-| **Blast radius** | Single file edit | Module changes | Production deployment |
-| **Cost** | API call < $0.10 | Batch operation < $10 | Operation > $100 |
-| **Sensitivity** | Internal code | Customer data access | Credentials, payments |
-| **Precedent** | Routine operation | First-time pattern | Novel approach |
+| Risk Factor       | Low (Auto-proceed)      | Medium (Notify)       | High (Require Approval) |
+| ----------------- | ----------------------- | --------------------- | ----------------------- |
+| **Reversibility** | Git commit (revertible) | Config change         | Database migration      |
+| **Blast radius**  | Single file edit        | Module changes        | Production deployment   |
+| **Cost**          | API call < $0.10        | Batch operation < $10 | Operation > $100        |
+| **Sensitivity**   | Internal code           | Customer data access  | Credentials, payments   |
+| **Precedent**     | Routine operation       | First-time pattern    | Novel approach          |
 
 ### The Gate Decision Tree
 
@@ -63,6 +64,7 @@ Is this the first time performing this type of operation?
 ### Common Gate Triggers
 
 **Always gate:**
+
 - Production deployments
 - Database schema changes
 - External API calls with side effects (sending emails, creating accounts)
@@ -71,12 +73,14 @@ Is this the first time performing this type of operation?
 - Deleting data (especially without backups)
 
 **Consider gating:**
+
 - First execution of a new workflow
 - Changes to security-sensitive code
 - Operations affecting multiple systems
 - Novel approaches the agent hasn't used before
 
 **Safe to auto-proceed:**
+
 - Reading files and exploring codebases
 - Running tests (in isolated environments)
 - Creating branches (not merging)
@@ -104,6 +108,7 @@ Agent: "I will deploy version 2.3.1 to production. This will:
 ```
 
 **Best for:**
+
 - Irreversible operations
 - High-cost actions
 - Operations with external effects
@@ -125,6 +130,7 @@ Agent: "I completed the code refactoring. Summary:
 ```
 
 **Best for:**
+
 - Complex multi-step workflows where intermediate work is valuable
 - Operations that are revertible
 - When blocking is more expensive than potential rework
@@ -159,6 +165,7 @@ Agent: "I encountered an unexpected situation:
 ```
 
 **Best for:**
+
 - Workflows with high autonomy but need fallback
 - Experienced agents with good self-assessment
 - Reducing gate overhead while preserving safety
@@ -172,6 +179,7 @@ Agent: "I encountered an unexpected situation:
 The agent waits for human response before continuing.
 
 **Implementation:**
+
 ```python
 def execute_with_approval(action, context):
     spec = generate_spec(action, context)
@@ -188,6 +196,7 @@ def execute_with_approval(action, context):
 ```
 
 **When to use:**
+
 - Interactive sessions where human is actively engaged
 - High-stakes operations where delay is acceptable
 - Workflows that genuinely cannot proceed without human judgment
@@ -199,6 +208,7 @@ def execute_with_approval(action, context):
 The agent queues the approval request and continues with other work or terminates cleanly.
 
 **Implementation:**
+
 ```python
 def execute_with_async_approval(action, context):
     spec = generate_spec(action, context)
@@ -215,6 +225,7 @@ def execute_with_async_approval(action, context):
 ```
 
 **When to use:**
+
 - Long-running workflows spanning hours/days
 - Batch operations where multiple approvals accumulate
 - Operations where human review takes time (code review, security audit)
@@ -239,6 +250,7 @@ def execute_with_timeout(action, context, timeout=300):
 ```
 
 **When to use:**
+
 - Production operations with SLAs
 - Workflows where delay has cost
 - When safe fallback behavior exists
@@ -253,23 +265,28 @@ A good approval request provides everything the human needs to decide:
 
 ```markdown
 ## Action Requested
+
 Deploy authentication service v2.1.0 to production
 
 ## Context
+
 - Previous version: v2.0.3 (deployed 2 weeks ago)
 - Changes: OAuth2 refresh token handling, rate limiting
 - Commits: 12 commits from 3 developers
 - Tests: 247 passing, 0 failing, 94% coverage
 
 ## Risk Assessment
+
 - **Rollback plan:** Blue-green deployment, instant rollback available
 - **Blast radius:** All authenticated users (~50K active sessions)
 - **Failure mode:** If refresh tokens fail, users must re-authenticate
 
 ## Recommendation
+
 APPROVE - Changes are well-tested and rollback is instant.
 
 ## Options
+
 - [APPROVE] Proceed with deployment
 - [REJECT] Cancel and provide reason
 - [DELAY] Schedule for off-peak hours (2am UTC)
@@ -277,6 +294,7 @@ APPROVE - Changes are well-tested and rollback is instant.
 ```
 
 **Key elements:**
+
 1. **Clear action statement** - What exactly will happen
 2. **Sufficient context** - What the human needs to know
 3. **Risk assessment** - What could go wrong and mitigation
@@ -287,12 +305,14 @@ APPROVE - Changes are well-tested and rollback is instant.
 For complex approvals, use artifacts rather than inline descriptions:
 
 **Spec files** (from Plan-Build-Review):
+
 ```
 Agent: "Review the spec at docs/specs/auth-v2.1-deploy.md
         and respond with 'approve spec' or provide modifications."
 ```
 
 **Diff summaries**:
+
 ```
 Agent: "Review the PR at github.com/org/repo/pull/234
         12 files changed, +340/-120 lines
@@ -300,21 +320,25 @@ Agent: "Review the PR at github.com/org/repo/pull/234
 ```
 
 **Decision logs** (for audit trail):
+
 ```markdown
 # Decision Log: Deploy auth-v2.1.0
 
 ## Request
+
 Agent: deploy-bot-7
 Time: 2026-01-30T14:23:00Z
 Action: Production deployment
 
 ## Approval
+
 Approver: jane@company.com
 Time: 2026-01-30T14:25:30Z
 Decision: APPROVED
 Notes: "Verified test coverage, rollback plan looks solid"
 
 ## Execution
+
 Started: 2026-01-30T14:26:00Z
 Completed: 2026-01-30T14:28:45Z
 Status: SUCCESS
@@ -333,11 +357,12 @@ Claude Code's `plan_mode_required` flag implements human-in-the-loop for plan ap
 {
   "name": "risky-builder",
   "plan_mode_required": true,
-  "prompt": "Implement database migration..."
+  "prompt": "Implement database migration...",
 }
 ```
 
 When enabled:
+
 1. Agent enters plan mode automatically
 2. Agent must call `ExitPlanMode` to request approval
 3. Team lead receives plan approval request
@@ -364,6 +389,7 @@ Use lifecycle hooks to implement custom gates:
 ```
 
 The hook script can:
+
 - Allow the operation (exit 0)
 - Block with message (exit non-zero with stderr)
 - Prompt for human input before returning
@@ -402,18 +428,21 @@ This allows the same agent to operate in both supervised and autonomous modes ba
 The [Autonomous Loops (Ralph Wiggum)](4-autonomous-loops.md) pattern deliberately minimizes human intervention—iteration discovers the path. Human-in-the-loop is the complementary pattern for when you need human judgment.
 
 **Use autonomous loops when:**
+
 - Task has machine-verifiable success criteria (tests pass)
 - Operations are reversible (git commits)
 - Failures are acceptable learning data
 - Cost of iteration < cost of human time
 
 **Use human-in-the-loop when:**
+
 - Success requires human judgment
 - Operations are irreversible or high-stakes
 - External systems are affected
 - Compliance or audit requires human approval
 
 **Hybrid approach:** Autonomous loops with escalation gates:
+
 ```
 while not complete:
     result = attempt_iteration()
@@ -434,6 +463,7 @@ while not complete:
 **Problem:** Too many approval requests desensitize humans to risk.
 
 **Symptoms:**
+
 - Humans approve without reading
 - Approval latency increases over time
 - "Rubber stamp" culture develops
@@ -445,6 +475,7 @@ while not complete:
 **Problem:** Agent asks "Should I proceed?" without context.
 
 **Symptoms:**
+
 - Humans ask clarifying questions
 - Approvals are guesses
 - Post-hoc disputes about what was approved
@@ -456,6 +487,7 @@ while not complete:
 **Problem:** Blocking gate in a workflow designed for autonomy.
 
 **Symptoms:**
+
 - Workflow stalls for hours waiting for approval
 - Agents timeout or lose context
 - Humans feel pressured to respond immediately
@@ -467,6 +499,7 @@ while not complete:
 **Problem:** Gate approves an action with no recovery path.
 
 **Symptoms:**
+
 - Approval request says "Proceed?" with no mention of reversal
 - Human approves hoping nothing goes wrong
 - Failure requires manual emergency intervention
@@ -478,6 +511,7 @@ while not complete:
 **Problem:** Approvals happen but aren't recorded.
 
 **Symptoms:**
+
 - "Who approved this?" has no answer
 - Compliance audits fail
 - Post-incident review lacks data
@@ -491,17 +525,20 @@ while not complete:
 ### Good Fit
 
 **Workflows with consequential actions:**
+
 - Production operations (deployments, migrations, data changes)
 - External communications (emails to customers, API calls with side effects)
 - Financial operations (charges, refunds, transfers)
 - Access control changes (permissions, credentials)
 
 **Compliance requirements:**
+
 - SOC2, HIPAA, or other frameworks requiring human oversight
 - Audit trails for regulatory review
 - Separation of duties (agent proposes, human approves)
 
 **Trust building:**
+
 - New workflows where agent reliability is unproven
 - High-value operations where mistakes are costly
 - Situations where human judgment genuinely adds value
@@ -509,17 +546,20 @@ while not complete:
 ### Poor Fit
 
 **Fully automatable workflows:**
+
 - Test execution in isolated environments
 - Code formatting and linting
 - Documentation generation from code
 - Development environment operations
 
 **Time-critical operations where human latency is unacceptable:**
+
 - Auto-scaling responses
 - Incident remediation (initial triage)
 - High-frequency trading decisions
 
 **Operations where human adds no value:**
+
 - Deterministic transformations
 - Operations with machine-verifiable correctness
 - Workflows where human would always approve
@@ -529,15 +569,19 @@ while not complete:
 ## Questions to Explore
 
 ### How do you calibrate gate placement over time?
+
 As trust in an agent grows, should gates be removed? How do you measure "trustworthiness" of an agent workflow? What signals indicate gates can be relaxed?
 
 ### What's the right approval latency target?
+
 Faster approvals enable agent productivity but may sacrifice review quality. How do you balance responsiveness with thoroughness? Does approval latency correlate with decision quality?
 
 ### How do you handle approval delegation?
+
 When the primary approver is unavailable, who can approve? How do you prevent delegation from undermining the gate's purpose?
 
 ### Can approval patterns be learned?
+
 If a human always approves a certain class of operation, should the agent learn to auto-proceed? What's the risk of encoding biases into automation?
 
 ---

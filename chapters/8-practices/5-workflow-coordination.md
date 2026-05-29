@@ -3,7 +3,19 @@ title: Workflow Coordination for Agents
 description: Using structured metadata and persistent stores as coordination layers between agents
 created: 2025-12-08
 last_updated: 2026-04-12
-tags: [practices, coordination, workflow, handoff, metadata, spec-files, human-role, agent-management, institutional-design, quality-gate]
+tags:
+  [
+    practices,
+    coordination,
+    workflow,
+    handoff,
+    metadata,
+    spec-files,
+    human-role,
+    agent-management,
+    institutional-design,
+    quality-gate,
+  ]
 part: 2
 part_title: Craft
 chapter: 8
@@ -41,6 +53,7 @@ The following sections use GitHub as a concrete example. Adapt the patterns to y
 Use version control platform as the primary communication medium between agents.
 
 Why this works:
+
 - **Persistence**: Context survives session boundaries
 - **Structure**: Issues, PRs, labels provide natural organization
 - **Traceability**: Git history shows evolution of decisions
@@ -57,14 +70,15 @@ The key pattern: **define mandatory categories that enable automated routing**. 
 
 One effective taxonomy uses four categories—adapt the specifics to your domain:
 
-| Category | Example Values | Purpose |
-|----------|----------------|---------|
-| **Component** | backend, frontend, database, api, testing | Route to relevant experts |
-| **Priority** | critical, high, medium, low | Sequence work |
-| **Effort** | small (<1d), medium (1-3d), large (>3d) | Scope estimation |
-| **Status** | needs-investigation, blocked, in-progress, ready-review | Track state |
+| Category      | Example Values                                          | Purpose                   |
+| ------------- | ------------------------------------------------------- | ------------------------- |
+| **Component** | backend, frontend, database, api, testing               | Route to relevant experts |
+| **Priority**  | critical, high, medium, low                             | Sequence work             |
+| **Effort**    | small (<1d), medium (1-3d), large (>3d)                 | Scope estimation          |
+| **Status**    | needs-investigation, blocked, in-progress, ready-review | Track state               |
 
 The categories matter more than the specific values. Your system might use:
+
 - **Type** instead of Component (feature, bug, chore, refactor)
 - **Urgency** instead of Priority (now, soon, later, someday)
 - **Size** with story points instead of Effort
@@ -72,12 +86,14 @@ The categories matter more than the specific values. Your system might use:
 ### Why This Enables Automation
 
 With structured categories, agents can:
+
 - **Route automatically**: "Component:database" → spawn database expert
 - **Prioritize without judgment**: Sort by priority, then effort, then age
 - **Track state machines**: Status labels enforce allowed transitions
 - **Validate completeness**: Reject work items missing required categories
 
 **Validation pattern** (GitHub example):
+
 ```bash
 gh label list --limit 100 | grep -E "component:|priority:|effort:|status:"
 ```
@@ -94,14 +110,14 @@ The pattern: **explicit, machine-parseable relationships between work items** en
 
 Six relationship types cover most scenarios:
 
-| Type | Meaning | Agent Behavior |
-|------|---------|----------------|
-| **Depends On** | Requires another to complete first | Block until dependency resolves |
-| **Blocks** | Other items waiting on this one | Prioritize to unblock downstream |
-| **Related To** | Shares context, no hard dependency | Load as additional context |
-| **Supersedes** | Replaces older work item | Close the superseded item |
-| **Child Of** | Sub-task of a larger epic | Roll up completion to parent |
-| **Follow-Up** | Created as result of another | Link for traceability |
+| Type           | Meaning                            | Agent Behavior                   |
+| -------------- | ---------------------------------- | -------------------------------- |
+| **Depends On** | Requires another to complete first | Block until dependency resolves  |
+| **Blocks**     | Other items waiting on this one    | Prioritize to unblock downstream |
+| **Related To** | Shares context, no hard dependency | Load as additional context       |
+| **Supersedes** | Replaces older work item           | Close the superseded item        |
+| **Child Of**   | Sub-task of a larger epic          | Roll up completion to parent     |
+| **Follow-Up**  | Created as result of another       | Link for traceability            |
 
 ### Machine-Parseable Format
 
@@ -116,6 +132,7 @@ Whatever your system, relationships need consistent format. Example using markdo
 ```
 
 The specifics matter less than consistency. Agents can parse:
+
 - Linear's built-in relations
 - Jira's "is blocked by" / "blocks" links
 - A JSON field in a local database
@@ -181,12 +198,15 @@ gh issue view <issue-number> --json number,title,labels
 
 ```markdown
 ## Summary
+
 Brief description of changes
 
 ## Changes
+
 - Bullet points of what changed
 
 ## Test Plan
+
 - How to verify
 
 Closes #123
@@ -206,13 +226,14 @@ docs/specs/bug-456-token-refresh.md
 ```
 
 This creates traceability:
+
 - Issue #123 → `docs/specs/feature-123-*.md` → `feature/123-*` branch → PR
 
 Future agents can reconstruct context by following these breadcrumbs.
 
 ### Spec Files Beat Accumulated Context
 
-*[2025-12-09]*: **Rather than passing large contexts between agents in messages, write findings to disk as spec files.** Each agent reads the same spec independently, avoiding context bloat and enabling parallel access to shared state.
+_[2025-12-09]_: **Rather than passing large contexts between agents in messages, write findings to disk as spec files.** Each agent reads the same spec independently, avoiding context bloat and enabling parallel access to shared state.
 
 This pattern has several advantages:
 
@@ -223,12 +244,14 @@ This pattern has several advantages:
 5. **Human readability**: Developers can inspect and override agent decisions
 
 **Anti-pattern** (context passing):
+
 ```
 Orchestrator → Build Agent: "Based on the analysis from Scout Agent (3000 words),
 and the design from Planning Agent (2000 words), implement feature X..."
 ```
 
 **Better** (spec-based):
+
 ```
 Orchestrator → Build Agent: "Read .claude/.cache/specs/feature-123-spec.md
 and implement according to the design section"
@@ -240,13 +263,14 @@ The spec file becomes the single source of truth. Agents coordinate by reading a
 
 ## Atomic Operations and State Persistence
 
-*[2026-02-06]*: Multi-session workflows require three complementary patterns: atomic commits for independent revertability, structured state files for session survival, and goal-backward verification to prevent drift. These patterns emerged from production agent workflows where sessions span days and context resets between executions.
+_[2026-02-06]_: Multi-session workflows require three complementary patterns: atomic commits for independent revertability, structured state files for session survival, and goal-backward verification to prevent drift. These patterns emerged from production agent workflows where sessions span days and context resets between executions.
 
 ### Atomic Commits as Revertability Strategy
 
 **Per-task commits enable independent rollback without cascading failures.** Each logical task becomes a single commit, allowing git-bisect debugging and surgical reverts.
 
 **Commit pattern:**
+
 ```
 One feature = One commit
 - Single logical change
@@ -256,18 +280,21 @@ One feature = One commit
 ```
 
 **Why this matters:**
+
 - **Surgical reversion**: Roll back feature B without affecting feature A
 - **Bisect-friendly**: `git bisect` identifies breaking commits quickly
 - **Clear history**: Each commit represents decision point
 - **Agent-friendly**: New sessions understand changes via commit messages
 
 **Anti-pattern** (accumulated commits):
+
 ```bash
 # Bad: Multiple features in single commit
 git commit -m "Add auth, fix database, update tests, refactor utils"
 ```
 
 **Better** (atomic):
+
 ```bash
 git commit -m "feat: add JWT authentication middleware"
 git commit -m "test: add integration tests for auth flow"
@@ -281,33 +308,39 @@ Each commit stands alone. Reverting authentication doesn't break the database ch
 **STATE.md captures current position, accumulated decisions, and blockers.** This pattern provides session-independent context—agents can resume work after interruptions without reconstructing history from chat logs.
 
 **STATE.md structure:**
+
 ```markdown
 # Current State
 
 ## Position
+
 - **Current Phase**: Implementation (Day 2 of 3)
 - **Last Completed**: Database schema migration (#45)
 - **Next Task**: API endpoint implementation (#52)
 - **Session**: 3 of estimated 5
 
 ## Accumulated Decisions
+
 - Using PostgreSQL over MongoDB (performance requirements)
 - JWT tokens expire after 24h (security review approved)
 - Rate limiting: 100 req/min per user (infrastructure constraints)
 
 ## Active Blockers
+
 - [ ] Waiting on API key from external service (ETA: tomorrow)
 - [ ] Database credentials for staging environment
 - [x] ~~Design review approval~~ (completed 2026-02-05)
 ```
 
 **Session survival benefits:**
+
 1. **Resume without reconstruction**: New agent reads STATE.md, continues immediately
 2. **Decision tracking**: Why choices were made, preventing re-litigation
 3. **Blocker visibility**: Clear obstacles, prevents spinning on known issues
 4. **Progress measurement**: Phase tracking shows velocity
 
 **Update pattern:**
+
 - Write STATE.md after completing each task
 - Commit with implementation changes (atomic commit includes state update)
 - Move completed blockers to decisions section with timestamps
@@ -317,6 +350,7 @@ Each commit stands alone. Reverting authentication doesn't break the database ch
 **Define success criteria before execution, verify after completion.** The must_haves pattern prevents drift by establishing measurable goals that implementations must satisfy.
 
 **must_haves structure:**
+
 ```yaml
 must_haves:
   truths:
@@ -335,6 +369,7 @@ must_haves:
 ```
 
 **Verification workflow:**
+
 1. **Before execution**: Write must_haves in spec file
 2. **During implementation**: Reference must_haves to stay on track
 3. **After completion**: Check each truth/artifact/link explicitly
@@ -344,6 +379,7 @@ must_haves:
 Without goal-backward verification, implementations expand scope. With must_haves, agents have clear stopping criteria.
 
 **Example verification:**
+
 ```markdown
 ## Verification Results
 
@@ -370,16 +406,19 @@ PRs include structured validation sections:
 ### Level: 2 (Integration)
 
 **Commands Run**:
+
 - ✅ `bun run lint`
 - ✅ `bun test --filter integration` - 42 tests passed
 - ✅ `bun run build`
 
 **Real-Service Evidence**:
+
 - Supabase: SELECT returned expected rows
 - Auth flow: Token refresh successful
 ```
 
 Three validation levels:
+
 1. **Docs-only**: Linting, formatting
 2. **Integration**: Real service tests
 3. **Full E2E**: Complete user flows
@@ -396,12 +435,14 @@ Agents must not leak reasoning into artifacts. Forbidden patterns:
 - "First, I'll check..."
 
 **Bad** (meta-commentary):
+
 ```
 Let me create a branch for this issue. Based on the labels,
 I'll use the feature/ prefix. Great, the branch was created successfully!
 ```
 
 **Good** (artifact only):
+
 ```
 Branch: feature/123-add-user-auth
 From: develop (abc1234)
@@ -416,11 +457,11 @@ Production artifacts (commits, PRs, issues) should contain decisions, not reason
 
 Delegate GitHub operations to focused agents:
 
-| Agent | Responsibility |
-|-------|----------------|
-| **GitHub Communicator** | Issue creation, commenting, label management |
-| **Issue Prioritizer** | Analyze dependencies, recommend next tasks |
-| **Meta-Agent Evaluator** | Ensure agent instructions stay aligned |
+| Agent                    | Responsibility                               |
+| ------------------------ | -------------------------------------------- |
+| **GitHub Communicator**  | Issue creation, commenting, label management |
+| **Issue Prioritizer**    | Analyze dependencies, recommend next tasks   |
+| **Meta-Agent Evaluator** | Ensure agent instructions stay aligned       |
 
 This reduces context contamination in the main agent and ensures consistency.
 
@@ -429,15 +470,18 @@ This reduces context contamination in the main agent and ensures consistency.
 ## Metrics to Track
 
 ### Velocity
+
 - Commit frequency: >5/day indicates healthy pace
 - PR turnaround: <2 days suggests efficient review
 - Feature completion: Issues closed vs. opened
 
 ### Quality
+
 - CI failure rate: <5% suggests robust gates
 - Post-release bugs: <1% indicates effective testing
 
 ### Agent Collaboration
+
 - Context handoff success via GitHub
 - Pattern consistency across sessions
 - Knowledge accumulation in issues/PRs
@@ -446,13 +490,14 @@ This reduces context contamination in the main agent and ensures consistency.
 
 ## Alternative: Database-Backed Communication
 
-*[2025-12-08]*: For faster-moving workflows, expose CRUD operations on a shared communications store via MCP tools or function calling. This provides:
+_[2025-12-08]_: For faster-moving workflows, expose CRUD operations on a shared communications store via MCP tools or function calling. This provides:
 
 - Lower latency than GitHub API
 - More flexible schema
 - Better suited for real-time coordination
 
 GitHub remains better for:
+
 - Human oversight and intervention
 - Long-lived context (issues that span weeks)
 - Integration with existing dev workflows
@@ -463,17 +508,17 @@ The patterns (labels, relationships, validation evidence) apply to both.
 
 ## Workflow Harnesses: GSD as Production Example
 
-*[2026-03-20]*: A distinct category sits between raw coding agents and full workspace managers: **workflow harnesses** — meta-prompting systems that structure how a human-AI pair approaches complex projects through context engineering, phase decomposition, and state persistence. For the full taxonomy of harness categories (coding harnesses, workflow harnesses, orchestration harnesses, and interface harnesses), see [Harness Categories](../6-harnesses/3-harness-categories.md). This section focuses on the GSD production case study as a concrete workflow harness example.
+_[2026-03-20]_: A distinct category sits between raw coding agents and full workspace managers: **workflow harnesses** — meta-prompting systems that structure how a human-AI pair approaches complex projects through context engineering, phase decomposition, and state persistence. For the full taxonomy of harness categories (coding harnesses, workflow harnesses, orchestration harnesses, and interface harnesses), see [Harness Categories](../6-harnesses/3-harness-categories.md). This section focuses on the GSD production case study as a concrete workflow harness example.
 
 [GSD (Get Shit Done)](https://github.com/gsd-build/get-shit-done) is the clearest example. Built as a Claude Code skill ecosystem, GSD addresses "context rot" — the quality degradation that occurs as context fills during extended sessions — through a five-stage lifecycle:
 
-| Phase | Purpose | Agent Role |
-|-------|---------|------------|
-| **Discuss** | Capture decisions and gray areas | Interactive clarification |
-| **Plan** | Research approach, create XML-structured task plans | Specialized planner + plan-checker |
-| **Execute** | Run tasks in parallel waves with fresh 200K contexts | Per-task executors (isolated) |
-| **Verify** | User acceptance testing with automated diagnosis | Verification agent |
-| **Ship** | Create PRs from verified work | Shipping agent |
+| Phase       | Purpose                                              | Agent Role                         |
+| ----------- | ---------------------------------------------------- | ---------------------------------- |
+| **Discuss** | Capture decisions and gray areas                     | Interactive clarification          |
+| **Plan**    | Research approach, create XML-structured task plans  | Specialized planner + plan-checker |
+| **Execute** | Run tasks in parallel waves with fresh 200K contexts | Per-task executors (isolated)      |
+| **Verify**  | User acceptance testing with automated diagnosis     | Verification agent                 |
+| **Ship**    | Create PRs from verified work                        | Shipping agent                     |
 
 ### Key Design Decisions
 
@@ -503,7 +548,7 @@ Scale and abstraction:
   Workspace manager      → 20+ agent infrastructure (worktrees, merge queues, supervision)
 ```
 
-Workspace managers (see [Multi-Agent Workspace Managers](../10-practitioner-toolkit/5-multi-agent-workspace-managers.md)) solve infrastructure problems — merge conflicts, agent supervision, work attribution across dozens of simultaneous branches. Workflow harnesses solve *workflow* problems — context degradation, phase discipline, verification gates, state persistence across sessions.
+Workspace managers (see [Multi-Agent Workspace Managers](../10-practitioner-toolkit/5-multi-agent-workspace-managers.md)) solve infrastructure problems — merge conflicts, agent supervision, work attribution across dozens of simultaneous branches. Workflow harnesses solve _workflow_ problems — context degradation, phase discipline, verification gates, state persistence across sessions.
 
 The two are complementary, not competing. A workspace manager could orchestrate multiple GSD-structured workflows in parallel.
 
@@ -511,7 +556,7 @@ The two are complementary, not competing. A workspace manager could orchestrate 
 
 ## The Human Role in Agent-Managed Workflows
 
-*[2026-04-11]*: As agents take over execution of hours-long workflows, the human role migrates upstream. Ethan Mollick's practitioner-research synthesis identifies three distinct responsibilities that remain human in agent-managed work — and notably, execution is not among them (Mollick, "The Shape of the Thing," 2026).
+_[2026-04-11]_: As agents take over execution of hours-long workflows, the human role migrates upstream. Ethan Mollick's practitioner-research synthesis identifies three distinct responsibilities that remain human in agent-managed work — and notably, execution is not among them (Mollick, "The Shape of the Thing," 2026).
 
 **Strategy and direction:** Practitioners write roadmaps, scope work, and set success criteria before agents begin. This is the specification layer — the work that happens above the workflow harness. In GSD terms, the Discuss phase is where this work lives; in GitHub-based coordination, it is the original issue description and its acceptance criteria. The quality of this work determines the quality of everything downstream. This is the inverse of the old model where strategy was the fast part and execution was the bottleneck — when implementation is automated, specification becomes the scarce resource (see [Design as Bottleneck](../9-mental-models/6-design-as-bottleneck.md)).
 
@@ -561,6 +606,7 @@ This is relevant to practitioners who have internalized the centaur/cyborg colla
 - **The three roles are layered, not sequential.** Institutional design is ongoing; strategy and direction cycle per project; quality gates operate continuously as agents complete work.
 
 **Sources:**
+
 - Mollick, E. "The Shape of the Thing." One Useful Thing, ~2026-03-12. https://www.oneusefulthing.org/p/the-shape-of-the-thing
 - Mollick, E. "Centaurs and Cyborgs on the Jagged Frontier." One Useful Thing, 2023-09-16. https://www.oneusefulthing.org/p/centaurs-and-cyborgs-on-the-jagged
 

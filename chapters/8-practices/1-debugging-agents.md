@@ -23,15 +23,16 @@ Traditional debugging asks "why did this code path execute?" Agent debugging ask
 
 ### Agent Debugging vs Traditional Debugging
 
-| Traditional Code | Agent Systems |
-|-----------------|---------------|
-| Deterministic execution | Probabilistic decisions |
-| Stack traces show cause | Only inputs/outputs visible |
-| Same input → same output | Same input → varying outputs |
-| Bugs reproduce reliably | Failures may be intermittent |
-| Fix the code | Fix the prompt, context, tools, OR code |
+| Traditional Code         | Agent Systems                           |
+| ------------------------ | --------------------------------------- |
+| Deterministic execution  | Probabilistic decisions                 |
+| Stack traces show cause  | Only inputs/outputs visible             |
+| Same input → same output | Same input → varying outputs            |
+| Bugs reproduce reliably  | Failures may be intermittent            |
+| Fix the code             | Fix the prompt, context, tools, OR code |
 
 Agent debugging requires working backward from observed behavior to infer what the model "thought." The model's internal reasoning remains opaque, so debugging relies on:
+
 - Structured logging at decision points
 - Systematic hypothesis testing
 - Understanding model behavior patterns
@@ -40,12 +41,12 @@ Agent debugging requires working backward from observed behavior to infer what t
 
 Every agent failure traces to one or more of the "core four" components. Before debugging, identify which component is suspect:
 
-| Component | Symptoms | First Check |
-|-----------|----------|-------------|
-| **Prompt** | Wrong interpretation, missed instructions | Does the prompt clearly specify what NOT to do? |
-| **Model** | Capability limits, reasoning errors | Can a more capable model do this task? |
-| **Context** | Hallucination, outdated info, missed details | What context was actually available? |
-| **Tools** | Wrong tool choice, tool errors, bad outputs | Did tools return what was expected? |
+| Component   | Symptoms                                     | First Check                                     |
+| ----------- | -------------------------------------------- | ----------------------------------------------- |
+| **Prompt**  | Wrong interpretation, missed instructions    | Does the prompt clearly specify what NOT to do? |
+| **Model**   | Capability limits, reasoning errors          | Can a more capable model do this task?          |
+| **Context** | Hallucination, outdated info, missed details | What context was actually available?            |
+| **Tools**   | Wrong tool choice, tool errors, bad outputs  | Did tools return what was expected?             |
 
 **The diagnostic sequence**: Check tools first (easiest to verify), then context (what did the agent know?), then prompt (ambiguity?), then model (capability?) last.
 
@@ -59,14 +60,14 @@ When an agent fails, work through this decision tree to identify root cause:
 
 **Q: What type of failure occurred?**
 
-| If the agent... | Jump to |
-|----------------|---------|
+| If the agent...       | Jump to   |
+| --------------------- | --------- |
 | Produced wrong output | → Step 2A |
-| Got stuck / looped | → Step 2B |
-| Stopped too early | → Step 2C |
-| Used wrong tool | → Step 2D |
-| Made something up | → Step 2E |
-| Crashed / errored | → Step 2F |
+| Got stuck / looped    | → Step 2B |
+| Stopped too early     | → Step 2C |
+| Used wrong tool       | → Step 2D |
+| Made something up     | → Step 2E |
+| Crashed / errored     | → Step 2F |
 
 ### Step 2A: Wrong Output
 
@@ -78,6 +79,7 @@ The agent completed but produced incorrect results.
 4. **Verify tool outputs**: Did tools return correct data that the agent then misinterpreted?
 
 **Common root causes**:
+
 - Ambiguous success criteria in prompt
 - Context window exceeded (lost early instructions)
 - Examples contradicted by instructions
@@ -93,6 +95,7 @@ The agent repeats actions without progress or enters infinite loops.
 4. **Look for oscillation**: Is the agent alternating between two states?
 
 **Common root causes**:
+
 - No explicit stopping condition
 - Tool returning same error without useful feedback
 - Agent misinterpreting partial success as failure
@@ -107,6 +110,7 @@ The agent declared completion prematurely.
 3. **Examine context usage**: Did the task description get truncated?
 
 **Common root causes**:
+
 - Vague completion criteria ("do your best")
 - Long task list in prompt, model stopped after early items
 - Context window filled, later instructions dropped
@@ -122,6 +126,7 @@ The agent chose an inappropriate tool for the task.
 4. **Look for capability assumptions**: Did the agent assume a tool could do something it couldn't?
 
 **Common root causes**:
+
 - Tool descriptions don't differentiate use cases
 - Too many similar tools creating decision fatigue
 - Correct tool not in allowed tools list
@@ -137,6 +142,7 @@ The agent fabricated information not present in context.
 4. **Examine pressure**: Was the agent pressured to answer despite missing info?
 
 **Common root causes**:
+
 - Information genuinely missing from context
 - Context too long, relevant info buried
 - Prompt doesn't allow "I don't know" responses
@@ -152,6 +158,7 @@ The agent or tooling produced an error.
 4. **Examine input validation**: Did invalid input cause the error?
 
 **Common root causes**:
+
 - API rate limits or authentication issues
 - Context window overflow
 - Tool returned unexpected format
@@ -166,16 +173,19 @@ The agent or tooling produced an error.
 **Symptoms**: Agent forgets early instructions, misses requirements mentioned at the start of a long conversation, produces outputs that ignore constraints specified initially.
 
 **Diagnosis**:
+
 - Check total token count vs model context limit
 - Look for "primacy bias" reversal (late tokens dominate)
 - Note if failures correlate with conversation length
 
 **Root causes**:
+
 - Context budget exhausted by tool outputs
 - Long system prompts combined with long conversations
 - Accumulated context from multi-turn interactions
 
 **Fixes**:
+
 - Summarize intermediate results instead of preserving raw outputs
 - Move critical instructions to end of prompt (recency bias)
 - Implement context pruning strategies
@@ -186,17 +196,20 @@ The agent or tooling produced an error.
 **Symptoms**: Agent reports tool failures, produces partial results, or works around tool limitations in unexpected ways.
 
 **Diagnosis**:
+
 - Check tool return values in logs
 - Verify tool authentication and configuration
 - Test tools in isolation outside agent context
 
 **Root causes**:
+
 - Tool misconfiguration (API keys, endpoints)
 - Tool returning error messages agent can't interpret
 - Tool success format different than agent expects
 - Race conditions in async tool calls
 
 **Fixes**:
+
 - Add structured error handling in tool implementations
 - Provide clear error messages with remediation hints
 - Validate tool outputs before returning to agent
@@ -207,17 +220,20 @@ The agent or tooling produced an error.
 **Symptoms**: Agent states facts not in context, makes up file paths or function names, fabricates API responses, invents prior conversation history.
 
 **Diagnosis**:
+
 - Compare agent claims to actual context provided
 - Check retrieval results if using RAG
 - Look for "confident but wrong" patterns
 
 **Root causes**:
+
 - Information genuinely not in context (expected knowledge)
 - RAG retrieval returning irrelevant results
 - Similar information creating confusion
 - Pressure to answer without "I don't know" escape hatch
 
 **Fixes**:
+
 - Explicitly state what information is NOT available
 - Add "if information is not in context, say so" instruction
 - Improve retrieval quality and relevance filtering
@@ -228,16 +244,19 @@ The agent or tooling produced an error.
 **Symptoms**: Agent follows instructions accurately at first, gradually deviates over extended conversations, ignores constraints that were respected earlier.
 
 **Diagnosis**:
+
 - Compare early vs late behavior in same conversation
 - Check if critical instructions are near prompt start
 - Look for context approaching limits
 
 **Root causes**:
+
 - Context filling with conversation history
 - Critical instructions too far from active context
 - Competing instructions accumulated over time
 
 **Fixes**:
+
 - Repeat key constraints at intervals
 - Use structured conversation resets
 - Summarize and restart for long workflows
@@ -248,16 +267,19 @@ The agent or tooling produced an error.
 **Symptoms**: Agent chooses suboptimal tools, oscillates between similar tools, uses tool A when tool B would be more appropriate.
 
 **Diagnosis**:
+
 - Review available tools and their descriptions
 - Check for overlapping tool capabilities
 - Examine if tool descriptions distinguish use cases
 
 **Root causes**:
+
 - Too many tools with unclear differentiation
 - Tool descriptions emphasize capabilities over use cases
 - No guidance on tool selection strategy
 
 **Fixes**:
+
 - Reduce number of available tools
 - Rewrite tool descriptions with clear "when to use" guidance
 - Add tool selection hints in system prompt
@@ -268,16 +290,19 @@ The agent or tooling produced an error.
 **Symptoms**: Agent stops before completing all steps, declares success when only partially done, skips items in a list.
 
 **Diagnosis**:
+
 - Check completion criteria in prompt
 - Review what the agent reported as "done"
 - Look for truncation in task lists
 
 **Root causes**:
+
 - Vague or easily-satisfied completion criteria
 - Long task lists where model attention fades
 - Implicit rather than explicit requirements
 
 **Fixes**:
+
 - Add explicit completion checklist
 - Use numbered steps with "confirm each step complete"
 - Require verification of completion conditions
@@ -285,14 +310,16 @@ The agent or tooling produced an error.
 
 ### Quality Gate Failures
 
-*[2026-02-06]*: **Symptoms**: Agent progresses through multi-phase workflow despite incomplete artifacts, ambiguous specifications, or missing dependencies. Downstream phases fail because upstream artifacts weren't validated.
+_[2026-02-06]_: **Symptoms**: Agent progresses through multi-phase workflow despite incomplete artifacts, ambiguous specifications, or missing dependencies. Downstream phases fail because upstream artifacts weren't validated.
 
 **Diagnosis:**
+
 - Review phase transition points—was artifact complete before progression?
 - Check artifact quality—are completion criteria met?
 - Examine dependencies—does this phase reference things that don't exist?
 
 **Root causes:**
+
 - No validation between workflow phases
 - Completion criteria too vague or easily satisfied
 - Pressure to ship fast bypasses quality checks
@@ -301,30 +328,35 @@ The agent or tooling produced an error.
 **Fixes:**
 
 **Implement adversarial review gates:**
+
 ```markdown
 # Between phases, add critical examination step
 
 Phase 1: Research → Generate research summary
-    ↓
+↓
 Quality Gate: Is research summary complete?
+
 - [ ] All dependencies identified
 - [ ] Root cause documented with evidence
 - [ ] Constraints explicitly stated
 - [ ] Recommended approach justified
-    ↓
-If incomplete → return to Research
-If complete → proceed to Plan
+      ↓
+      If incomplete → return to Research
+      If complete → proceed to Plan
 ```
 
 **Add artifact validation prompts:**
+
 ```markdown
 Before accepting Research output:
+
 - Does this answer "what problem are we solving?"
 - Are all file paths/dependencies concrete (not "probably in auth.py")
 - Can the next phase execute from this artifact alone?
 ```
 
 **Example validation logic:**
+
 ```python
 def validate_research_artifact(artifact: str) -> tuple[bool, str]:
     """Validate research artifact before allowing Plan phase."""
@@ -349,17 +381,20 @@ BMAD uses adversarial review as XML task (one of 4 core framework tasks). Orches
 Bad research compounds exponentially. A 10-minute research mistake can create a 10-week refactoring disaster. Quality gates prevent cascade failures by validating artifacts when mistakes are cheap to fix (specification phase) rather than expensive (post-implementation).
 
 **Trade-offs:**
+
 - **Slower progression** through phases (validation takes time)
 - **Higher quality output** (prevents compounding errors)
 - **Better debugging** (clear failure point when gates reject artifacts)
 
 **When to use quality gates:**
+
 - Multi-phase workflows (Research → Plan → Build)
 - High-cost-of-failure scenarios (production systems, regulated industries)
 - Complex domains where upfront validation saves downstream rework
 - Team environments where quality standards must be enforced
 
 **When to skip:**
+
 - Simple single-phase tasks (no handoff, no cascade risk)
 - Prototyping (speed over quality initially)
 - Well-understood domains (team expertise reduces validation need)
@@ -369,16 +404,19 @@ Bad research compounds exponentially. A 10-minute research mistake can create a 
 **Symptoms**: Agent acts on outdated information, conflicts between parallel agents, inconsistent state after handoffs.
 
 **Diagnosis**:
+
 - Trace state passing between agents
 - Check timestamp of context provided to each agent
 - Verify state serialization/deserialization
 
 **Root causes**:
+
 - State not passed completely between agents
 - Parallel agents modifying shared state
 - Stale context provided to downstream agents
 
 **Fixes**:
+
 - Use explicit state objects passed between agents
 - Implement read/write locks for shared state
 - Refresh context before critical decisions
@@ -418,6 +456,7 @@ Effective agent debugging requires structured logs at decision points, not just 
 ```
 
 **Log analysis patterns**:
+
 - Search for tool calls that precede failures
 - Track token count growth through conversation
 - Compare successful vs failed runs for divergence points
@@ -427,6 +466,7 @@ Effective agent debugging requires structured logs at decision points, not just 
 When debugging, create the smallest case that reproduces the failure.
 
 **Reduction process**:
+
 1. Start with the full failing case
 2. Remove context elements one at a time
 3. Simplify the prompt while preserving failure
@@ -434,6 +474,7 @@ When debugging, create the smallest case that reproduces the failure.
 5. Document the minimal reproduction case
 
 **Benefits**:
+
 - Faster iteration on fixes
 - Clearer root cause identification
 - Portable test case for regression prevention
@@ -443,6 +484,7 @@ When debugging, create the smallest case that reproduces the failure.
 When the cause is unclear, test variations systematically.
 
 **Structure**:
+
 ```
 Base case: [original prompt]
 Variation A: [change one element]
@@ -453,6 +495,7 @@ Compare success rates
 ```
 
 **What to vary**:
+
 - Instruction ordering
 - Specificity of requirements
 - Format of examples
@@ -463,12 +506,14 @@ Compare success rates
 Examine exactly what the agent saw.
 
 **Techniques**:
+
 - Dump full context at failure point
 - Highlight what was present vs missing
 - Check token counts for each context section
 - Verify encoding/special characters
 
 **Questions to answer**:
+
 - Was the needed information in context?
 - Where in the context was it? (position matters)
 - What other information competed for attention?
@@ -479,6 +524,7 @@ Examine exactly what the agent saw.
 For complex multi-step failures, replay the trace step by step.
 
 **Process**:
+
 1. Capture full execution trace
 2. Identify the step where behavior first diverged
 3. Extract context as of that step
@@ -486,6 +532,7 @@ For complex multi-step failures, replay the trace step by step.
 5. Isolate the specific decision that went wrong
 
 **Useful for**:
+
 - Multi-agent coordination failures
 - Long workflow debugging
 - Intermittent failures that are hard to reproduce
@@ -494,12 +541,12 @@ For complex multi-step failures, replay the trace step by step.
 
 When suspecting model capability, test across models.
 
-| If behavior... | Suggests... |
-|---------------|-------------|
-| Fails on all models | Prompt/context issue, not model |
-| Fails only on smaller models | Task complexity exceeds model capability |
-| Fails inconsistently on same model | Edge case or prompt ambiguity |
-| Succeeds on API but fails embedded | Environment/configuration issue |
+| If behavior...                     | Suggests...                              |
+| ---------------------------------- | ---------------------------------------- |
+| Fails on all models                | Prompt/context issue, not model          |
+| Fails only on smaller models       | Task complexity exceeds model capability |
+| Fails inconsistently on same model | Edge case or prompt ambiguity            |
+| Succeeds on API but fails embedded | Environment/configuration issue          |
 
 **Caution**: Model comparison is expensive. Use only after ruling out prompt, context, and tool issues.
 
@@ -508,9 +555,11 @@ When suspecting model capability, test across models.
 ## Anti-Patterns
 
 ### Debugging Without Logs
+
 **What it looks like**: Agent fails. The engineer stares at the prompt and tries to guess what went wrong. Changes are made based on intuition rather than data.
 
 **Why it fails**:
+
 - Debugging the theory of what happened, not what actually happened
 - Intermittent failures are impossible to diagnose
 - Can't distinguish "agent didn't try" from "agent tried and failed"
@@ -519,9 +568,11 @@ When suspecting model capability, test across models.
 **Better alternative**: Instrument before debugging. Add logging at decision points, tool calls, and validation gates. Use event logs to trace execution. Read agent outputs and intermediate states. Debug the data, not the mental model.
 
 ### Changing Multiple Things at Once
+
 **What it looks like**: Agent isn't working right. The engineer simultaneously changes the prompt structure, swaps the model, adjusts the context window, and modifies the tool permissions. One of those fixes it—but which one?
 
 **Why it fails**:
+
 - Can't identify root cause
 - Might have fixed one thing but broken another
 - No reproducible solution to apply elsewhere
@@ -530,9 +581,11 @@ When suspecting model capability, test across models.
 **Better alternative**: Change one variable at a time. Make a hypothesis, change only what tests that hypothesis, verify the impact. If that didn't work, revert and try the next hypothesis. Keep notes on what was tried.
 
 ### Not Reproducing Before Fixing
+
 **What it looks like**: Agent failed once. The engineer makes a change without verifying the original failure can be reproduced or that the fix prevents it.
 
 **Why it fails**:
+
 - "Fix" might do nothing, failure was intermittent
 - Can't tell if future failures are regressions or new issues
 - No confidence the problem is actually solved
@@ -541,9 +594,11 @@ When suspecting model capability, test across models.
 **Better alternative**: First, reproduce the failure reliably (even if just 2-3 times in a row). Document the repro steps. Then make the fix. Then verify the fix prevents the failure in 5+ consecutive runs. Without reproduction, there's no verification.
 
 ### Assuming It's the Model
+
 **What it looks like**: Agent produces wrong output. Model capability gets blamed immediately: "Haiku isn't smart enough for this" or "Opus hallucinates here." Switch to bigger/newer model without investigating further.
 
 **Why it fails**:
+
 - Most agent failures are prompt, context, or tool issues, not model capability
 - Bigger models are slower and more expensive
 - Doesn't fix the actual problem—new model often fails the same way
@@ -552,9 +607,11 @@ When suspecting model capability, test across models.
 **Better alternative**: Check the other "core four" first. Is the instruction clear? Does the agent have the right context? Are tools working correctly? Is the output format well-specified? Model capability is usually the last resort, not the first suspect.
 
 ### Debugging in Production
+
 **What it looks like**: Agent fails in production. The engineer modifies the production prompt to add debugging output or try different approaches. Iteration happens on the live system.
 
 **Why it fails**:
+
 - Every iteration affects real users or systems
 - Can't experiment freely without consequences
 - Pressure leads to quick hacks instead of root cause fixes
@@ -563,9 +620,11 @@ When suspecting model capability, test across models.
 **Better alternative**: Reproduce the failure locally or in a dev environment. Use production logs to understand the failure mode, but fix and test in isolation. Only deploy to production after verifying the fix in a safe environment.
 
 ### Ignoring Partial Successes
+
 **What it looks like**: Agent works 70% of the time, fails 30%. Focus goes only to the failures, trying to fix what went wrong. Successes are never analyzed for what makes them different.
 
 **Why it fails**:
+
 - Successes often show what conditions enable correct behavior
 - Failure analysis alone doesn't reveal missing prerequisites
 - Can't identify environmental or input patterns that matter
@@ -574,9 +633,11 @@ When suspecting model capability, test across models.
 **Better alternative**: Compare successes to failures. What's different about the inputs, context, or environment when it works? Often the pattern is "succeeds when context includes Y" or "fails when input is ambiguous." This points directly to the fix.
 
 ### The Infinite Retry Loop
+
 **What it looks like**: Add retry logic to handle intermittent failures. Agent fails, retries, fails, retries... infinitely, never surfacing the underlying issue.
 
 **Why it fails**:
+
 - Masks systemic problems with tactical patches
 - Wastes tokens and time on doomed attempts
 - No signal to humans that something is fundamentally broken
@@ -588,11 +649,11 @@ When suspecting model capability, test across models.
 
 ## Debugging War Stories
 
-*Document specific debugging sessions—what happened, how you figured it out:*
+_Document specific debugging sessions—what happened, how you figured it out:_
 
 ### Multi-Agent Debugging Strategies
 
-*[2025-12-09]*: Multi-agent systems have distinct failure modes that require different debugging approaches than single-agent systems.
+_[2025-12-09]_: Multi-agent systems have distinct failure modes that require different debugging approaches than single-agent systems.
 
 **Check Single-Message Parallelism First**
 
@@ -601,6 +662,7 @@ When parallel agents run slower than expected or produce suspiciously sequential
 **Graceful Degradation Patterns**
 
 Multi-agent systems should degrade gracefully when individual agents fail:
+
 - If one expert fails, note the failure and continue with available analyses
 - Recommend manual review for failed expert domains
 - Include recovery instructions in output
@@ -611,6 +673,7 @@ Implement this by checking subagent return status before synthesis. The orchestr
 **Partial Success Handling**
 
 Unlike single-agent (which either works or doesn't), multi-agent systems have complex success states:
+
 - Commit successful changes before reporting failures
 - Allow selective retry via phase parameters
 - Never leave the workflow in an inconsistent state
@@ -619,6 +682,7 @@ Unlike single-agent (which either works or doesn't), multi-agent systems have co
 **Use Hooks to Trace Agent Transitions**
 
 SubagentStop hooks record what each subagent produced. ErrorEscalation surfaces failures to the orchestrator. These create an audit trail for debugging:
+
 - Which subagent ran when?
 - What did it return?
 - Where did it fail?
@@ -632,6 +696,7 @@ Each agent stays focused on its domain and doesn't need to know about other agen
 **Coordination vs. Agent Failures**
 
 Two distinct failure modes:
+
 1. **Agent failure**: Individual subagent does wrong thing (debug like single-agent)
 2. **Coordination failure**: Orchestrator routes incorrectly, synthesizes badly, or mismanages state
 
@@ -686,6 +751,7 @@ cat test-pretool-input.json | python .claude/hooks/orchestrator_guard.py
 **Verifying Exit Codes:**
 
 Exit codes control hook behavior:
+
 - **Exit 0**: Success, allow operation
 - **Exit 2**: Block operation, show stderr to Claude
 - **Other**: Non-blocking error, visible in debug mode only
@@ -727,6 +793,7 @@ claude --debug
 ```
 
 This shows:
+
 - Which hooks are triggered
 - stdin/stdout/stderr content
 - Exit codes
@@ -736,6 +803,7 @@ This shows:
 **Use `/hooks` Command:**
 
 Inside Claude Code, run `/hooks` to see all registered hooks and their configuration. This confirms:
+
 - Hook is properly registered
 - Matcher patterns are correct
 - Hook file paths are valid
@@ -804,6 +872,7 @@ If using `#!/usr/bin/env -S uv run --script`, ensure `uv` is installed and in PA
 ### Verifying Orchestrator Enforcement
 
 The orchestrator pattern uses two hooks working together:
+
 1. `orchestrator_context.py` (UserPromptSubmit) - Sets context when orchestrator commands run
 2. `orchestrator_guard.py` (PreToolUse) - Blocks Write/Edit tools in orchestrator context
 
@@ -832,6 +901,7 @@ Example: Task(subagent_type='knowledge-build-agent', prompt='...')
 ```
 
 If you're not seeing this error when you should, check:
+
 1. Is `CLAUDE_ORCHESTRATOR_CONTEXT` actually set in the env file?
 2. Is the PreToolUse hook registered? (use `/hooks` to verify)
 3. Is the hook script executable and working? (test manually)
@@ -839,6 +909,7 @@ If you're not seeing this error when you should, check:
 **What to Look For in Error Messages:**
 
 Good hook errors should:
+
 - Identify the problem clearly: "BLOCKED: Orchestrator 'X' cannot use Y"
 - Explain why: "Delegate to a build agent"
 - Show how to fix it: "Example: Task(...)"
@@ -904,6 +975,7 @@ def main():
 **What to Log:**
 
 Log decision points, not every line:
+
 - Hook triggered (with input summary)
 - Context detected (orchestrator name, environment state)
 - Decisions made (allow/block, why)
@@ -918,6 +990,7 @@ tail -f ~/.claude/logs/orchestrator_guard.log
 ```
 
 This shows hook execution in real-time, helping you understand:
+
 - Which hooks are actually running
 - What input they're receiving
 - What decisions they're making
@@ -967,6 +1040,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Symptom**: Code generation agent produced output that violated explicit constraints. The constraint "never use external dependencies" was clearly stated, but the agent added `import requests` to the code.
 
 **Investigation**:
+
 1. Checked the prompt—constraint was present at line 5 of a 200-line system prompt
 2. Estimated token count: system prompt (4k) + conversation history (12k) + code context (8k) = 24k tokens
 3. Constraint was in the first 3% of context
@@ -975,6 +1049,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Root cause**: Context overflow creating effective instruction loss. The constraint existed but was too far from active generation for the model to weight it appropriately.
 
 **Fix**:
+
 - Moved critical constraints to the end of the system prompt
 - Added constraint reminders in user messages
 - Implemented a "constraints" section that gets repeated before code generation
@@ -986,6 +1061,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Symptom**: Agent alternated between `file_search` and `web_search` for the same query, never settling on one approach. Task timed out after 15 iterations.
 
 **Investigation**:
+
 1. Logged tool selection reasoning
 2. Both tools returned partial results
 3. Agent interpreted partial results as "wrong tool chosen"
@@ -994,6 +1070,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Root cause**: No guidance on tool selection criteria. Tools had similar descriptions. Agent had no way to determine which was "correct" when both returned something.
 
 **Fix**:
+
 - Added explicit tool selection criteria to prompt: "Use file_search for content already in context. Use web_search only for information not in any provided files."
 - Added "stick with your choice unless result is empty" instruction
 - Implemented a max-switches-per-query limit
@@ -1005,6 +1082,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Symptom**: Agent confidently cited a function `validate_user_input()` that didn't exist in the codebase. Claimed it was in `auth.py` at line 45.
 
 **Investigation**:
+
 1. Searched codebase—no such function
 2. Checked RAG retrieval—returned `validate_input()` from `forms.py`
 3. Context also included `user_auth_check()` from `auth.py`
@@ -1013,6 +1091,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Root cause**: Conflation of similar-but-different retrieved results. RAG returned relevant but not exact matches; agent synthesized a plausible-sounding but non-existent reference.
 
 **Fix**:
+
 - Added verification step: "Before citing any function, use grep to confirm it exists"
 - Improved RAG retrieval to return exact matches when available
 - Added instruction: "If you cannot find the exact function, say so rather than approximating"
@@ -1024,6 +1103,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Symptom**: In a three-agent pipeline (scout → planner → builder), the builder produced code that contradicted the planner's specifications. Scout found the right files, planner made a correct plan, builder ignored parts of the plan.
 
 **Investigation**:
+
 1. Traced state passing between agents
 2. Scout returned: "Found 3 relevant files: auth.py, middleware.py, routes.py"
 3. Planner created spec referencing all three files
@@ -1032,6 +1112,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Root cause**: Spec file referenced files by name, but builder didn't have file contents. Builder proceeded with incomplete context rather than requesting missing information.
 
 **Fix**:
+
 - Changed spec format to include file contents, not just names
 - Added builder validation: "Verify all referenced files are accessible before proceeding"
 - Implemented explicit context handoff verification at phase transitions
@@ -1043,6 +1124,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Symptom**: Identical prompt, identical context, but 60% success rate. Some runs produced correct output, others failed with apparent reasoning errors.
 
 **Investigation**:
+
 1. Compared successful vs failed runs
 2. No obvious pattern in inputs
 3. Examined model temperature—set to 0.7
@@ -1051,6 +1133,7 @@ This keeps logs clean during normal operation while providing detail when troubl
 **Root cause**: Prompt had multiple valid interpretation paths. At temperature 0.7, model sometimes followed the successful path, sometimes followed a plausible but wrong path.
 
 **Fix**:
+
 - Reduced temperature to 0.1 for this task
 - Added explicit step-by-step reasoning structure to reduce path variance
 - Made success criteria unambiguous
@@ -1064,22 +1147,26 @@ This keeps logs clean during normal operation while providing detail when troubl
 Quick reference for systematic debugging:
 
 ### Before Starting
+
 - [ ] Can the failure be reproduced? (Try 3 times)
 - [ ] Is the failure documented? (Inputs, outputs, error messages)
 - [ ] Is there logging/tracing available?
 
 ### Initial Diagnosis
+
 - [ ] Categorize failure type (wrong output, stuck, early stop, tool error, hallucination, crash)
 - [ ] Check which "core four" component is suspect (tools → context → prompt → model)
 - [ ] Review recent changes (what was different when it worked?)
 
 ### Investigation
+
 - [ ] Examine exact context provided to agent
 - [ ] Check token counts vs limits
 - [ ] Review tool call inputs and outputs
 - [ ] Compare successful vs failed runs
 
 ### Fix Verification
+
 - [ ] Change only one variable at a time
 - [ ] Verify fix in 5+ consecutive runs
 - [ ] Document what was tried and what worked
@@ -1107,5 +1194,3 @@ Quick reference for systematic debugging:
 - Can agents be designed to self-diagnose and report their own failure modes?
 
 ---
-
-

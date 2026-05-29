@@ -15,17 +15,17 @@ order: 1.1.0
 
 Everything in agentic engineering flows from five interconnected pillars:
 
-| Pillar | Core Question |
-|--------|---------------|
-| [Prompt](../2-prompt/_index.md) | How to instruct the agent? |
-| [Model](../3-model/_index.md) | What capabilities does the system provide? |
-| [Context](../4-context/_index.md) | What information does the agent access? |
-| [Tool Use](../5-tool-use/_index.md) | What actions can the agent take? |
+| Pillar                              | Core Question                                      |
+| ----------------------------------- | -------------------------------------------------- |
+| [Prompt](../2-prompt/_index.md)     | How to instruct the agent?                         |
+| [Model](../3-model/_index.md)       | What capabilities does the system provide?         |
+| [Context](../4-context/_index.md)   | What information does the agent access?            |
+| [Tool Use](../5-tool-use/_index.md) | What actions can the agent take?                   |
 | [Harness](../6-harnesses/_index.md) | What system orchestrates and constrains execution? |
 
 This framing extends [agenticengineer.com](https://agenticengineer.com)'s "core four" with a fifth pillar: Harness. For a more granular hierarchy of intervention points, see the [Twelve Leverage Points](1-twelve-leverage-points.md)—a framework that expands beyond the core five into architecture, workflows, and system-level concerns.
 
-*[2026-04-12]*: **Why Harness was added as a fifth pillar.** The original core four (Prompt, Model, Context, Tool Use) answered: what do you say, what brain do you use, what does it know, what can it do. A fifth question crystallized in early 2026: *what system orchestrates and constrains the agent's execution?* Without a harness, there is no agent — only a model being prompted. Multiple authoritative practitioners converged on the formula `Agent = Model + Harness` within a 90-day window (Fowler, Raschka, Mollick, Hashimoto, Schmid), constituting a definitional crystallization event. Agent Psychometrics research (arXiv:2604.00594) formalized the independence: P(success) = σ(θ_LLM + θ_scaffold − β_difficulty), where harness quality and model quality contribute independently. Harness investment yields separable gains from model investment — meaning the fifth pillar carries foundational weight equal to the original four.
+_[2026-04-12]_: **Why Harness was added as a fifth pillar.** The original core four (Prompt, Model, Context, Tool Use) answered: what do you say, what brain do you use, what does it know, what can it do. A fifth question crystallized in early 2026: _what system orchestrates and constrains the agent's execution?_ Without a harness, there is no agent — only a model being prompted. Multiple authoritative practitioners converged on the formula `Agent = Model + Harness` within a 90-day window (Fowler, Raschka, Mollick, Hashimoto, Schmid), constituting a definitional crystallization event. Agent Psychometrics research (arXiv:2604.00594) formalized the independence: P(success) = σ(θ_LLM + θ_scaffold − β_difficulty), where harness quality and model quality contribute independently. Harness investment yields separable gains from model investment — meaning the fifth pillar carries foundational weight equal to the original four.
 
 ---
 
@@ -69,6 +69,7 @@ The pillars are deeply interdependent:
 - **Harness quality is often the distinguishing factor**—apparent model quality differences frequently resolve to harness design differences (Raschka, 2026)
 
 When one pillar changes, it ripples to the others:
+
 - **Downgrade the model** → massive performance impacts across the board
 - **Add more tools** → risk flooding the context window if not handled properly
 - **Alter context** → changes model behavior for that entire session, including tool usage
@@ -78,29 +79,29 @@ When one pillar changes, it ripples to the others:
 
 ## Is There a Hierarchy?
 
-*[2025-12-10]*: Until mid-2025, **model** sat at the top. The gap between state-of-the-art (SOTA) and other models was so large that model choice dominated outcomes.
+_[2025-12-10]_: Until mid-2025, **model** sat at the top. The gap between state-of-the-art (SOTA) and other models was so large that model choice dominated outcomes.
 
-*[2025-12-10]*: The frontier narrowed through 2024. Claude 3.5 Sonnet (June 2024), Gemini 1.5 Pro, and GPT-4o compressed capability gaps. Differences between frontier models became less deterministic of outcomes. The other pillars now carry more weight:
+_[2025-12-10]_: The frontier narrowed through 2024. Claude 3.5 Sonnet (June 2024), Gemini 1.5 Pro, and GPT-4o compressed capability gaps. Differences between frontier models became less deterministic of outcomes. The other pillars now carry more weight:
 
 - **Tool use** is essential to any workflow that needs to take action. A model without tools produces analysis but cannot execute workflows.
 - **Context** alters the entire behavior of a model during a session.
 - **Prompting** determines the direction of the context window and model behavior.
 
-*[2025-12-10]*: Practical observation from production deployments: SOTA models provide superior outcomes across most tasks. The cost premium pays for itself through reduced iteration cycles and higher first-attempt success rates.
+_[2025-12-10]_: Practical observation from production deployments: SOTA models provide superior outcomes across most tasks. The cost premium pays for itself through reduced iteration cycles and higher first-attempt success rates.
 
 ---
 
 ## How the Framework Has Evolved
 
-*[2025-12-10]*: Early LLMs (pre-2023) lacked tool use capabilities. GPT-3.5's function calling (June 2023) marked the transition to agentic systems. Claude 3 Opus demonstrated extended context windows (March 2024, 200k tokens). Each capability expansion required reevaluation of what agents could accomplish.
+_[2025-12-10]_: Early LLMs (pre-2023) lacked tool use capabilities. GPT-3.5's function calling (June 2023) marked the transition to agentic systems. Claude 3 Opus demonstrated extended context windows (March 2024, 200k tokens). Each capability expansion required reevaluation of what agents could accomplish.
 
-*[2025-12-10]*: Current SOTA models (Claude 3.5 Sonnet, GPT-4o, Gemini 1.5 Pro) demonstrate capability across most coding tasks. Observable limitations center on context window constraints and tool availability rather than model intelligence.
+_[2025-12-10]_: Current SOTA models (Claude 3.5 Sonnet, GPT-4o, Gemini 1.5 Pro) demonstrate capability across most coding tasks. Observable limitations center on context window constraints and tool availability rather than model intelligence.
 
 ---
 
 ## Common Mistakes
 
-*[2025-12-10]*: Observed patterns from new practitioners in agentic engineering:
+_[2025-12-10]_: Observed patterns from new practitioners in agentic engineering:
 
 1. **Organization of information**—poor structure kills agent effectiveness. Unstructured context causes models to miss critical information.
 2. **Excessive trust in model outputs**—skipping verification leads to compounding errors in multi-step workflows.
@@ -111,7 +112,7 @@ When one pillar changes, it ripples to the others:
 7. **Insufficient instruction detail**—relying too heavily on agent discovery increases failure rates.
 8. **Failing to adhere to the [pit of success](../9-mental-models/1-pit-of-success.md) mindset**—making correct actions harder than incorrect ones.
 
-*[2025-12-10]*: Counter-intuitive finding: "more" does not equal better capability. More tools, more context, and more steering prompts degrade performance. **A focused agent is a productive agent.**
+_[2025-12-10]_: Counter-intuitive finding: "more" does not equal better capability. More tools, more context, and more steering prompts degrade performance. **A focused agent is a productive agent.**
 
 ---
 

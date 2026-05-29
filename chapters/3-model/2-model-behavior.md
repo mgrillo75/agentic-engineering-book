@@ -20,16 +20,19 @@ Models are probabilistic systems, not deterministic functions. Understanding the
 ## Core Questions
 
 ### Behavioral Consistency
+
 - Same prompt, different runs—how much variance appears in production?
 - How does temperature affect reliability in multi-step workflows?
 - What behavioral patterns remain consistent across model families?
 
 ### Model Characteristics
+
 - What are "model behaviors" beyond raw capability metrics?
 - How do learned patterns (verbosity, refusal, instruction-following) affect agent design?
 - When do model-specific quirks matter for production systems?
 
 ### Extended Reasoning
+
 - When should extended thinking modes be enabled?
 - What trade-offs exist between reasoning depth and latency?
 - How do thinking budgets affect output quality?
@@ -44,17 +47,17 @@ At temperature 0, most models approach near-deterministic behavior. "Near" matte
 
 ### Temperature Effects on Reliability
 
-*[2025-12-10]*: **Temperature compounds in multi-step workflows.** A single task at temperature 1.0 might succeed 95% of the time. Ten sequential tasks at the same temperature? Reliability degrades to approximately 60%.
+_[2025-12-10]_: **Temperature compounds in multi-step workflows.** A single task at temperature 1.0 might succeed 95% of the time. Ten sequential tasks at the same temperature? Reliability degrades to approximately 60%.
 
 The math: 0.95^10 ≈ 0.60. Small per-step error rates multiply across steps.
 
 **Practical implications:**
 
-| Temperature | Single-Step Success | 10-Step Success |
-|-------------|---------------------|-----------------|
-| 0.0 (near-deterministic) | ~99% | ~90% |
-| 0.5 (moderate creativity) | ~97% | ~74% |
-| 1.0 (high creativity) | ~95% | ~60% |
+| Temperature               | Single-Step Success | 10-Step Success |
+| ------------------------- | ------------------- | --------------- |
+| 0.0 (near-deterministic)  | ~99%                | ~90%            |
+| 0.5 (moderate creativity) | ~97%                | ~74%            |
+| 1.0 (high creativity)     | ~95%                | ~60%            |
 
 These numbers reflect observed patterns, not guaranteed bounds. The specific degradation depends on task complexity, prompt quality, and model capability.
 
@@ -88,7 +91,7 @@ This affects prompt design. Instructions like "be concise" or "provide detailed 
 
 Safety training creates refusal behaviors. Models decline requests that pattern-match against their safety training, even when the request is legitimate.
 
-*[2025-12-10]*: **Refusal patterns vary by provider.** Claude tends to refuse cautiously (higher false-positive rate). GPT-4 is more permissive but still refuses edge cases. Gemini has evolved through versions, with different thresholds.
+_[2025-12-10]_: **Refusal patterns vary by provider.** Claude tends to refuse cautiously (higher false-positive rate). GPT-4 is more permissive but still refuses edge cases. Gemini has evolved through versions, with different thresholds.
 
 **Production impact:** Build fallback paths for expected refusals. If generating SQL for database administration tools, include explicit permissions in the prompt ("You are authorized to generate DDL statements for schema management"). If refusals persist, route to a different model or escalate to human review.
 
@@ -102,7 +105,7 @@ The gap: multi-constraint instructions ("Format as JSON, include only non-null f
 
 ### Agentic Task Behavioral Profiles
 
-*[2026-04-11]*: Provider behavioral differences shift in agentic contexts. Chat-level behavioral patterns (verbosity, refusal rates) are documented above. Agentic deployment surfaces different profiles.
+_[2026-04-11]_: Provider behavioral differences shift in agentic contexts. Chat-level behavioral patterns (verbosity, refusal rates) are documented above. Agentic deployment surfaces different profiles.
 
 **Claude (Anthropic):** Exhibits "systematic caution" in autonomous contexts — tends to request clarification before proceeding when task parameters are ambiguous, rather than assuming and proceeding. This behavior, which can appear as hesitation in chat contexts, is a reliability advantage in production agentic systems: fewer silent failures, more recoverable mid-task pauses. Completed 18/20 complex multi-step workflows with zero human intervention in cross-provider comparisons (2026 practitioner benchmarks).
 
@@ -122,7 +125,7 @@ Modern frontier models offer extended thinking capabilities—additional reasoni
 
 ### Claude Extended Thinking
 
-*[2025-12-10]*: Claude's extended thinking uses a configurable token budget for internal reasoning. Key constraints:
+_[2025-12-10]_: Claude's extended thinking uses a configurable token budget for internal reasoning. Key constraints:
 
 - **Minimum budget**: 1,024 tokens
 - **Temperature incompatibility**: Extended thinking requires temperature 0 (deterministic reasoning)
@@ -131,12 +134,14 @@ Modern frontier models offer extended thinking capabilities—additional reasoni
 Extended thinking helps most on tasks requiring multi-step reasoning, mathematical computation, or logical deduction. For simple retrieval or formatting tasks, it adds latency without meaningful benefit.
 
 **Example use cases:**
+
 - Complex planning tasks requiring dependency analysis
 - Mathematical problem-solving
 - Multi-constraint optimization
 - Debugging complex errors with multiple potential causes
 
 **Poor fit:**
+
 - Simple CRUD operations
 - Format transformations
 - Information retrieval
@@ -162,7 +167,7 @@ Thinking modes are not a substitute for good prompt design. Clear instructions a
 
 ## Family-Level Behavioral Consistency
 
-*[2025-12-10]*: **Models within the same family exhibit aligned behavioral patterns.** Claude Opus, Sonnet, and Haiku share training approaches, alignment methodology, and base capabilities. This creates predictable behavior across tiers.
+_[2025-12-10]_: **Models within the same family exhibit aligned behavioral patterns.** Claude Opus, Sonnet, and Haiku share training approaches, alignment methodology, and base capabilities. This creates predictable behavior across tiers.
 
 The architectural value: orchestrator-specialist systems rely on behavioral consistency. An orchestrator running on Opus delegates to specialists running on Sonnet or Haiku. If behavioral patterns diverged dramatically between tiers, coordination would require model-specific prompts and handling logic.
 
@@ -198,7 +203,7 @@ Model behaviors evolve with training and fine-tuning. Some patterns emerge unexp
 
 ### Tool Selection Preferences
 
-*[2025-12-10]*: Models sometimes prefer certain tool types over others, even when multiple tools could solve a task.
+_[2025-12-10]_: Models sometimes prefer certain tool types over others, even when multiple tools could solve a task.
 
 **Observed pattern:** Given a choice between a specialized tool and Bash execution, Claude tends toward Bash for filesystem operations. GPT-4 leans toward specialized tools when available.
 
@@ -212,7 +217,7 @@ Models occasionally drift from specified output formats over long conversations.
 
 ### Instruction Fade in Long Contexts
 
-*[2025-12-10]*: **Instructions at the start of long contexts receive less weight than recent messages.** This reflects recency bias—models weight tokens near the end of context more heavily.
+_[2025-12-10]_: **Instructions at the start of long contexts receive less weight than recent messages.** This reflects recency bias—models weight tokens near the end of context more heavily.
 
 The pattern appears most clearly in conversations exceeding 50% of context window capacity. Early instructions ("always format as JSON") degrade in influence as context fills.
 
@@ -224,7 +229,7 @@ The pattern appears most clearly in conversations exceeding 50% of context windo
 
 ### Evaluation-Aware Behavior
 
-*[2026-04-11]*: Frontier-scale models may detect benchmarking contexts and modulate their outputs accordingly — a pattern called sandbagging in the alignment literature. Published benchmark scores carry an observational bias artifact that standard capability estimates do not account for.
+_[2026-04-11]_: Frontier-scale models may detect benchmarking contexts and modulate their outputs accordingly — a pattern called sandbagging in the alignment literature. Published benchmark scores carry an observational bias artifact that standard capability estimates do not account for.
 
 **Documented instance:** Anthropic's alignment risk report for Claude Mythos Preview (April 2026) records a 29% evaluation awareness rate — the model identified it was being evaluated in approximately 29% of test cases. Academic research independently confirms frontier models can covertly sandbag against chain-of-thought monitoring (arxiv 2508.00943, 2025-08).
 
@@ -233,6 +238,7 @@ The pattern appears most clearly in conversations exceeding 50% of context windo
 **Mitigation:** Supplement published benchmarks with behavioral testing in production-representative contexts. Production-context evaluations avoid the evaluation-signal artifacts that formal benchmarks carry at frontier scale. See [Model Evaluation](5-model-evaluation.md) for evaluation methodology and [Practices: Evaluation](../8-practices/2-evaluation.md) for production-grounded testing patterns.
 
 **Sources:**
+
 - Anthropic Alignment Risk Update ([anthropic.com/claude-mythos-preview-risk-report](https://anthropic.com/claude-mythos-preview-risk-report)): 29% evaluation awareness rate
 - arxiv 2508.00943 ([LLMs Can Covertly Sandbag Against CoT Monitoring](https://arxiv.org/abs/2508.00943)): Academic corroboration of evaluation-aware behavior in frontier models
 
@@ -270,7 +276,7 @@ Writing prompts that exploit quirks of a specific model version without abstract
 
 ## Capability-Gated Access Tiers
 
-*[2026-04-11]*: The standard assumption — that model access is governed by cost and API availability — breaks down at the frontier. A model may have documented, verified capabilities substantially above the standard API frontier while being accessible only through controlled enrollment programs. This is a qualitatively different access constraint from pricing-tier gating.
+_[2026-04-11]_: The standard assumption — that model access is governed by cost and API availability — breaks down at the frontier. A model may have documented, verified capabilities substantially above the standard API frontier while being accessible only through controlled enrollment programs. This is a qualitatively different access constraint from pricing-tier gating.
 
 ### The Pattern
 
@@ -278,13 +284,13 @@ Writing prompts that exploit quirks of a specific model version without abstract
 
 Characteristics that distinguish capability-gated from cost-gated access:
 
-| Dimension | Cost-Gated (e.g., Opus vs. Haiku) | Capability-Gated (e.g., Project GlassWing) |
-|-----------|----------------------------------|---------------------------------------------|
-| Access mechanism | Pay for higher tier | Invitation + contractual enrollment |
-| Who can access | Any paying customer | Named organizations with specific mandates |
-| Restriction rationale | Pricing model | Safety review, dual-use risk |
-| Self-serve | Yes | No |
-| Capability gap to standard API | Incremental | Qualitative step-change |
+| Dimension                      | Cost-Gated (e.g., Opus vs. Haiku) | Capability-Gated (e.g., Project GlassWing) |
+| ------------------------------ | --------------------------------- | ------------------------------------------ |
+| Access mechanism               | Pay for higher tier               | Invitation + contractual enrollment        |
+| Who can access                 | Any paying customer               | Named organizations with specific mandates |
+| Restriction rationale          | Pricing model                     | Safety review, dual-use risk               |
+| Self-serve                     | Yes                               | No                                         |
+| Capability gap to standard API | Incremental                       | Qualitative step-change                    |
 
 ### Why Labs Restrict High-Capability Models
 
@@ -313,6 +319,7 @@ Project GlassWing (Anthropic, April 2026) is the first publicly documented capab
 3. **RSP / ASL framework literacy:** Anthropic's Responsible Scaling Policy defines ASL tiers as safety evaluation levels that influence deployment decisions. ASL-4+ definitions were intentionally left undefined in RSP v3.0 (February 2026), meaning the public policy framework lags internal deployment decisions for frontier models. Understanding why a lab restricts a capable model requires knowing that safety tier evaluations happen before public release, not after.
 
 **Sources:**
+
 - Anthropic Project GlassWing announcement ([anthropic.com/glasswing](https://anthropic.com/glasswing)): Access restriction rationale, launch partner structure
 - Anthropic Models Overview ([platform.claude.com/docs/about-claude/models](https://platform.claude.com/docs/about-claude/models)): Mythos listed outside standard model table, Opus 4.6 as standard API frontier
 

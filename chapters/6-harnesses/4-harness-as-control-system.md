@@ -3,7 +3,17 @@ title: Harness as Control System
 description: Fowler's guides and sensors decomposition — feedforward and feedback control in agentic systems
 created: 2026-04-12
 last_updated: 2026-04-12
-tags: [foundations, harness, control-theory, fowler, guides, sensors, feedforward, feedback]
+tags:
+  [
+    foundations,
+    harness,
+    control-theory,
+    fowler,
+    guides,
+    sensors,
+    feedforward,
+    feedback,
+  ]
 part: 1
 part_title: Foundations
 chapter: 6
@@ -33,10 +43,10 @@ Each mechanism can be implemented in two modes:
 
 This produces a four-quadrant taxonomy that maps most harness control mechanisms to a precise location:
 
-| Mechanism | Computational | Inferential |
-|-----------|--------------|------------|
-| **Guide** (feedforward) | Permission filter, lint-before-commit hook, schema validator, path allowlist | Planning agent, spec review agent, pre-action classification prompt |
-| **Sensor** (feedback) | Test runner results, CI signals, compiler output, linter output | Self-reflection prompt, error diagnosis agent, evaluation/judge agent |
+| Mechanism               | Computational                                                                | Inferential                                                           |
+| ----------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| **Guide** (feedforward) | Permission filter, lint-before-commit hook, schema validator, path allowlist | Planning agent, spec review agent, pre-action classification prompt   |
+| **Sensor** (feedback)   | Test runner results, CI signals, compiler output, linter output              | Self-reflection prompt, error diagnosis agent, evaluation/judge agent |
 
 Every harness control mechanism belongs to one of these four quadrants. Understanding which quadrant a mechanism occupies clarifies its cost, reliability, and appropriate use case.
 
@@ -136,13 +146,13 @@ Task complete or escalate to human
 
 Every guide and sensor mechanism involves a tradeoff between cost, speed, and coverage:
 
-| Dimension | Computational | Inferential |
-|-----------|--------------|------------|
-| Cost per invocation | Low (microseconds to milliseconds) | High (LLM inference, seconds) |
-| Reliability | Deterministic | Probabilistic |
-| Coverage | Rules can express | Judgment can assess |
-| Maintenance | Explicit rules must be updated | Prompts can be updated more fluidly |
-| Failure mode | Rigid (cannot handle edge cases rules don't cover) | Inconsistent (results vary across invocations) |
+| Dimension           | Computational                                      | Inferential                                    |
+| ------------------- | -------------------------------------------------- | ---------------------------------------------- |
+| Cost per invocation | Low (microseconds to milliseconds)                 | High (LLM inference, seconds)                  |
+| Reliability         | Deterministic                                      | Probabilistic                                  |
+| Coverage            | Rules can express                                  | Judgment can assess                            |
+| Maintenance         | Explicit rules must be updated                     | Prompts can be updated more fluidly            |
+| Failure mode        | Rigid (cannot handle edge cases rules don't cover) | Inconsistent (results vary across invocations) |
 
 **Design principle:** Use computational controls wherever the constraint can be expressed as a deterministic rule; use inferential controls for judgment calls that rules cannot anticipate.
 
@@ -163,6 +173,7 @@ P(success) = σ(θ_LLM + θ_scaffold − β_difficulty)
 ```
 
 Where:
+
 - `θ_LLM` = LLM capability (fixed for a given model)
 - `θ_scaffold` = scaffold (harness) quality
 - `β_difficulty` = task difficulty
@@ -175,13 +186,13 @@ This independence principle justifies treating the harness control system as a f
 
 ## Common Control System Failures
 
-| Failure | Symptom | Root Cause | Fix |
-|---------|---------|-----------|-----|
-| No guides | Agent takes action outside intended scope | Missing permission filters or pre-action classification | Add computational permission enforcement |
-| No sensors | Agent believes task is complete; output is wrong | No test runner, no evaluation agent | Add computational or inferential feedback |
-| Over-gating | Every action requires multiple approvals; throughput collapses | Too many inferential guides in series | Replace inferential guides with computational guides where possible |
-| Feedback loop delay | Agent cannot correct because sensor output arrives too late | Sensors run after multi-step sequences rather than per action | Move sensors earlier in the loop |
-| Sensor noise | Agent receives contradictory signals from different sensors | Inconsistent evaluation rubrics across inferential sensors | Standardize rubrics; prefer computational sensors for binary criteria |
+| Failure             | Symptom                                                        | Root Cause                                                    | Fix                                                                   |
+| ------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------- |
+| No guides           | Agent takes action outside intended scope                      | Missing permission filters or pre-action classification       | Add computational permission enforcement                              |
+| No sensors          | Agent believes task is complete; output is wrong               | No test runner, no evaluation agent                           | Add computational or inferential feedback                             |
+| Over-gating         | Every action requires multiple approvals; throughput collapses | Too many inferential guides in series                         | Replace inferential guides with computational guides where possible   |
+| Feedback loop delay | Agent cannot correct because sensor output arrives too late    | Sensors run after multi-step sequences rather than per action | Move sensors earlier in the loop                                      |
+| Sensor noise        | Agent receives contradictory signals from different sensors    | Inconsistent evaluation rubrics across inferential sensors    | Standardize rubrics; prefer computational sensors for binary criteria |
 
 ---
 

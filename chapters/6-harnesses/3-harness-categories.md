@@ -3,7 +3,8 @@ title: Harness Categories
 description: The taxonomy of harness types from workflow harnesses to full agentic runtimes
 created: 2026-04-12
 last_updated: 2026-04-12
-tags: [foundations, harness, categories, workflow, workspace-managers, frameworks]
+tags:
+  [foundations, harness, categories, workflow, workspace-managers, frameworks]
 part: 1
 part_title: Foundations
 chapter: 6
@@ -23,29 +24,29 @@ The term "harness" spans a spectrum from lightweight workflow structuring to ful
 
 Ethan Mollick identifies three independent axes in the AI selection decision (~2026-Q1):
 
-| Axis | What It Selects | Examples |
-|------|----------------|---------|
-| Model | The underlying reasoning capability | Claude Opus, GPT-5, Gemini Pro |
-| App | The human-facing interface | claude.ai chat, IDE integration, CLI |
-| Harness | The autonomous execution environment | Claude Code, LangGraph, raw API |
+| Axis    | What It Selects                      | Examples                             |
+| ------- | ------------------------------------ | ------------------------------------ |
+| Model   | The underlying reasoning capability  | Claude Opus, GPT-5, Gemini Pro       |
+| App     | The human-facing interface           | claude.ai chat, IDE integration, CLI |
+| Harness | The autonomous execution environment | Claude Code, LangGraph, raw API      |
 
 These axes are genuinely independent. The same model deployed in different harness categories produces categorically different outcomes — not marginally different outputs, but fundamentally different capabilities.
 
 **The capability ceiling implication:** Choosing a chat interface as the harness for an agentic system is not a model choice — it is a capability ceiling. A frontier model in a web chat interface cannot maintain state across sessions, cannot execute commands, cannot manage a multi-agent workflow, and cannot apply harness engineering improvements. The harness selection determines the upper bound of what the agent can do; the model selection operates within that bound.
 
-*[2026-04-12]*: This observation from Mollick's analysis has significant practical implications. Many practitioners who report that AI tools "cannot handle complex tasks" are operating frontier models inside chat interfaces — harnesses that were not designed for autonomous, multi-step execution. The limitation is architectural, not model-level.
+_[2026-04-12]_: This observation from Mollick's analysis has significant practical implications. Many practitioners who report that AI tools "cannot handle complex tasks" are operating frontier models inside chat interfaces — harnesses that were not designed for autonomous, multi-step execution. The limitation is architectural, not model-level.
 
 ---
 
 ## Harness Capability Tiers
 
-*[2026-04-12]*: The three-tier taxonomy below reflects the production landscape as of April 2026. Boundaries between tiers are shifting as vendors add agentic capabilities to chat interfaces.
+_[2026-04-12]_: The three-tier taxonomy below reflects the production landscape as of April 2026. Boundaries between tiers are shifting as vendors add agentic capabilities to chat interfaces.
 
-| Tier | Examples | Characteristics |
-|------|----------|----------------|
-| Full agentic harnesses | Claude Code, OpenAI Codex | Autonomous file access, command execution, multi-step loops, tool-native design, hooks for enforcement, persistent memory across sessions |
-| Web-based chat interfaces | claude.ai, chatgpt.com | Optimized for conversational interaction; limited autonomous execution; session-scoped context; no persistent filesystem access |
-| Constrained agentic environments | Gemini website, Gemini in Google Workspace | Capable model with limited harness; agency bounded by platform design; some tool access but not full autonomy |
+| Tier                             | Examples                                   | Characteristics                                                                                                                           |
+| -------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Full agentic harnesses           | Claude Code, OpenAI Codex                  | Autonomous file access, command execution, multi-step loops, tool-native design, hooks for enforcement, persistent memory across sessions |
+| Web-based chat interfaces        | claude.ai, chatgpt.com                     | Optimized for conversational interaction; limited autonomous execution; session-scoped context; no persistent filesystem access           |
+| Constrained agentic environments | Gemini website, Gemini in Google Workspace | Capable model with limited harness; agency bounded by platform design; some tool access but not full autonomy                             |
 
 **Practical implication for practitioners:** Framework selection is moot if the deployment target is a chat interface. A practitioner who selects LangGraph as their orchestration framework but deploys agents through a chat interface has applied the wrong tool to the wrong problem. The harness category must be selected before framework selection begins.
 
@@ -57,11 +58,11 @@ These axes are genuinely independent. The same model deployed in different harne
 
 Three terms that practitioners frequently conflate but that refer to distinct layers of the stack:
 
-| Term | Definition | Examples | When It Operates |
-|------|-----------|---------|-----------------|
-| Framework | Build-time libraries for constructing agent workflows | LangChain, CrewAI, AutoGen | Build-time (development) |
-| Runtime | Production execution with state persistence and observability | LangGraph, LangSmith, Weave | Build-time + runtime |
-| Harness | Opinionated runtime with defaults, batteries-included | Claude Code, OpenAI Codex | Runtime (production) |
+| Term      | Definition                                                    | Examples                    | When It Operates         |
+| --------- | ------------------------------------------------------------- | --------------------------- | ------------------------ |
+| Framework | Build-time libraries for constructing agent workflows         | LangChain, CrewAI, AutoGen  | Build-time (development) |
+| Runtime   | Production execution with state persistence and observability | LangGraph, LangSmith, Weave | Build-time + runtime     |
+| Harness   | Opinionated runtime with defaults, batteries-included         | Claude Code, OpenAI Codex   | Runtime (production)     |
 
 **The key distinction:** A framework is what a developer uses to build an agent. A harness is what the agent runs inside during execution. These are different concerns at different times.
 
@@ -71,14 +72,14 @@ Claude Code is a harness — it ships with Anthropic's architectural decisions a
 
 **Choosing between framework and harness:**
 
-| Situation | Recommendation |
-|-----------|---------------|
-| Novel multi-agent coordination pattern | Framework (LangGraph, AutoGen) — need full control |
-| Standard coding/development work | Harness (Claude Code) — defaults work; start immediately |
-| Web-based AI product | Framework + custom runtime — harness defaults won't fit product requirements |
-| Research and experimentation | Framework — flexibility needed for exploration |
-| Production agentic workflow at standard tasks | Harness — faster deployment, maintained defaults |
-| Enterprise with specific compliance requirements | Framework + custom runtime — compliance-specific controls |
+| Situation                                        | Recommendation                                                               |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Novel multi-agent coordination pattern           | Framework (LangGraph, AutoGen) — need full control                           |
+| Standard coding/development work                 | Harness (Claude Code) — defaults work; start immediately                     |
+| Web-based AI product                             | Framework + custom runtime — harness defaults won't fit product requirements |
+| Research and experimentation                     | Framework — flexibility needed for exploration                               |
+| Production agentic workflow at standard tasks    | Harness — faster deployment, maintained defaults                             |
+| Enterprise with specific compliance requirements | Framework + custom runtime — compliance-specific controls                    |
 
 ---
 
@@ -89,6 +90,7 @@ Claude Code is a harness — it ships with Anthropic's architectural decisions a
 Full agentic harnesses are purpose-built execution environments that provide all six stack components out of the box. They are the reference implementation of the harness concept.
 
 **Defining characteristics:**
+
 - Autonomous filesystem access (read, write, navigate directories)
 - Command execution (shell, compilers, test runners)
 - Multi-step execution loops with stopping conditions
@@ -107,6 +109,7 @@ Full agentic harnesses are purpose-built execution environments that provide all
 Web-based chat interfaces are conversational environments that prioritize human-AI dialogue over autonomous execution. They are not harnesses in the production engineering sense — they are apps that use harnesses internally.
 
 **Defining characteristics:**
+
 - Optimized for back-and-forth conversation
 - Session-scoped context (typically no cross-session persistence unless explicitly provided)
 - Limited tool access (file upload, web search, code execution via sandbox — not filesystem access)
@@ -121,9 +124,10 @@ Web-based chat interfaces are conversational environments that prioritize human-
 
 A workflow harness is a structured layer above raw agent interactions that imposes phase discipline, context engineering, and state persistence on multi-step human-AI work. It is the middle tier between chat interfaces and full agentic runtimes.
 
-*[2026-04-12]*: Workflow harnesses are a recently named category (2026-Q1) that fills the gap between single-session chat and full autonomous execution. The GSD (get-shit-done) tool is the canonical open-source example.
+_[2026-04-12]_: Workflow harnesses are a recently named category (2026-Q1) that fills the gap between single-session chat and full autonomous execution. The GSD (get-shit-done) tool is the canonical open-source example.
 
 **Defining characteristics:**
+
 - Meta-prompting system that structures human-AI workflows
 - Phase decomposition (break large work into defined phases with verification gates)
 - Context engineering (fresh context per executor, no context rot across phases)
@@ -133,6 +137,7 @@ A workflow harness is a structured layer above raw agent interactions that impos
 **The GSD pattern:** The GSD workflow harness implements a five-phase lifecycle for complex software projects: specification → design → implementation → verification → integration. Each phase uses a fresh executor with scoped context, preventing context rot that accumulates when a single agent carries full conversation history across all phases. State is persisted in explicit files (not model memory) so each phase has access to previous phase outputs without inheriting previous phase context.
 
 **Tooling hierarchy:**
+
 ```
 Scale and abstraction:
   Raw coding agent       → Single-session, ad-hoc interaction
@@ -147,13 +152,14 @@ The workflow harness occupies a practical niche: it handles projects too complex
 Workspace managers are the high end of the harness spectrum — infrastructure for coordinating 20 or more agents simultaneously with shared filesystem coordination, merge queues, and active supervision.
 
 **Defining characteristics:**
+
 - Multi-worktree management (each agent operates in an isolated git worktree)
 - Merge queue coordination (sequential integration of parallel agent outputs)
 - Supervision layer (orchestrating agent monitors and corrects subagent behavior)
 - Shared state coordination (distributed state accessible to all agents without conflicts)
 - Scale designed for sustained parallel throughput, not occasional multi-agent use
 
-*[2026-04-12]*: Workspace manager tooling is an emerging infrastructure category (2026-Q1). Specific tools in this category include multi-agent workspace coordinators that manage git worktrees, parallel execution queues, and supervisory oversight. The category is evolving rapidly.
+_[2026-04-12]_: Workspace manager tooling is an emerging infrastructure category (2026-Q1). Specific tools in this category include multi-agent workspace coordinators that manage git worktrees, parallel execution queues, and supervisory oversight. The category is evolving rapidly.
 
 **When this category applies:** Large-scale parallel software development, enterprise codebase refactoring, sustained autonomous engineering workflows where human supervision of individual agents is not feasible.
 
@@ -162,6 +168,7 @@ Workspace managers are the high end of the harness spectrum — infrastructure f
 An emerging category (2026) optimized for single-agent long-running personal use with persistent memory and self-improving skills — not multi-agent coordination.
 
 **Defining characteristics:**
+
 - Cross-session memory (SQLite-backed or equivalent persistent storage)
 - Self-improvement loop (tasks generate procedural skills stored for future reuse)
 - Multi-platform integration (connects to calendar, email, documents, external services)
@@ -176,6 +183,7 @@ An emerging category (2026) optimized for single-agent long-running personal use
 The full-flexibility option: practitioners build agent infrastructure using framework primitives (LangChain, CrewAI, AutoGen) and deploy on runtime infrastructure (LangGraph, LangSmith) without using an opinionated harness.
 
 **When this applies:**
+
 - Novel coordination patterns not supported by existing harnesses
 - Enterprise compliance requirements that prohibit opinionated defaults
 - Research contexts requiring full control over every component
@@ -187,16 +195,16 @@ The full-flexibility option: practitioners build agent infrastructure using fram
 
 ## Decision Table
 
-| Problem Type | Harness Category |
-|-------------|-----------------|
-| Single-session, exploratory work | Chat interface or raw coding agent |
-| Multi-session projects with defined phases | Workflow harness (GSD pattern) |
-| Parallel execution across 20+ agents | Workspace manager |
-| Long-running personal assistant with persistent recall | Persistent personal runtime |
-| Custom multi-agent system from scratch | Framework + runtime |
-| Standard software development with Anthropic models | Full agentic harness (Claude Code) |
-| Research with novel coordination patterns | Framework + runtime |
-| Compliance-sensitive enterprise deployment | Framework + runtime with custom controls |
+| Problem Type                                           | Harness Category                         |
+| ------------------------------------------------------ | ---------------------------------------- |
+| Single-session, exploratory work                       | Chat interface or raw coding agent       |
+| Multi-session projects with defined phases             | Workflow harness (GSD pattern)           |
+| Parallel execution across 20+ agents                   | Workspace manager                        |
+| Long-running personal assistant with persistent recall | Persistent personal runtime              |
+| Custom multi-agent system from scratch                 | Framework + runtime                      |
+| Standard software development with Anthropic models    | Full agentic harness (Claude Code)       |
+| Research with novel coordination patterns              | Framework + runtime                      |
+| Compliance-sensitive enterprise deployment             | Framework + runtime with custom controls |
 
 ---
 
@@ -205,6 +213,7 @@ The full-flexibility option: practitioners build agent infrastructure using fram
 Category selection matters most at the beginning of a project, when the deployment environment is still open. Once a chat interface is chosen and workflows are established around it, the switching cost to a full agentic harness is significant — not in technical terms but in organizational terms. Teams develop habits and expectations around the interface they use.
 
 The correct order of selection decisions:
+
 1. **Define the problem type** (single-session vs. multi-session, exploratory vs. systematic)
 2. **Select the harness category** based on the decision table
 3. **Select specific tools** within the chosen category (evaluated in [Practitioner Toolkit](../10-practitioner-toolkit/_index.md))

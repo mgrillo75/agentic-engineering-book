@@ -19,18 +19,20 @@ AI coding assistance has moved from novelty to necessity. Every major IDE now sh
 
 ## The Integration Spectrum
 
-*[2026-01-30]*: IDE AI integrations fall along a spectrum from lightweight extensions to purpose-built editors.
+_[2026-01-30]_: IDE AI integrations fall along a spectrum from lightweight extensions to purpose-built editors.
 
 ### Extension-Based
 
 Extensions add AI capabilities to existing editors without changing the core experience. Examples: GitHub Copilot in VS Code, Continue.dev, JetBrains AI Assistant.
 
 **Advantages:**
+
 - Preserves existing keybindings, settings, and muscle memory
 - Mix-and-match: combine multiple extensions
 - Lower switching cost
 
 **Trade-offs:**
+
 - AI features constrained by extension API limits
 - Context awareness limited to what the extension can access
 - Less tight integration with editor internals
@@ -40,11 +42,13 @@ Extensions add AI capabilities to existing editors without changing the core exp
 Forks of existing editors (typically VS Code) rebuilt around AI. Examples: Cursor, Windsurf.
 
 **Advantages:**
+
 - Deeper integration possible than extensions allow
 - AI-first UX decisions throughout
 - Can modify core editor behavior for AI workflows
 
 **Trade-offs:**
+
 - Lags behind upstream editor updates
 - May break with some extensions
 - Vendor lock-in to the fork
@@ -57,20 +61,20 @@ Purpose-built from the ground up for AI coding. Examples emerging in 2026, thoug
 
 ## Tool Comparison
 
-| Tool | Type | Model Options | Multi-File Edit | Agent Mode | Self-Hosted | Cost |
-|------|------|---------------|-----------------|------------|-------------|------|
-| **Cursor** | Fork (VS Code) | Claude, GPT, Gemini, custom | Yes | Yes | No | $20/mo |
-| **Windsurf** | Fork (VS Code) | Multiple via Cascade | Yes | Yes | Enterprise | $15/mo |
-| **GitHub Copilot** | Extension | GPT, Claude (via agent) | Yes | Yes (preview) | No | $19/mo |
-| **Continue.dev** | Extension | Any (local, API, cloud) | Yes | Limited | Yes | Free (OSS) |
-| **JetBrains AI** | Extension | Multiple + BYOK | Yes | Yes (Junie) | Local LLM | $10/mo |
-| **Aider** | CLI | Any (local or API) | Yes | Yes | Yes | Free (OSS) |
+| Tool               | Type           | Model Options               | Multi-File Edit | Agent Mode    | Self-Hosted | Cost       |
+| ------------------ | -------------- | --------------------------- | --------------- | ------------- | ----------- | ---------- |
+| **Cursor**         | Fork (VS Code) | Claude, GPT, Gemini, custom | Yes             | Yes           | No          | $20/mo     |
+| **Windsurf**       | Fork (VS Code) | Multiple via Cascade        | Yes             | Yes           | Enterprise  | $15/mo     |
+| **GitHub Copilot** | Extension      | GPT, Claude (via agent)     | Yes             | Yes (preview) | No          | $19/mo     |
+| **Continue.dev**   | Extension      | Any (local, API, cloud)     | Yes             | Limited       | Yes         | Free (OSS) |
+| **JetBrains AI**   | Extension      | Multiple + BYOK             | Yes             | Yes (Junie)   | Local LLM   | $10/mo     |
+| **Aider**          | CLI            | Any (local or API)          | Yes             | Yes           | Yes         | Free (OSS) |
 
 ---
 
 ## Cursor
 
-*[2026-01-30]*: Cursor has emerged as the industry standard for agentic coding, particularly since its 2.0 release with the Composer model.
+_[2026-01-30]_: Cursor has emerged as the industry standard for agentic coding, particularly since its 2.0 release with the Composer model.
 
 ### Defining Characteristics
 
@@ -83,6 +87,7 @@ Purpose-built from the ground up for AI coding. Examples emerging in 2026, thoug
 ### Agentic Workflow
 
 In agent mode, Cursor:
+
 - Executes terminal commands (install dependencies, run tests)
 - Analyzes compilation errors
 - Proposes fixes without human intervention
@@ -102,11 +107,12 @@ Privacy Mode (SOC 2 compliant) ensures code is never stored or used for training
 
 ## Windsurf (Cascade)
 
-*[2026-01-30]*: Windsurf (formerly Codeium) positions itself as a full-stack AI development environment rather than an editor layer.
+_[2026-01-30]_: Windsurf (formerly Codeium) positions itself as a full-stack AI development environment rather than an editor layer.
 
 ### Cascade Architecture
 
 Cascade combines three capabilities:
+
 1. **Deep codebase understanding** - Repository-scale comprehension
 2. **Tool breadth** - MCP integrations with GitHub, Slack, Stripe, Figma, databases
 3. **Real-time awareness** - Tracks edits, commands, clipboard, and terminal activity
@@ -133,11 +139,12 @@ Credit-based: Free (25/mo), Pro $15/mo (500), Teams $30/user/mo, Enterprise $60/
 
 ## GitHub Copilot
 
-*[2026-01-30]*: GitHub Copilot continues evolving from autocomplete to full agentic capabilities.
+_[2026-01-30]_: GitHub Copilot continues evolving from autocomplete to full agentic capabilities.
 
 ### Agent Mode (2025-2026)
 
 Agent mode enables Copilot to:
+
 - Determine which files require changes
 - Offer code changes and terminal commands
 - Iterate to remediate issues until the task completes
@@ -153,6 +160,7 @@ This represents a shift from "assistant in the editor" to "autonomous contributo
 ### Copilot CLI (January 2026)
 
 Specialized agents for common tasks:
+
 - **Explore** - Fast codebase analysis without cluttering main context
 - **Task** - Runs commands like tests and builds
 
@@ -166,11 +174,12 @@ Copilot now supports multiple models beyond GPT, including Claude models via the
 
 ## Continue.dev
 
-*[2026-01-30]*: Continue.dev is the leading open-source alternative—maximum flexibility at the cost of configuration effort.
+_[2026-01-30]_: Continue.dev is the leading open-source alternative—maximum flexibility at the cost of configuration effort.
 
 ### Model Freedom
 
 Continue supports:
+
 - OpenAI (GPT-4, o1)
 - Anthropic (Claude)
 - Mistral
@@ -197,7 +206,7 @@ The flexibility comes with configuration overhead. Continue requires more setup 
 
 ## JetBrains AI Assistant
 
-*[2026-01-30]*: For developers committed to IntelliJ-based IDEs, JetBrains AI Assistant provides native integration without leaving the ecosystem.
+_[2026-01-30]_: For developers committed to IntelliJ-based IDEs, JetBrains AI Assistant provides native integration without leaving the ecosystem.
 
 ### IDE-Aware Completions
 
@@ -206,6 +215,7 @@ JetBrains leverages its deep understanding of code structure—static analysis, 
 ### Junie Agent
 
 Junie handles tasks autonomously or collaboratively:
+
 - Explores the project
 - Writes context-appropriate code
 - Runs tests
@@ -225,7 +235,7 @@ Connect local models via Ollama, LM Studio, or other OpenAI-compatible servers f
 
 ## Aider (CLI)
 
-*[2026-01-30]*: Aider represents the terminal-native approach—no GUI, no editor, just conversation with code.
+_[2026-01-30]_: Aider represents the terminal-native approach—no GUI, no editor, just conversation with code.
 
 ### Repository Intelligence
 
@@ -251,37 +261,43 @@ Automatic linting and testing after each change; Aider can fix detected problems
 
 ## Selection Guidance
 
-### Choose Cursor When:
+### Choose Cursor When
+
 - Speed matters—rapid iteration on ideas
 - Working with large codebases requiring multi-file changes
 - Team already standardized on VS Code conventions
 - Enterprise compliance (SOC 2) is required
 
-### Choose Windsurf When:
+### Choose Windsurf When
+
 - Deep integrations with external services (GitHub, Slack, Figma) matter
 - Memory persistence between sessions is valuable
 - Credit-based pricing aligns with usage patterns
 - Frontend-heavy work benefits from live preview
 
-### Choose GitHub Copilot When:
+### Choose GitHub Copilot When
+
 - Already embedded in GitHub workflow (Issues, PRs, Actions)
 - The coding agent's ephemeral CI environment fits the review process
 - Model flexibility via agent layer is sufficient
 - Organization has existing Copilot licensing
 
-### Choose Continue.dev When:
+### Choose Continue.dev When
+
 - Model freedom is non-negotiable (local, private, or specific providers)
 - Air-gapped or on-premise deployment required
 - Budget constraints favor open-source
 - Willing to invest configuration time for flexibility
 
-### Choose JetBrains AI When:
+### Choose JetBrains AI When
+
 - Committed to IntelliJ ecosystem
 - IDE-aware completions (static analysis integration) provide value
 - BYOK reduces subscription costs
 - Junie agent fits the workflow
 
-### Choose Aider When:
+### Choose Aider When
+
 - Terminal-native workflow preferred
 - Git-centric version control matters
 - Model-agnostic operation across projects
@@ -291,7 +307,7 @@ Automatic linting and testing after each change; Aider can fix detected problems
 
 ## Combining Tools
 
-*[2026-01-30]*: Practitioners often combine tools rather than choosing one:
+_[2026-01-30]_: Practitioners often combine tools rather than choosing one:
 
 **Copilot + Claude via API:** Copilot handles inline completions; Claude handles complex reasoning via chat or agent mode.
 

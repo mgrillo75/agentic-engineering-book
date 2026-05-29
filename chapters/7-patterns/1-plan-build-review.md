@@ -19,7 +19,7 @@ A workflow pattern that separates specification from implementation, with option
 
 ## Core Insight
 
-*[2025-12-10]*: **Bad research compounds exponentially.** One flawed architectural assumption in the Research phase leads to a misguided plan, which generates thousands of lines of incorrect code. Research quality has massive leverage on all downstream outcomes.
+_[2025-12-10]_: **Bad research compounds exponentially.** One flawed architectural assumption in the Research phase leads to a misguided plan, which generates thousands of lines of incorrect code. Research quality has massive leverage on all downstream outcomes.
 
 The core pattern has three phases (Plan-Build-Improve), with an optional Research phase for complex domains. The four-command expert pattern (Research-Plan-Build-Improve) creates a learning loop where each phase builds on validated understanding:
 
@@ -61,7 +61,7 @@ The Improve phase closes the loop by extracting learnings from actual production
 
 ## The Research Phase
 
-*[2025-12-10]*: Research is the foundation that determines everything downstream. Before planning what to build, you need to understand:
+_[2025-12-10]_: Research is the foundation that determines everything downstream. Before planning what to build, you need to understand:
 
 - **Codebase structure**: Where does relevant code live? What are the existing patterns?
 - **Dependencies**: What does this component depend on? What depends on it?
@@ -76,24 +76,29 @@ The output of research isn't just understanding—it's **concise summary documen
 # Research Summary: Feature X Implementation
 
 ## Current Architecture
+
 - Component Y handles Z via pattern P
 - Dependencies: A, B, C (see /path/to/code)
 
 ## Problem Root Cause
+
 - Symptom: Users report timeout
 - Cause: Unbounded retry loop in module M
 - Evidence: /path/to/logs, line 234
 
 ## Constraints
+
 - Cannot change API contract (external clients)
 - Must maintain backward compatibility with v1.x
 
 ## Recommended Approach
+
 Based on architecture analysis, approach 2 (async queue)
 fits existing patterns better than approach 1 (sync retry).
 ```
 
 These artifacts serve two purposes:
+
 1. **Grounding**: Plan phase references concrete findings, not assumptions
 2. **Validation**: Team can review research conclusions before building begins
 
@@ -102,22 +107,24 @@ These artifacts serve two purposes:
 Why research deserves a dedicated phase:
 
 | Research Quality | Plan Accuracy | Lines of Wrong Code | Cost to Fix |
-|------------------|---------------|---------------------|-------------|
-| Excellent | 95% | ~50 | Hours |
-| Good | 80% | ~500 | Days |
-| Poor | 50% | ~5,000 | Weeks |
-| Terrible | 10% | Complete rewrite | Months |
+| ---------------- | ------------- | ------------------- | ----------- |
+| Excellent        | 95%           | ~50                 | Hours       |
+| Good             | 80%           | ~500                | Days        |
+| Poor             | 50%           | ~5,000              | Weeks       |
+| Terrible         | 10%           | Complete rewrite    | Months      |
 
 A 10-minute research mistake can create a 10-week refactoring disaster. The leverage is asymmetric—investing in research quality pays exponential dividends.
 
 ### What Good Research Looks Like
 
 **Good:**
+
 - "Module X uses pattern Y (see lines 45-67 in file.py)"
 - "Dependency graph shows A→B→C, change must start at C"
 - "Root cause: race condition between handlers (reproduced in test)"
 
 **Bad:**
+
 - "The code probably does something with databases"
 - "I think this component is important"
 - "We should investigate the authentication system"
@@ -139,6 +146,7 @@ In Claude Code's slash command system, this pattern is implemented through exper
 ```
 
 The Improve command:
+
 1. Analyzes recent git changes
 2. Identifies successful patterns and learnings
 3. Updates ONLY the Expertise sections in Research/Plan/Build commands
@@ -172,7 +180,7 @@ A typical Research expert command:
 
 ## Expertise
 
-*[2025-12-10]*: (Accumulated learnings about researching this domain)
+_[2025-12-10]_: (Accumulated learnings about researching this domain)
 ```
 
 ---
@@ -182,12 +190,14 @@ A typical Research expert command:
 ### Good Fit
 
 **Complex, knowledge-intensive domains:**
+
 - Multi-step workflows requiring specialized understanding
 - Tasks where learning from experience is valuable
 - Situations where patterns emerge over time
 - When you want prompts to improve with use
 
 **Indicators you need this pattern:**
+
 - Repeatedly solving similar problems in the same domain
 - Accumulating domain-specific best practices
 - Need for consistent approach across team/project
@@ -196,12 +206,14 @@ A typical Research expert command:
 ### Poor Fit
 
 **Simple or one-off tasks:**
+
 - Single-file changes with clear requirements
 - Domains with fixed, unchanging requirements
 - When expertise doesn't accumulate meaningfully
 - Tasks simple enough that planning overhead exceeds benefit
 
 **When simpler approaches work:**
+
 - Ad-hoc changes with no pattern reuse
 - Exploratory work where learning isn't transferable
 - Domains where external documentation is comprehensive and stable
@@ -210,7 +222,7 @@ A typical Research expert command:
 
 ## Scale-Adaptive Execution
 
-*[2026-02-06]*: Not every task requires full Research-Plan-Build-Improve. BMAD-METHOD demonstrates **scale-adaptive intelligence**—the framework adjusts depth based on task complexity, from quick-fix to enterprise governance.
+_[2026-02-06]_: Not every task requires full Research-Plan-Build-Improve. BMAD-METHOD demonstrates **scale-adaptive intelligence**—the framework adjusts depth based on task complexity, from quick-fix to enterprise governance.
 
 ### The Spectrum
 
@@ -222,30 +234,38 @@ Quick Flow          Partial Planning    Full Planning       Compliance Planning
 ```
 
 **Quick Flow** (Bug fixes, refactoring, prototypes):
+
 ```
 /quick-spec → /dev-story → /code-review
 ```
+
 Skip Research, Analysis, Architecture. Get to code fast.
 
 **Standard Flow** (Features, enhancements):
+
 ```
 Research → Plan → Build → Review
 ```
+
 The base pattern described in this chapter.
 
 **Full Planning** (New products, major features):
+
 ```
 Research → Product Brief → PRD → Architecture →
 Epics/Stories → Sprint Planning → Dev → Review
 ```
+
 Add business analysis and structured requirements.
 
 **Enterprise** (Compliance-required, multi-team):
+
 ```
 Research → Product Brief → Stakeholder Review → PRD →
 Architecture → Security Review → Implementation Plan →
 Readiness Assessment → Build → QA → Release Gates → Retrospective
 ```
+
 Add approval gates, compliance artifacts, governance.
 
 ### How Framework Decides
@@ -258,6 +278,7 @@ Add approval gates, compliance artifacts, governance.
 - **Team size**: Solo dev → Quick Flow, 5-team effort → Enterprise
 
 **Example decision logic:**
+
 ```
 User: "Implement real-time notifications"
     ↓
@@ -281,6 +302,7 @@ Don't spend 4 hours planning a 30-minute bug fix. Quick Flow gets you to solutio
 Don't write 5,000 lines of code for a "new authentication system" without architecture. Full Planning prevents compounding errors.
 
 **Matches investment to risk:**
+
 - Low risk → minimal planning
 - Medium risk → standard planning
 - High risk → comprehensive planning with gates
@@ -288,12 +310,14 @@ Don't write 5,000 lines of code for a "new authentication system" without archit
 ### When to Override Framework Recommendations
 
 **Use lighter process when:**
+
 - Prototyping to validate feasibility
 - Strict time constraints (ship fast, refine later)
 - Low-stakes exploratory work
 - Team has deep domain expertise (less research needed)
 
 **Use heavier process when:**
+
 - Regulatory compliance required
 - Changes affect many teams
 - Mistakes are expensive to fix
@@ -306,6 +330,7 @@ Scale-adaptive execution pairs with self-improving experts:
 **Pattern:** Framework recommends process depth, expert improves recommendations over time.
 
 **Learning loop:**
+
 1. Framework recommends Quick Flow for "add field to API"
 2. Implementation reveals need for database migration (should have been Standard Flow)
 3. Improve phase captures: "Field additions requiring schema changes → Standard Flow"
@@ -314,10 +339,12 @@ Scale-adaptive execution pairs with self-improving experts:
 ### Practical Implementation
 
 **In prompts:**
+
 ```markdown
 ## Workflow Selection
 
 Based on task analysis, use:
+
 - **Quick Flow** if: Bug fix, refactoring, prototype, < 2 hours estimated
 - **Standard Flow** if: Feature, enhancement, system change, 2-8 hours
 - **Full Planning** if: New subsystem, major feature, multi-team, > 8 hours
@@ -325,6 +352,7 @@ Based on task analysis, use:
 ```
 
 **In orchestrators:**
+
 ```python
 def select_workflow_depth(task: str, context: dict) -> WorkflowDepth:
     """Recommend workflow depth based on task complexity."""
@@ -343,6 +371,7 @@ def select_workflow_depth(task: str, context: dict) -> WorkflowDepth:
 ### Production Evidence
 
 BMAD-METHOD (34.5k stars) demonstrates this at scale:
+
 - 68 workflows covering spectrum from quick-fix to enterprise
 - Automatic workflow recommendation via `/bmad-help`
 - Scale-adaptive intelligence distinguishes SaaS app from medical system
@@ -350,11 +379,11 @@ BMAD-METHOD (34.5k stars) demonstrates this at scale:
 
 ### Trade-Offs
 
-| Approach | Planning Time | Risk Mitigation | Flexibility |
-|----------|--------------|----------------|-------------|
-| **Always Quick Flow** | Minimal | Low (skips critical planning) | High |
-| **Always Full Planning** | High | High (prevents errors) | Low (overhead for simple tasks) |
-| **Scale-Adaptive** | Variable (matches task) | Appropriate (risk-matched) | High (right tool for job) |
+| Approach                 | Planning Time           | Risk Mitigation               | Flexibility                     |
+| ------------------------ | ----------------------- | ----------------------------- | ------------------------------- |
+| **Always Quick Flow**    | Minimal                 | Low (skips critical planning) | High                            |
+| **Always Full Planning** | High                    | High (prevents errors)        | Low (overhead for simple tasks) |
+| **Scale-Adaptive**       | Variable (matches task) | Appropriate (risk-matched)    | High (right tool for job)       |
 
 ### Open Questions
 

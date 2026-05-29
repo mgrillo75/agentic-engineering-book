@@ -3,7 +3,16 @@ title: "Software Factories"
 description: "The resurgence of industrial-scale software production — from Japanese factories to dark factories, and what the metaphor reveals about agentic systems"
 created: 2026-04-09
 last_updated: 2026-04-11
-tags: [mental-models, software-factories, dark-factory, multi-agent, scale, production, spec-driven-development]
+tags:
+  [
+    mental-models,
+    software-factories,
+    dark-factory,
+    multi-agent,
+    scale,
+    production,
+    spec-driven-development,
+  ]
 part: 3
 part_title: Perspectives
 chapter: 9
@@ -13,28 +22,32 @@ order: 3.9.7
 
 # Software Factories
 
-The previous section (§6) introduced the factory floor metaphor to describe what happens when agent count exceeds eight to twelve: infrastructure requirements emerge, the workshop model breaks down, and a phase transition occurs. That section asked *when* the transition happens. This section asks *what* factory means—historically, critically, and practically—as the term has re-emerged in 2026 discourse with remarkable force.
+The previous section (§6) introduced the factory floor metaphor to describe what happens when agent count exceeds eight to twelve: infrastructure requirements emerge, the workshop model breaks down, and a phase transition occurs. That section asked _when_ the transition happens. This section asks _what_ factory means—historically, critically, and practically—as the term has re-emerged in 2026 discourse with remarkable force.
 
 ---
 
 ## Core Questions
 
 ### Historical Context
+
 - How has the "software factory" concept failed twice before, and what is different now?
 - What problems did Japanese software factories (1980s) and Microsoft software factories (2004) solve, and where did each stall?
 - Why did LLMs dissolve the flexibility problem that killed the 2004 approach?
 
 ### The 2026 Landscape
+
 - What does an actual production software factory look like in 2026?
 - What does Dan Shapiro's five-level framework reveal about where most practitioners actually operate?
 - What is the "dark factory" variant, and where does it come from?
 
 ### Critical Assessment
+
 - What does independent evidence say about AI-authored code quality?
 - How does the circularity problem (AI builds, AI validates) undermine traditional quality assurance?
 - Which factory claims are greenfield-only, and how does brownfield work change the calculus?
 
 ### Practitioner Guidance
+
 - What signals indicate a team should adopt factory thinking?
 - What scale thresholds map to which infrastructure requirements?
 - What does an honest assessment of Level 5 ("dark factory") actually support?
@@ -69,7 +82,7 @@ The 2026 resurgence is the third attempt to realize the software factory concept
 
 ### Era 1: Japanese Software Factories (1980s–1991)
 
-Michael Cusumano's 1991 study *Japan's Software Factories* documented how Hitachi, Toshiba, NEC, and Fujitsu applied manufacturing logic to software development in the 1980s. The central problem was engineer scarcity: skilled developers were expensive and in short supply. The factories sought to address this by standardizing components for reuse—if a software component could be written once and reused many times, the ratio of engineers to output would improve.
+Michael Cusumano's 1991 study _Japan's Software Factories_ documented how Hitachi, Toshiba, NEC, and Fujitsu applied manufacturing logic to software development in the 1980s. The central problem was engineer scarcity: skilled developers were expensive and in short supply. The factories sought to address this by standardizing components for reuse—if a software component could be written once and reused many times, the ratio of engineers to output would improve.
 
 The approach achieved genuine, documented gains in defect rates and productivity within narrow domains. But it stalled when confronted with the fundamental tension in software: standardization reduces flexibility. Components built for reuse across many projects must be general enough to apply broadly, which makes them less precisely fitted to any specific need. The more a team optimized for reuse, the less they could accommodate novel requirements. Projects that didn't fit the standard components required either expensive custom work or compromised designs that fit the templates.
 
@@ -77,7 +90,7 @@ The Japanese factories solved the engineer scarcity problem for standard work. T
 
 ### Era 2: Microsoft Software Factories (2004)
 
-Greenfield, Short, Cook, Kent, and Crupi's 2004 book *Software Factories* proposed a different mechanism: domain-specific languages (DSLs) and model-driven code generation. The factory would consist of "a configuration of languages, patterns, frameworks, and tools that can be used to rapidly and cost-effectively produce an open-ended set of unique variants of a standard product."
+Greenfield, Short, Cook, Kent, and Crupi's 2004 book _Software Factories_ proposed a different mechanism: domain-specific languages (DSLs) and model-driven code generation. The factory would consist of "a configuration of languages, patterns, frameworks, and tools that can be used to rapidly and cost-effectively produce an open-ended set of unique variants of a standard product."
 
 This formulation is remarkably close to the 2026 conception. The insight was correct: if software could be specified formally at a higher level of abstraction, and if a code generator could translate those specifications into working implementations, the bottleneck would shift from implementation to specification. The human would design; the machine would build.
 
@@ -101,14 +114,14 @@ Martin Fowler's 2026 analysis of spec-driven development positions this explicit
 
 Dan Shapiro's January 2026 framework, modeled on NHTSA vehicle automation levels, provides a concrete taxonomy for AI-assisted development:
 
-| Level | Name | Description | Who Controls Implementation |
-|-------|------|-------------|---------------------------|
-| **0** | Manual | No AI assistance | Humans entirely |
-| **1** | Task offloading | "Write this unit test" | Humans, with AI executing bounded tasks |
-| **2** | Active partnership | Extended back-and-forth with AI | Collaborative; humans review each output |
-| **3** | Human oversight | Humans managing extensive AI diffs | AI implements; humans review and steer |
-| **4** | Autonomous coding | Humans write specs, agents implement | AI, with human specification |
-| **5** | The Dark Factory | Specs to software, no human intervention | AI entirely |
+| Level | Name               | Description                              | Who Controls Implementation              |
+| ----- | ------------------ | ---------------------------------------- | ---------------------------------------- |
+| **0** | Manual             | No AI assistance                         | Humans entirely                          |
+| **1** | Task offloading    | "Write this unit test"                   | Humans, with AI executing bounded tasks  |
+| **2** | Active partnership | Extended back-and-forth with AI          | Collaborative; humans review each output |
+| **3** | Human oversight    | Humans managing extensive AI diffs       | AI implements; humans review and steer   |
+| **4** | Autonomous coding  | Humans write specs, agents implement     | AI, with human specification             |
+| **5** | The Dark Factory   | Specs to software, no human intervention | AI entirely                              |
 
 Shapiro's observation is that most practitioners plateau at Level 2. The jump to Level 3 requires comfort with reviewing large AI-generated diffs rather than writing code directly. Levels 4 and 5 require infrastructure and process changes that most teams have not made.
 
@@ -116,7 +129,7 @@ The Anthropic 2026 Agentic Coding Trends Report corroborates this distribution: 
 
 ### StrongDM's Production Implementation
 
-StrongDM's approach, documented by Willison and analyzed by Allan MacGregor (*The Pragmatic CTO*), represents one of the most detailed public accounts of Level 4-5 operations. Several features distinguish it from simpler AI-assisted development:
+StrongDM's approach, documented by Willison and analyzed by Allan MacGregor (_The Pragmatic CTO_), represents one of the most detailed public accounts of Level 4-5 operations. Several features distinguish it from simpler AI-assisted development:
 
 **Validation separation.** Scenarios that define acceptance criteria are never exposed to the agents generating code. This separation is analogous to holdout sets in machine learning: the validation criteria are not part of the training signal. Agents cannot "teach to the test" because they do not see the test.
 
@@ -128,7 +141,7 @@ StrongDM's approach, documented by Willison and analyzed by Allan MacGregor (*Th
 
 Andrew Baker's March 2026 analysis identifies a developing polarization in the software industry. A small fraction of teams—Baker estimates 3-5%—operate at Levels 4-5 with productivity multiples of three to five times traditional development. The majority operate at Levels 1-2, capturing real but bounded gains.
 
-This bifurcation is complicated by evidence on productivity perception. The METR study (2025) examined 246 real open-source development tasks with experienced developers working with and without AI assistance. Developers using AI tools took 19% *longer* to complete tasks while predicting they would be 24% faster—a 43-percentage-point gap between predicted and actual performance. This suggests that productivity gains at higher levels require deliberate process changes, not simply the addition of AI tools to existing workflows. The subjective experience of acceleration does not reliably indicate actual acceleration.
+This bifurcation is complicated by evidence on productivity perception. The METR study (2025) examined 246 real open-source development tasks with experienced developers working with and without AI assistance. Developers using AI tools took 19% _longer_ to complete tasks while predicting they would be 24% faster—a 43-percentage-point gap between predicted and actual performance. This suggests that productivity gains at higher levels require deliberate process changes, not simply the addition of AI tools to existing workflows. The subjective experience of acceleration does not reliably indicate actual acceleration.
 
 ### Adjacent Tool Development
 
@@ -205,7 +218,7 @@ These are population-level findings. Individual teams—including StrongDM—hav
 
 ### The Validation Gap
 
-Simon Willison frames the core epistemic challenge: "How can agents *prove* software works?" Scenarios test anticipated behavior. Unknown unknowns—failure modes not anticipated when acceptance criteria were written—remain outside the test coverage boundary. In traditional development, experienced engineers bring tacit knowledge about failure modes to code review. That tacit knowledge catches issues that are not in the specification.
+Simon Willison frames the core epistemic challenge: "How can agents _prove_ software works?" Scenarios test anticipated behavior. Unknown unknowns—failure modes not anticipated when acceptance criteria were written—remain outside the test coverage boundary. In traditional development, experienced engineers bring tacit knowledge about failure modes to code review. That tacit knowledge catches issues that are not in the specification.
 
 At factory scale, that tacit knowledge must be encoded into the specification or it does not exist in the system. The factory's quality ceiling is bounded by specification coverage.
 
@@ -258,13 +271,13 @@ The three conditions together identify genuine factory readiness: sufficient sca
 
 Extending the infrastructure table from §6 (Model 5) to factory-scale operations:
 
-| Tier | Agent Count | Infrastructure Required | Factory Applicability |
-|------|-------------|------------------------|-----------------------|
-| **Solo** | 1-5 | None | Not applicable |
-| **Workshop** | 6-12 | Merge strategy, basic supervision | Factory thinking counterproductive |
-| **Small Factory** | 13-30 | Full orchestration, health monitoring, attribution | Core factory infrastructure; factory model appropriate |
-| **Industrial** | 30-100 | Hierarchical coordination, specification infrastructure, Digital Twin-class context management | Full factory operations; specification quality is dominant constraint |
-| **Dark Factory** | 100+ | Automated specification validation, circularity mitigation, regulatory compliance framework | Experimental; limited production evidence; circularity risks unresolved |
+| Tier              | Agent Count | Infrastructure Required                                                                        | Factory Applicability                                                   |
+| ----------------- | ----------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Solo**          | 1-5         | None                                                                                           | Not applicable                                                          |
+| **Workshop**      | 6-12        | Merge strategy, basic supervision                                                              | Factory thinking counterproductive                                      |
+| **Small Factory** | 13-30       | Full orchestration, health monitoring, attribution                                             | Core factory infrastructure; factory model appropriate                  |
+| **Industrial**    | 30-100      | Hierarchical coordination, specification infrastructure, Digital Twin-class context management | Full factory operations; specification quality is dominant constraint   |
+| **Dark Factory**  | 100+        | Automated specification validation, circularity mitigation, regulatory compliance framework    | Experimental; limited production evidence; circularity risks unresolved |
 
 ### Anti-Patterns
 
@@ -328,8 +341,8 @@ The factory metaphor is most useful as a way of understanding what changes as sc
 
 ## Sources
 
-- Michael Cusumano, *Japan's Software Factories* (1991) — documentation of 1980s factory attempts at Hitachi, Toshiba, NEC, and Fujitsu; standardization-flexibility tension
-- Jack Greenfield, Keith Short, Steve Cook, Stuart Kent, and John Crupi, *Software Factories* (2004) — DSL-driven code generation framework; the definition quoted in Era 2
+- Michael Cusumano, _Japan's Software Factories_ (1991) — documentation of 1980s factory attempts at Hitachi, Toshiba, NEC, and Fujitsu; standardization-flexibility tension
+- Jack Greenfield, Keith Short, Steve Cook, Stuart Kent, and John Crupi, _Software Factories_ (2004) — DSL-driven code generation framework; the definition quoted in Era 2
 - Simon Willison, "How StrongDM's AI team build serious software" (February 7, 2026) — scenarios-as-holdout-sets, Digital Twin Universe, cost structure
 - Dan Shapiro, "The Five Levels: From Spicy Autocomplete to the Dark Factory" (January 2026) — five-level framework modeled on NHTSA vehicle automation
 - Stanford Law CodeX, "Built by Agents, Tested by Agents, Trusted by Whom?" (February 8, 2026) — circularity problem analysis

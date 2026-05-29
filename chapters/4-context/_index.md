@@ -48,6 +48,7 @@ This chapter builds from fundamental principles through advanced multi-agent pat
 Core principles of context as agent working memory. Covers the capability capacity model (context fill = capability drain), the difference between context and memory, and the "one agent, one task" principle. Establishes the mental model: context is ephemeral, finite, and the single biggest determinant of output quality.
 
 **Key concepts:**
+
 - Context vs. memory
 - Capability capacity model
 - One agent, one prompt, one task
@@ -58,6 +59,7 @@ Core principles of context as agent working memory. Covers the capability capaci
 Practical techniques for handling context limits, compression, and the injection vs. retrieval balance. Introduces frequent intentional compaction—proactive compression at 40-60% capacity to maintain quality, not salvage it. Contrasts with emergency compaction at 95%.
 
 **Key concepts:**
+
 - Context window limits and capability degradation
 - When to boot fresh vs. compact
 - Injection for priming, retrieval for discovery
@@ -69,6 +71,7 @@ Practical techniques for handling context limits, compression, and the injection
 Sophisticated patterns for complex scenarios. Progressive disclosure enables unlimited expertise within fixed context budgets. Context loading treats context as curated payloads, not accumulated logs. The ACE framework challenges assumptions—contexts should grow with learned knowledge in knowledge-intensive domains.
 
 **Key concepts:**
+
 - Progressive disclosure (metadata → content → resources)
 - Context loading vs. accumulation
 - Agentic Context Engineering (ACE)
@@ -80,6 +83,7 @@ Sophisticated patterns for complex scenarios. Progressive disclosure enables unl
 How context management changes in multi-agent systems. Context isolation keeps orchestrator context clean by having subagents return synthesized summaries, not raw data. Persistent state vs. ephemeral context—the critical distinction for cross-session continuity.
 
 **Key concepts:**
+
 - Multi-agent context isolation
 - Orchestrator context cleanliness
 - Persistent state vs. ephemeral context
@@ -91,6 +95,7 @@ How context management changes in multi-agent systems. Context isolation keeps o
 Architectural approaches to active context management. Surveys three points on the design spectrum: passive accumulation (the default), lossless preservation (LCM), and continuous curation (Sapling). Comparative analysis of trade-offs, with practitioner guidance on when to use each approach.
 
 **Key concepts:**
+
 - Passive accumulation and its failure modes
 - Lossless Context Management (LCM) — immutable store, hierarchical DAG, operator-level recursion
 - Continuous curation (Sapling) — five-stage inter-turn pipeline, operation model

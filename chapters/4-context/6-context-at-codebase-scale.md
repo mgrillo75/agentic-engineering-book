@@ -3,7 +3,15 @@ title: Context at Codebase Scale
 description: Architectural patterns for giving agents effective context in large, underdocumented brownfield codebases
 created: 2026-04-07
 last_updated: 2026-04-07
-tags: [context, brownfield, enterprise, codebase-scale, patterns, graduated-adoption]
+tags:
+  [
+    context,
+    brownfield,
+    enterprise,
+    codebase-scale,
+    patterns,
+    graduated-adoption,
+  ]
 part: 1
 part_title: Foundations
 chapter: 4
@@ -13,7 +21,7 @@ order: 1.4.6
 
 # Context at Codebase Scale
 
-*[2026-02-11]*: Multi-agent deployments fail in the majority of enterprises — not due to agent capability limitations but due to architectural misunderstanding of legacy systems and undocumented dependencies. The systems agents interact with were not designed for automated consumption. Undocumented APIs, implicit workflows, and tribal knowledge create failure surfaces that no amount of agent sophistication can navigate without explicit mapping. ([Multi-Agent Landscape](../7-patterns/10-multi-agent-landscape.md))
+_[2026-02-11]_: Multi-agent deployments fail in the majority of enterprises — not due to agent capability limitations but due to architectural misunderstanding of legacy systems and undocumented dependencies. The systems agents interact with were not designed for automated consumption. Undocumented APIs, implicit workflows, and tribal knowledge create failure surfaces that no amount of agent sophistication can navigate without explicit mapping. ([Multi-Agent Landscape](../7-patterns/10-multi-agent-landscape.md))
 
 This section addresses that failure mode directly with a pattern catalog for managing agent context in codebases that are too large, too old, or too underdocumented for naive context loading.
 
@@ -23,7 +31,7 @@ This section addresses that failure mode directly with a pattern catalog for man
 
 ### The Width vs. Depth Distinction
 
-Section 5 ([Context Management Architectures](5-context-management-architectures.md)) addresses *depth*: how agents manage context across long sessions. LCM and Sapling answer the question "what happens when a single session runs too long?" This section addresses *width*: how agents navigate codebases that are too large for any single context window, regardless of session length. The two challenges are distinct and compose. A brownfield enterprise deployment requires both.
+Section 5 ([Context Management Architectures](5-context-management-architectures.md)) addresses _depth_: how agents manage context across long sessions. LCM and Sapling answer the question "what happens when a single session runs too long?" This section addresses _width_: how agents navigate codebases that are too large for any single context window, regardless of session length. The two challenges are distinct and compose. A brownfield enterprise deployment requires both.
 
 ### What Makes Enterprise Codebases Structurally Hostile to Agents
 
@@ -41,9 +49,9 @@ Brownfield codebases accumulate structural complexity that greenfield systems ne
 
 Brownfield context management has two distinct failure modes:
 
-**"I can't see enough."** The agent lacks access to the relevant code, documentation, or system relationships. It makes decisions based on an incomplete view. This is a *coverage* problem.
+**"I can't see enough."** The agent lacks access to the relevant code, documentation, or system relationships. It makes decisions based on an incomplete view. This is a _coverage_ problem.
 
-**"I see noise, not signal."** The agent has access to large amounts of code but cannot distinguish what matters for the current task. Irrelevant files, stale comments, and misleading naming conventions pollute the signal. This is a *relevance* problem.
+**"I see noise, not signal."** The agent has access to large amounts of code but cannot distinguish what matters for the current task. Irrelevant files, stale comments, and misleading naming conventions pollute the signal. This is a _relevance_ problem.
 
 The patterns in this section address both failure types. Semantic indexing (Pattern 1) and dependency-graph queries (Pattern 4) address coverage. Hierarchical convention files (Pattern 2), decision records (Pattern 3), and tribal knowledge codification (Pattern 6) address relevance. Progressive codebase disclosure (Pattern 5) addresses both by controlling which tier of information agents see.
 
@@ -76,6 +84,7 @@ The [Progressive Disclosure Pattern](../7-patterns/7-progressive-disclosure.md) 
 **Failure mode.** Semantic indexing fails when symbol names are misleading or when the codebase uses implicit conventions that the index cannot capture. A function named `processData` that actually handles PII scrubbing is indexed as `processData` — its constraint regime is invisible until an agent reads it and encounters the business logic. Semantic indexing addresses coverage; it does not address the tribal knowledge failure type.
 
 **Implementation guidance.**
+
 - Parse symbols at the grammar level, not the text level — tree-sitter provides a language-agnostic parsing standard for 130+ languages
 - Rank by reference frequency and dependency depth to surface entry points an agent is most likely to need
 - Fit to a configurable token budget: the index should consume a predictable fraction of context, leaving room for activated content
@@ -96,6 +105,7 @@ The book's prior evidence for this pattern appears in [Production Concerns](../8
 **Failure mode.** Hierarchical convention files fail when they drift from the code they document. A module-level file that described the state of a service two years ago may actively mislead agents navigating the current state. Convention files require maintenance discipline — they are living documentation, not one-time artifacts.
 
 **Implementation guidance.**
+
 - Root file: project-wide conventions, dependencies, deployment patterns, ownership structure
 - Module files: module-specific constraints, known limitations, contact points, exception regimes
 - Service files: API contracts, data schema ownership, SLA expectations, downstream consumers
@@ -105,11 +115,11 @@ The book's prior evidence for this pattern appears in [Production Concerns](../8
 
 ### Pattern 3: Decision Records as Agent Context
 
-**What it is.** Architecture Decision Records (ADRs) used as structured context that explains *why* the code is the way it is, not just *what* it does. ADRs capture the decision, the alternatives considered, the reasoning, and the constraints that shaped the outcome.
+**What it is.** Architecture Decision Records (ADRs) used as structured context that explains _why_ the code is the way it is, not just _what_ it does. ADRs capture the decision, the alternatives considered, the reasoning, and the constraints that shaped the outcome.
 
 **Why it applies to brownfield specifically.** This pattern directly addresses the tribal knowledge failure type. Agents that encounter code without decision context will "helpfully" reverse decisions made for reasons no longer visible in the code — deprecated library? Agents may suggest migrating away from it, not knowing the migration was attempted and abandoned due to a data integrity issue. PCI constraint? Agents may refactor the data flow, not knowing the separation is legally required.
 
-ADRs give agents the *why*, which is invisible to semantic indexing and invisible to the model without explicit encoding.
+ADRs give agents the _why_, which is invisible to semantic indexing and invisible to the model without explicit encoding.
 
 **The AI-assisted retrospective ADR pattern.** For legacy codebases that predate ADR practices, retrospective generation is viable: feed existing code, test files, and commit history to a model to generate candidate ADRs for documented decisions. The generated candidates require human review and correction, but the process surfaces implicit decisions and makes them explicit. This turns tribal knowledge into structured context.
 
@@ -118,6 +128,7 @@ The relationship to [Specs as Source Code](../9-mental-models/3-specs-as-source-
 **Failure mode.** ADRs fail when they are disconnected from the code they document. An ADR that references a decision no longer reflected in the code misleads more than no ADR at all. ADRs must be co-located with or explicitly linked to the code they constrain.
 
 **Implementation guidance.**
+
 - Structure ADRs with: Status (Accepted / Superseded), Context (the forces at play), Decision (what was chosen), Consequences (the resulting constraints)
 - Tag ADRs with the modules they constrain — agents can discover relevant ADRs for a module without reading all ADRs
 - For retrospective generation: use commit history, test names, and code comments as source material; treat generated ADRs as drafts requiring engineer review
@@ -140,6 +151,7 @@ The KotaDB case study (`appendices/examples/kotadb/CASE_STUDY.md:361-397`) demon
 **Failure mode.** Dependency-graph queries fail in polyglot codebases where modules cross language boundaries without explicit interface documentation. A Go service calling a Python service via HTTP has a dependency that LSP cannot trace — it requires API documentation or integration tests to surface. Cross-language dependency resolution remains an unsolved problem in current tooling.
 
 **Implementation guidance.**
+
 - Build the dependency graph as a pre-computed artifact, updated on CI or on-commit; agents query it, not build it
 - Expose as a tool interface: `find_callers(symbol)`, `find_dependencies(module)`, `impact_radius(symbol)` — discrete query operations, not raw graph access
 - For cross-language boundaries, document the interface contracts explicitly in convention files and ADRs — the tooling gap requires human documentation
@@ -169,17 +181,18 @@ The original pattern was documented for loading expertise and skills into agent 
 
 **Three codification mechanisms.**
 
-*Structured convention files.* Encoding workflow patterns and implicit conventions into module-level and root-level convention files. The content: recurring workflows (what steps must happen before deploying this service), implicit conventions (this module uses a naming scheme that predates the rest of the codebase), boundary conditions (this API has a rate limit that is not documented in the API itself).
+_Structured convention files._ Encoding workflow patterns and implicit conventions into module-level and root-level convention files. The content: recurring workflows (what steps must happen before deploying this service), implicit conventions (this module uses a naming scheme that predates the rest of the codebase), boundary conditions (this API has a rate limit that is not documented in the API itself).
 
-*Domain expertise files.* Structured `expertise.yaml` files that capture domain-specific knowledge the book's expert agent pattern can load. These go beyond conventions into domain semantics: what does "subscriber" mean in this system? Which events are idempotent and which are not? What are the valid state transitions for an order?
+_Domain expertise files._ Structured `expertise.yaml` files that capture domain-specific knowledge the book's expert agent pattern can load. These go beyond conventions into domain semantics: what does "subscriber" mean in this system? Which events are idempotent and which are not? What are the valid state transitions for an order?
 
-*The thin-pointer model.* For large legacy codebases, the root convention file is a navigation hub rather than a knowledge repository. Domain knowledge lives in module-level expertise files, and the root file provides the map. This mirrors the pattern documented in the external-teacher expertise: a 31KB legacy system document replaced with a 104-line navigation hub pointing to domain-specific expertise files. The result is composable — agents load only the expertise relevant to their current task rather than loading all domain knowledge upfront.
+_The thin-pointer model._ For large legacy codebases, the root convention file is a navigation hub rather than a knowledge repository. Domain knowledge lives in module-level expertise files, and the root file provides the map. This mirrors the pattern documented in the external-teacher expertise: a 31KB legacy system document replaced with a 104-line navigation hub pointing to domain-specific expertise files. The result is composable — agents load only the expertise relevant to their current task rather than loading all domain knowledge upfront.
 
 The relationship to [Specs as Source Code](../9-mental-models/3-specs-as-source-code.md) is foundational: tribal knowledge codification is the process of creating the specs that agents will use as source. Without this phase, other patterns operate on an incomplete substrate.
 
 **Failure mode.** Tribal knowledge codification fails when it is treated as a one-time project rather than a continuous practice. The knowledge base grows stale as the system evolves. Codification requires a maintenance discipline: when a tribal decision changes, the documentation changes with it.
 
 **Implementation guidance.**
+
 - Start with the highest-risk knowledge: constraints that agents might violate with significant consequences (PCI requirements, rate limits, data ownership rules)
 - Use AI assistance for drafting: describe the domain to a model, let it generate structured documentation, review and correct the output
 - Co-locate documentation with code: expertise files live in the modules they describe, not in a separate documentation repository
@@ -204,15 +217,15 @@ workflows         prompt inventory    prompts that drift   domain knowledge  aut
                   decision frames                                            invariants
 ```
 
-*Encoding.* Create slash commands as convention files for recurring workflows. A command that runs the generation pipeline, a command that runs tests, a command that sets up a new client — these encode the implicit workflow steps that currently require human memory. Implementation is entirely in markdown files, requiring no code changes. Immediate daily value; usable the next day.
+_Encoding._ Create slash commands as convention files for recurring workflows. A command that runs the generation pipeline, a command that runs tests, a command that sets up a new client — these encode the implicit workflow steps that currently require human memory. Implementation is entirely in markdown files, requiring no code changes. Immediate daily value; usable the next day.
 
-*Documenting.* Upgrade convention files with three additions: workflow patterns (the recurring sequences that agents should follow rather than invent), a prompt inventory (a list of every prompt in the system, its location, its purpose, and when it was last reviewed), and a decision framework (when to use which model, cost/quality trade-offs, task-specific guidance). This phase makes implicit knowledge explicit. Agents learn what practitioners already know.
+_Documenting._ Upgrade convention files with three additions: workflow patterns (the recurring sequences that agents should follow rather than invent), a prompt inventory (a list of every prompt in the system, its location, its purpose, and when it was last reviewed), and a decision framework (when to use which model, cost/quality trade-offs, task-specific guidance). This phase makes implicit knowledge explicit. Agents learn what practitioners already know.
 
-*Consolidating.* Establish a single source of truth for prompts that have drifted — multiple copies in multiple files that have diverged from each other. Consolidation creates a canonical prompt directory and eliminates duplication. This phase is the one that often requires code changes, but the changes are mechanical: move text from A to B, add an import. The prompt inventory from Documenting makes the problem visible; Consolidating eliminates it.
+_Consolidating._ Establish a single source of truth for prompts that have drifted — multiple copies in multiple files that have diverged from each other. Consolidation creates a canonical prompt directory and eliminates duplication. This phase is the one that often requires code changes, but the changes are mechanical: move text from A to B, add an import. The prompt inventory from Documenting makes the problem visible; Consolidating eliminates it.
 
-*Specializing.* Create expert agent domains with persistent knowledge — domain-specific expertise files that agents load rather than having humans re-explain context at the start of each session. A content pipeline expert that knows extraction schemas, model selection rules, and multi-client content variations. A database operations expert that knows the namespace conventions, migration ordering, and Pydantic model patterns. The improve agent pattern learns from each session, making expertise cumulative.
+_Specializing._ Create expert agent domains with persistent knowledge — domain-specific expertise files that agents load rather than having humans re-explain context at the start of each session. A content pipeline expert that knows extraction schemas, model selection rules, and multi-client content variations. A database operations expert that knows the namespace conventions, migration ordering, and Pydantic model patterns. The improve agent pattern learns from each session, making expertise cumulative.
 
-*Enforcing.* Add hooks that enforce invariants automatically: run tests before every commit, load project context at session start, block operations that violate constraints. This stage enables higher autonomy — the safeguards enforce the rules the practitioner would otherwise enforce manually. The calibration principle from the autonomy frameworks applies: autonomy level and safeguard depth must scale together.
+_Enforcing._ Add hooks that enforce invariants automatically: run tests before every commit, load project context at session start, block operations that violate constraints. This stage enables higher autonomy — the safeguards enforce the rules the practitioner would otherwise enforce manually. The calibration principle from the autonomy frameworks applies: autonomy level and safeguard depth must scale together.
 
 **Key principles for graduated adoption.**
 
@@ -227,20 +240,21 @@ Teams should not wait for all five stages to be in place before beginning. Encod
 ## Decision Matrix
 
 Archetype definitions:
+
 - **Director** — Non-coder lead who directs agents more than writing code; managing an inherited project
 - **Platform/DevEx** — Infrastructure-focused team building context tooling for other developers
 - **Senior Dev** — Individual practitioner without organizational buy-in; can only adopt what requires no shared infrastructure
 - **Compliance Enterprise** — Regulated industry; air-gap, PCI, HIPAA, or SOC 2 requirements constrain tool choice
 
-| Pattern | Director | Platform/DevEx | Senior Dev | Compliance Enterprise | Notes |
-|---------|----------|----------------|------------|----------------------|-------|
-| **1. Semantic Indexing** | S | P | S | S | Platform/DevEx builds the index; others consume it. Senior Dev can use OSS local tooling without org buy-in. Compliance Enterprise requires air-gap deployment. |
-| **2. Hierarchical Convention Files** | P | S | P | P | Primary for all archetypes — requires only file creation. Director starts here. Compliance Enterprise uses for regulatory constraint encoding. No infrastructure dependency. |
-| **3. Decision Records** | S | S | P | P | Senior Dev can adopt unilaterally for personal workflow. Compliance Enterprise uses for audit trail of architectural decisions under regulatory review. |
-| **4. Dependency-Graph Queries** | L | P | L | S | High infrastructure investment; Platform/DevEx archetype is the natural owner. Director lacks technical depth to operate. Senior Dev cannot adopt without org buy-in. Compliance requires on-prem graph store. |
-| **5. Progressive Codebase Disclosure** | S | P | S | S | Platform/DevEx designs the tier structure; others benefit. Composable with all other patterns. Requires semantic index (Pattern 1) as Tier 1 input. |
-| **6. Tribal Knowledge Codification** | P | S | P | P | Director-first: encoding what the team already knows into agent-readable form is the highest-leverage activity for a non-coder lead. Compliance Enterprise: essential for documenting regulatory constraint rationale. |
-| **7. Graduated Adoption** | P | — | P | S | Designed for teams that cannot adopt simultaneously. Platform/DevEx typically has capacity for more systematic adoption. Compliance Enterprise uses staged approach to manage audit risk during transition. |
+| Pattern                                | Director | Platform/DevEx | Senior Dev | Compliance Enterprise | Notes                                                                                                                                                                                                                  |
+| -------------------------------------- | -------- | -------------- | ---------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1. Semantic Indexing**               | S        | P              | S          | S                     | Platform/DevEx builds the index; others consume it. Senior Dev can use OSS local tooling without org buy-in. Compliance Enterprise requires air-gap deployment.                                                        |
+| **2. Hierarchical Convention Files**   | P        | S              | P          | P                     | Primary for all archetypes — requires only file creation. Director starts here. Compliance Enterprise uses for regulatory constraint encoding. No infrastructure dependency.                                           |
+| **3. Decision Records**                | S        | S              | P          | P                     | Senior Dev can adopt unilaterally for personal workflow. Compliance Enterprise uses for audit trail of architectural decisions under regulatory review.                                                                |
+| **4. Dependency-Graph Queries**        | L        | P              | L          | S                     | High infrastructure investment; Platform/DevEx archetype is the natural owner. Director lacks technical depth to operate. Senior Dev cannot adopt without org buy-in. Compliance requires on-prem graph store.         |
+| **5. Progressive Codebase Disclosure** | S        | P              | S          | S                     | Platform/DevEx designs the tier structure; others benefit. Composable with all other patterns. Requires semantic index (Pattern 1) as Tier 1 input.                                                                    |
+| **6. Tribal Knowledge Codification**   | P        | S              | P          | P                     | Director-first: encoding what the team already knows into agent-readable form is the highest-leverage activity for a non-coder lead. Compliance Enterprise: essential for documenting regulatory constraint rationale. |
+| **7. Graduated Adoption**              | P        | —              | P          | S                     | Designed for teams that cannot adopt simultaneously. Platform/DevEx typically has capacity for more systematic adoption. Compliance Enterprise uses staged approach to manage audit risk during transition.            |
 
 **P** = primary recommendation for this archetype | **S** = supplementary, useful in combination | **L** = low fit | **—** = not applicable
 

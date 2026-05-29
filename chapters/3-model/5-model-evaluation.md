@@ -3,7 +3,20 @@ title: Model Evaluation for Agents
 description: How to evaluate models for agentic tasks—metrics, benchmarks, observability, and the compound error problem
 created: 2025-12-10
 last_updated: 2026-04-11
-tags: [model, evaluation, benchmarks, observability, metrics, agentic, reliability-gap, reliability-dimensions, benchmark-validity, autoresearch, training-loop]
+tags:
+  [
+    model,
+    evaluation,
+    benchmarks,
+    observability,
+    metrics,
+    agentic,
+    reliability-gap,
+    reliability-dimensions,
+    benchmark-validity,
+    autoresearch,
+    training-loop,
+  ]
 part: 1
 part_title: Foundations
 chapter: 3
@@ -20,16 +33,19 @@ Agent evaluation differs fundamentally from chatbot evaluation. Single-turn resp
 ## Core Questions
 
 ### Measurement Strategy
+
 - How do you evaluate agentic capabilities versus conversational quality?
 - What metrics actually predict production success?
 - Which benchmarks test the capabilities that matter for agents?
 
 ### The Compound Error Problem
+
 - Why does 99% per-step accuracy collapse over multi-step tasks?
 - How does error compounding shape architecture decisions?
 - What reliability threshold is needed for production deployment?
 
 ### Implementation Approaches
+
 - How to evaluate without comprehensive test suites?
 - When to use LLM-as-judge versus human evaluation?
 - What observability infrastructure enables effective debugging?
@@ -52,18 +68,18 @@ Evaluating agents requires different approaches than evaluating chatbots or code
 
 ## The Compound Error Problem
 
-*[2025-12-10]*: Error rates multiply across steps, not add. This shapes every architectural decision in agentic systems.
+_[2025-12-10]_: Error rates multiply across steps, not add. This shapes every architectural decision in agentic systems.
 
 **The Math of Cascading Failures**
 
 If each step in a workflow has accuracy `p`, then the probability of completing an `n`-step task successfully is `p^n`. This compounds errors exponentially:
 
 | Per-Step Accuracy | 10 Steps | 20 Steps | 50 Steps | 100 Steps |
-|-------------------|----------|----------|----------|-----------|
-| 99% | 90.4% | 81.8% | 60.5% | 36.6% |
-| 98% | 81.7% | 66.8% | 36.4% | 13.3% |
-| 95% | 59.9% | 35.8% | 7.7% | 0.6% |
-| 90% | 34.9% | 12.2% | 0.5% | 0.003% |
+| ----------------- | -------- | -------- | -------- | --------- |
+| 99%               | 90.4%    | 81.8%    | 60.5%    | 36.6%     |
+| 98%               | 81.7%    | 66.8%    | 36.4%    | 13.3%     |
+| 95%               | 59.9%    | 35.8%    | 7.7%     | 0.6%      |
+| 90%               | 34.9%    | 12.2%    | 0.5%     | 0.003%    |
 
 A 95% per-step accuracy—high by many standards—yields only 60% success over 10 steps and nearly 0% over 100 steps. This explains why agents that seem to work well in demos fail catastrophically in production multi-step workflows.
 
@@ -83,7 +99,7 @@ The compound error problem drives several core architectural patterns:
 
 ## The Capability-Reliability Gap
 
-*[2026-04-11]*: The compound error problem is a theoretical concern. The capability-reliability gap is its empirical confirmation.
+_[2026-04-11]_: The compound error problem is a theoretical concern. The capability-reliability gap is its empirical confirmation.
 
 Rabanser et al. define **capability** as mean task success rate — the standard benchmark metric — and **reliability** as a multi-dimensional property covering consistency, robustness, predictability, and safety that is independent of raw capability. The gap is the empirically measured divergence in how these improve over time. [Rabanser et al., arXiv:2602.16666, 2026]
 
@@ -191,13 +207,14 @@ Traditional NLP benchmarks don't measure agentic capabilities. Newer benchmarks 
 **What it tests:** Real GitHub issues from open source projects. Agents must understand the codebase, locate relevant files, implement changes, and verify fixes.
 
 **Variants:**
+
 - **SWE-bench Lite:** 300 filtered issues, baseline difficulty
 - **SWE-bench Verified:** Human-validated test cases, reduced contamination
 - **SWE-bench Pro:** Significantly harder, addresses data contamination in original benchmark
 
 **Why it matters:** Tests end-to-end software engineering workflows—understanding requirements, navigating codebases, writing code, running tests. Multi-step tasks requiring dozens to hundreds of tool calls.
 
-*[2025-12-10]*: SWE-bench Pro revealed widespread contamination in the original benchmark. Top agents scored 70%+ on Verified but dropped to 23% on Pro, demonstrating that earlier results were inflated by training data leakage.
+_[2025-12-10]_: SWE-bench Pro revealed widespread contamination in the original benchmark. Top agents scored 70%+ on Verified but dropped to 23% on Pro, demonstrating that earlier results were inflated by training data leakage.
 
 **Key insight:** Codebase navigation and multi-file reasoning are major bottlenecks. Agents often struggle more with finding the right location to make changes than with implementing the fix itself.
 
@@ -213,7 +230,7 @@ Traditional NLP benchmarks don't measure agentic capabilities. Newer benchmarks 
 
 ### Current Benchmark Landscape
 
-*[2025-12-10]*: 2025 agent benchmarks are significantly harder than 2024 benchmarks. Best-in-class agents score as low as 5% on some tasks. This reflects both reduced data contamination and more realistic task complexity.
+_[2025-12-10]_: 2025 agent benchmarks are significantly harder than 2024 benchmarks. Best-in-class agents score as low as 5% on some tasks. This reflects both reduced data contamination and more realistic task complexity.
 
 Benchmark scores should be interpreted as lower bounds on capability, not predictions of production performance. Agents often perform better on domain-specific tasks than on generic benchmarks, especially when paired with well-designed tools and context.
 
@@ -221,26 +238,26 @@ Benchmark scores should be interpreted as lower bounds on capability, not predic
 
 ## Cognitive Frameworks for Capability Assessment
 
-*[2026-03-18]*: Google DeepMind's "Measuring Progress Toward AGI: A Cognitive Framework" (Burnell et al., 2026) offers a structured lens for understanding *what* an AI system can and cannot do—directly useful for agent architecture decisions.
+_[2026-03-18]_: Google DeepMind's "Measuring Progress Toward AGI: A Cognitive Framework" (Burnell et al., 2026) offers a structured lens for understanding _what_ an AI system can and cannot do—directly useful for agent architecture decisions.
 
 ### The Cognitive Taxonomy
 
 The framework identifies 10 cognitive faculties that underpin general intelligence, drawn from decades of research in psychology, neuroscience, and cognitive science:
 
-| Faculty | Definition | Agent Relevance |
-|---------|-----------|-----------------|
-| **Perception** | Extract and process sensory information | Multimodal input handling, image/document understanding |
-| **Generation** | Produce outputs (text, code, actions) | Core LLM capability; tool call generation |
-| **Attention** | Focus cognitive resources on specific aspects | Context window utilization, instruction following |
-| **Learning** | Acquire new knowledge through experience | In-context learning, few-shot adaptation |
-| **Memory** | Store and retrieve information over time | Context management, RAG integration |
-| **Reasoning** | Draw valid conclusions via logical principles | Multi-step planning, debugging, chain-of-thought |
-| **Metacognition** | Monitor and control own cognitive processes | Self-correction, knowing when to ask for help |
-| **Executive Functions** | Planning, inhibition, cognitive flexibility | Workflow orchestration, task decomposition |
-| **Problem Solving** | Find effective solutions (composite faculty) | End-to-end task completion |
-| **Social Cognition** | Process and respond to social information | User intent understanding, collaborative behavior |
+| Faculty                 | Definition                                    | Agent Relevance                                         |
+| ----------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| **Perception**          | Extract and process sensory information       | Multimodal input handling, image/document understanding |
+| **Generation**          | Produce outputs (text, code, actions)         | Core LLM capability; tool call generation               |
+| **Attention**           | Focus cognitive resources on specific aspects | Context window utilization, instruction following       |
+| **Learning**            | Acquire new knowledge through experience      | In-context learning, few-shot adaptation                |
+| **Memory**              | Store and retrieve information over time      | Context management, RAG integration                     |
+| **Reasoning**           | Draw valid conclusions via logical principles | Multi-step planning, debugging, chain-of-thought        |
+| **Metacognition**       | Monitor and control own cognitive processes   | Self-correction, knowing when to ask for help           |
+| **Executive Functions** | Planning, inhibition, cognitive flexibility   | Workflow orchestration, task decomposition              |
+| **Problem Solving**     | Find effective solutions (composite faculty)  | End-to-end task completion                              |
+| **Social Cognition**    | Process and respond to social information     | User intent understanding, collaborative behavior       |
 
-The taxonomy focuses on *what* the system can accomplish, not *how*—remaining agnostic to underlying mechanisms. This makes it applicable whether evaluating a single model or a multi-agent system with tools.
+The taxonomy focuses on _what_ the system can accomplish, not _how_—remaining agnostic to underlying mechanisms. This makes it applicable whether evaluating a single model or a multi-agent system with tools.
 
 ### Jagged Cognitive Profiles
 
@@ -258,13 +275,13 @@ The paper argues that evaluating the model checkpoint alone is increasingly insu
 
 > Modern AI systems are deployed with specific system instructions, have access to tools, can manipulate their environments via actions, and may even have the ability to make calls to other AI systems.
 
-This directly validates the agent evaluation approach: measure the *system* (model + tools + prompts + orchestration), not just the model. A model that scores poorly on memory benchmarks might perform excellently when paired with a well-designed RAG system. Conversely, a model with strong reasoning might fail in practice when given poorly designed tools.
+This directly validates the agent evaluation approach: measure the _system_ (model + tools + prompts + orchestration), not just the model. A model that scores poorly on memory benchmarks might perform excellently when paired with a well-designed RAG system. Conversely, a model with strong reasoning might fail in practice when given poorly designed tools.
 
 The analogy: evaluating a person's intelligence changes when you give them a calculator. For agents, the "calculator" is the entire tool and context infrastructure. Evaluate with it, not without it.
 
 ### Capabilities vs. Propensities
 
-A critical distinction the paper raises: what a system *can* do versus what it *tends* to do. Propensities—risk tolerance, communication style, default problem-solving strategies—significantly affect deployment outcomes. This connects directly to model behavioral patterns (see [Model Behavior](2-model-behavior.md)): two models with identical capability profiles can behave very differently in production due to different propensities.
+A critical distinction the paper raises: what a system _can_ do versus what it _tends_ to do. Propensities—risk tolerance, communication style, default problem-solving strategies—significantly affect deployment outcomes. This connects directly to model behavioral patterns (see [Model Behavior](2-model-behavior.md)): two models with identical capability profiles can behave very differently in production due to different propensities.
 
 ### Evaluation Protocol Implications
 
@@ -286,7 +303,7 @@ Production agents require observability infrastructure to enable debugging and p
 
 ### What Tracing Must Capture
 
-*[2025-12-10]*: Tracing consistently tops must-have lists in production agent surveys. This reflects the difficulty of debugging without visibility into decision paths.
+_[2025-12-10]_: Tracing consistently tops must-have lists in production agent surveys. This reflects the difficulty of debugging without visibility into decision paths.
 
 **Token counts per step.** Input tokens, output tokens, and cumulative totals. Essential for cost analysis and identifying context window pressure.
 
@@ -303,6 +320,7 @@ Production agents require observability infrastructure to enable debugging and p
 Text logs are insufficient for understanding complex agent behaviors. Visual representations of decision trees reveal patterns invisible in linear logs.
 
 **Decision graphs show:**
+
 - Branch points where the agent chose between approaches
 - Paths taken versus paths not taken
 - Retry loops and recovery attempts
@@ -354,11 +372,11 @@ Generic judge calibration—calibrate on 50–100 examples, measure agreement, d
 
 **Three rubric structuring dimensions** ensure evaluation coverage across realistic usage:
 
-| Dimension | What It Covers | Examples |
-|-----------|---------------|---------|
-| **Features** | Specific functionalities the product provides | Order tracking, email summarization, code review, appointment scheduling |
-| **Scenarios** | Problem contexts the agent encounters | Multiple matches, no match, ambiguous request, invalid data, system error, incomplete information, unsupported feature |
-| **Personas** | User profiles with different needs | New users (high explanation need), expert users (low tolerance for verbosity), non-native speakers, busy professionals (prefer brevity) |
+| Dimension     | What It Covers                                | Examples                                                                                                                                |
+| ------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Features**  | Specific functionalities the product provides | Order tracking, email summarization, code review, appointment scheduling                                                                |
+| **Scenarios** | Problem contexts the agent encounters         | Multiple matches, no match, ambiguous request, invalid data, system error, incomplete information, unsupported feature                  |
+| **Personas**  | User profiles with different needs            | New users (high explanation need), expert users (low tolerance for verbosity), non-native speakers, busy professionals (prefer brevity) |
 
 A rubric that covers all three dimensions produces evaluation cases that represent the product's actual usage distribution, not a developer's intuition about what matters.
 
@@ -379,6 +397,7 @@ A rubric that covers all three dimensions produces evaluation cases that represe
 **The process-value insight.** The iterative judge-building process produces value beyond the judge itself. Husain observes that "the judge is a hack to trick people into looking at their data"—the real benefit is the systematic examination of failures that the construction process forces. Teams that build judges by going through the calibration workflow develop product intuition that teams using off-the-shelf evaluators do not.
 
 **Sources:**
+
 - Husain, H. "Using LLM-as-a-Judge For Evaluation: A Complete Guide." hamel.dev/blog/posts/llm-judge/ (2024-10-29)
 - Yan, E. "Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)." eugeneyan.com/writing/llm-evaluators/ (2024-08-18)
 
@@ -397,12 +416,14 @@ A rubric that covers all three dimensions produces evaluation cases that represe
 LLM judges scale evaluation but cannot replace human judgment entirely.
 
 **Use humans for:**
+
 - Calibration dataset creation
 - Validating LLM judge reliability
 - Evaluating subjective qualities (tone, appropriateness)
 - Catching systematic biases in automated evaluation
 
 **Use LLM judges for:**
+
 - Large-scale comparative testing (A/B tests across hundreds of examples)
 - Rapid iteration during development
 - Regression testing (did this change hurt performance?)
@@ -410,7 +431,7 @@ LLM judges scale evaluation but cannot replace human judgment entirely.
 
 ### Evaluation Inside Training Loops
 
-*[2026-04-11]*: Autoresearch introduces a structurally distinct application of evaluation that does not appear elsewhere in this file. Existing coverage evaluates deployed agent outputs — task completion, tool accuracy, error recovery, LLM-as-judge quality ratings. The autoresearch pattern applies evaluation in a different role: as the fitness function inside an iterative model training loop.
+_[2026-04-11]_: Autoresearch introduces a structurally distinct application of evaluation that does not appear elsewhere in this file. Existing coverage evaluates deployed agent outputs — task completion, tool accuracy, error recovery, LLM-as-judge quality ratings. The autoresearch pattern applies evaluation in a different role: as the fitness function inside an iterative model training loop.
 
 **The structural distinction**
 
@@ -430,21 +451,23 @@ The compound error analysis elsewhere in this file establishes that small per-st
 
 Four constraints identified independently by the HN community (2026-03-08) and embedded in Karpathy's implementation define the minimum viable guardrails for unattended evaluation-driven loops:
 
-| Constraint | Why it matters |
-|------------|----------------|
-| One-file scope | Limits blast radius of any single experiment; prevents architectural drift across unrelated components |
-| One scalar metric | Prevents gaming: a single metric forces genuine improvement rather than trade-off exploitation |
-| Time-boxed experiments (~5 minutes) | Caps maximum compute waste per rejected experiment; enables 100 iterations overnight |
-| Git checkpoint per accepted change | Every accepted modification is committed; full rollback available at any point |
+| Constraint                          | Why it matters                                                                                         |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| One-file scope                      | Limits blast radius of any single experiment; prevents architectural drift across unrelated components |
+| One scalar metric                   | Prevents gaming: a single metric forces genuine improvement rather than trade-off exploitation         |
+| Time-boxed experiments (~5 minutes) | Caps maximum compute waste per rejected experiment; enables 100 iterations overnight                   |
+| Git checkpoint per accepted change  | Every accepted modification is committed; full rollback available at any point                         |
 
 These constraints map directly to observability requirements described earlier in this file: one metric to monitor, bounded execution time, and a complete audit trail of accepted changes.
 
 **See Also:**
+
 - [When to Train Your Own](1-model-selection.md#when-to-train-your-own) — Model selection context for trained-to-task SLMs
 - [Autonomous Loops](../7-patterns/4-autonomous-loops.md) — Autoresearch as a specific application of the autonomous loop pattern
 - [Evaluation (Practices)](../8-practices/2-evaluation.md) — Eval-driven model improvement workflows
 
 **Sources:**
+
 - Schmid, P. "How Autoresearch will change Small Language Models adoption." philschmid.de, ~2026-03-10. https://www.philschmid.de/autoresearch
 - Karpathy, A. karpathy/autoresearch. GitHub, 2026-03-06. https://github.com/karpathy/autoresearch
 - GEPA (arxiv 2501.09361). ICLR 2026. https://arxiv.org/abs/2501.09361
@@ -461,6 +484,7 @@ Effective evaluation starts simple and scales with the project. Waiting for comp
 The first evaluation should happen before the first deployment. Three to five carefully chosen test cases reveal more than zero test cases.
 
 **Pick test cases that:**
+
 - Cover the most common use case (happy path)
 - Test the most likely failure mode
 - Exercise the full workflow end-to-end
@@ -479,7 +503,7 @@ Run these manually. Observe the agent's reasoning, tool calls, and outputs. This
 
 Pipeline-level evaluations produce ambiguous failures: the agent failed, but which component failed? Component-level evaluation isolates each pipeline stage's behavior before composing it into system-level tests. This maps to Husain's Level 1 evaluation hierarchy [Husain, 2024]: deterministic assertions per component, run on every code change. Level 1 must be solid before scaling to Level 2 (model-based evaluations) because model-based evals on a fragile pipeline produce noise, not signal.
 
-**Why the sequencing gate matters.** A RAG pipeline that returns wrong answers could fail at retrieval (wrong chunks returned), reranking (right chunks returned in wrong order), generation (right chunks, wrong synthesis), or format validation (correct content, wrong structure). A single pipeline-level eval catches that something is wrong. Component-level evals identify *which* component is wrong. That specificity is the difference between a debugging session that takes hours and one that takes minutes—see [Debugging Agents](../../8-practices/1-debugging-agents.md) for how failure attribution accelerates diagnosis.
+**Why the sequencing gate matters.** A RAG pipeline that returns wrong answers could fail at retrieval (wrong chunks returned), reranking (right chunks returned in wrong order), generation (right chunks, wrong synthesis), or format validation (correct content, wrong structure). A single pipeline-level eval catches that something is wrong. Component-level evals identify _which_ component is wrong. That specificity is the difference between a debugging session that takes hours and one that takes minutes—see [Debugging Agents](../../8-practices/1-debugging-agents.md) for how failure attribution accelerates diagnosis.
 
 **Canonical component list for RAG systems** (the most common pipeline architecture in deployed agents):
 
@@ -492,6 +516,7 @@ Pipeline-level evaluations produce ambiguous failures: the agent failed, but whi
 **Generalization beyond RAG.** The component taxonomy extends to other architectures: routing accuracy for intent-classification agents, tool selection accuracy for function-calling agents, extraction precision for document-processing pipelines. The principle is architecture-agnostic—isolate and validate each component before trusting the composition.
 
 **Sources:**
+
 - Husain, H. "Your AI Product Needs Evals." hamel.dev/blog/posts/evals/ (2024-03-29)
 - Husain, H. "LLM Evals: Everything You Need to Know (FAQ)." hamel.dev/blog/posts/evals-faq/ (2025)
 
@@ -500,6 +525,7 @@ Pipeline-level evaluations produce ambiguous failures: the agent failed, but whi
 Every production failure should become a test case.
 
 **When an agent fails:**
+
 1. Capture the exact input, context, and expected output
 2. Add it to the regression test suite
 3. Verify the fix prevents recurrence

@@ -3,7 +3,18 @@ title: Multi-Model Architectures
 description: When and how to use multiple models in agent systems—orchestrator patterns, cascades, routing strategies, and planning versus execution separation
 created: 2025-12-10
 last_updated: 2026-04-11
-tags: [model, multi-model, orchestrator, cascade, routing, agentic, swarm, advisor-strategy, model-pairing]
+tags:
+  [
+    model,
+    multi-model,
+    orchestrator,
+    cascade,
+    routing,
+    agentic,
+    swarm,
+    advisor-strategy,
+    model-pairing,
+  ]
 part: 1
 part_title: Foundations
 chapter: 3
@@ -24,16 +35,19 @@ Multi-model systems route tasks based on complexity, capability requirements, an
 ## Core Questions
 
 ### Architecture Decisions
+
 - When does a single model suffice versus requiring multiple models?
 - How do orchestrator-specialist patterns differ from model cascades?
 - What routing strategies exist and when does each apply?
 
 ### Trade-off Management
+
 - What overhead does multi-model coordination introduce?
 - How do cost savings compare to coordination complexity?
 - When does planning-execution separation improve outcomes?
 
 ### Implementation Patterns
+
 - How do quality gates work in cascade architectures?
 - What intermediate representations enable clean model handoffs?
 - How does model family consistency affect integration complexity?
@@ -45,6 +59,7 @@ Multi-model systems route tasks based on complexity, capability requirements, an
 Start with a single frontier model. Multi-model architectures add complexity that only pays off at scale.
 
 **Single model works when:**
+
 - Task volume is low (hundreds of queries per day, not thousands)
 - Task complexity is homogeneous (all planning, all execution, or all simple)
 - Prototyping and validation phase (optimize for learning speed, not cost)
@@ -53,6 +68,7 @@ Start with a single frontier model. Multi-model architectures add complexity tha
 The default should be "one model until proven otherwise." Premature optimization toward multi-model introduces coordination bugs, testing complexity, and architectural overhead that outweighs cost savings.
 
 **Indicators that single model is breaking down:**
+
 - Monthly API costs exceed team budget allocations
 - Simple tasks wait behind complex tasks in queue (latency suffers)
 - Quality variance increases (model struggles with mixed complexity)
@@ -95,9 +111,10 @@ The orchestrator handles complex reasoning—task decomposition, dependency anal
 
 ### Evidence: NVIDIA ToolOrchestra
 
-*[2025-12-10]*: NVIDIA's ToolOrchestra research demonstrated that an 8B parameter orchestrator coordinating 1B specialist models outperformed larger single models on tool-use benchmarks.
+_[2025-12-10]_: NVIDIA's ToolOrchestra research demonstrated that an 8B parameter orchestrator coordinating 1B specialist models outperformed larger single models on tool-use benchmarks.
 
 **Results:**
+
 - 8B orchestrator + 1B specialists: 78.2% accuracy at $9.20 per 1000 queries
 - 70B single model: 72.5% accuracy at $17.80 per 1000 queries
 - Better performance at half the cost
@@ -111,6 +128,7 @@ The finding challenges assumptions about model size. Orchestration allows smalle
 Anthropic's multi-agent research revealed the cost of coordination: ~15× token overhead compared to single-agent approaches.
 
 **Where the tokens go:**
+
 - Orchestrator context: task description + specialist outputs
 - Specialist contexts: decomposed subtasks + execution instructions
 - Coordination messages: routing decisions, synthesis prompts
@@ -119,12 +137,14 @@ Anthropic's multi-agent research revealed the cost of coordination: ~15× token 
 The 15× multiplier means this pattern only justifies itself for high-value use cases. If a task costs $0.10 with a single agent, multi-agent orchestration costs $1.50. The economic threshold depends on what quality improvement or speed gain that $1.40 buys.
 
 **When the overhead pays off:**
+
 - Complex research tasks requiring parallel domain expertise
 - Code generation with architecture, implementation, and testing phases
 - Multi-step workflows where specialists can run concurrently
 - Quality-critical tasks where deterministic outcomes justify token cost
 
 **When it doesn't:**
+
 - Simple queries answerable by a single model pass
 - Low-budget prototyping where cost discipline matters
 - Tasks with low parallelization potential (sequential dependencies)
@@ -136,6 +156,7 @@ The 15× multiplier means this pattern only justifies itself for high-value use 
 The overhead buys deterministic quality. Anthropic's production system showed 90.2% improvement over single-agent Opus on internal research evaluations.
 
 Academic research on multi-agent legal systems found:
+
 - 80× improvement in action specificity
 - 100% actionable recommendation rate (vs. 1.7% for single agent)
 - 140× improvement in solution correctness
@@ -167,9 +188,10 @@ Cascades optimize for the common case. If 70-80% of requests are simple enough f
 
 ### Evidence: 40-85% Cost Reduction
 
-*[2025-12-10]*: Research on cascade architectures shows 40-85% cost reduction when cheap models successfully handle 70-80% of queries.
+_[2025-12-10]_: Research on cascade architectures shows 40-85% cost reduction when cheap models successfully handle 70-80% of queries.
 
 **Representative numbers:**
+
 - Query mix: 70% simple (Haiku handles), 30% complex (requires Opus)
 - Haiku cost: $0.001 per query
 - Opus cost: $0.010 per query
@@ -266,7 +288,7 @@ The expensive model never executes. The cheap model never plans. Separation is e
 
 ### Evidence: 41.1% → 96.3% Success Rate
 
-*[2025-12-10]*: A study using GPT-4o for planning and GPT-3.5 for execution showed task success rates increased from 41.1% (single model) to 96.3% (separated planning and execution).
+_[2025-12-10]_: A study using GPT-4o for planning and GPT-3.5 for execution showed task success rates increased from 41.1% (single model) to 96.3% (separated planning and execution).
 
 The improvement came from specialization. Planning models focused on decomposition and correctness without execution distractions. Execution models followed precise instructions without second-guessing the plan.
 
@@ -276,7 +298,7 @@ The cost savings came from volume. Execution steps outnumber planning steps 5-10
 
 ### The Advisor Strategy: Inverted Orchestration
 
-*[2026-04-11]*: Anthropic's officially named "advisor strategy" is a structural variant on planning-execution separation that inverts the orchestrator-specialist topology described above. In standard orchestrator-specialist architectures, the expensive model orchestrates — it decomposes tasks, routes to specialists, and synthesizes results. In the advisor strategy, the small model drives end-to-end: it calls tools, iterates, and produces output. The expensive model advises only — it receives queries from the executor, returns guidance, and never calls tools or produces user-facing responses.
+_[2026-04-11]_: Anthropic's officially named "advisor strategy" is a structural variant on planning-execution separation that inverts the orchestrator-specialist topology described above. In standard orchestrator-specialist architectures, the expensive model orchestrates — it decomposes tasks, routes to specialists, and synthesizes results. In the advisor strategy, the small model drives end-to-end: it calls tools, iterates, and produces output. The expensive model advises only — it receives queries from the executor, returns guidance, and never calls tools or produces user-facing responses.
 
 This inversion changes where expensive model tokens are consumed. The executor handles the high-frequency, low-reasoning steps (tool calls, iteration loops, output formatting). The advisor handles only the low-frequency, high-reasoning steps (architectural decisions, ambiguous judgment calls). Advisor tokens are tracked separately from executor tokens, enabling precise cost attribution at the decision-type level.
 
@@ -288,6 +310,7 @@ This inversion changes where expensive model tokens are consumed. The executor h
 - Haiku (executor) + Opus (advisor) on BrowseComp: 41.2% vs. 19.7% Haiku solo (>2× improvement), 85% cheaper than Sonnet solo at equivalent or higher accuracy
 
 **When this pattern applies:**
+
 - Tasks require occasional high-stakes decisions embedded in a routine execution loop — the executor handles most steps; the advisor unblocks specific judgment calls
 - Cost observability per decision-type is required — `max_uses` limits enforce spending at the architectural level, not prompt level
 - The executor model is capable enough to drive tool use and iteration but bottlenecks at specific reasoning quality thresholds
@@ -298,7 +321,7 @@ This inversion changes where expensive model tokens are consumed. The executor h
 
 ## Model-Native Swarm Orchestration
 
-*[2026-01-30]*: Moonshot AI's Kimi K2.5 introduced model-native swarm orchestration—a 1 trillion parameter MoE model that spawns and coordinates multiple subagents internally rather than through external framework code.
+_[2026-01-30]_: Moonshot AI's Kimi K2.5 introduced model-native swarm orchestration—a 1 trillion parameter MoE model that spawns and coordinates multiple subagents internally rather than through external framework code.
 
 Unlike SDK-based orchestration patterns (LangGraph, AutoGen, Claude Code's Task tool), Kimi K2.5 embeds coordination logic within the model's reasoning itself. The model decides when to parallelize, spawns subagents dynamically, and synthesizes results—all as trained behavior rather than prompted instructions.
 
@@ -346,6 +369,7 @@ CriticalSteps = Σ(Smain(t) + max_i(Ssub,i(t)))
 ```
 
 Where:
+
 - `Smain(t)` = steps taken by main agent at time t
 - `max_i(Ssub,i(t))` = maximum steps taken by any subagent at time t
 - Sum across all timesteps in task completion
@@ -357,15 +381,17 @@ The model receives higher reward for solutions with lower Critical Steps count. 
 
 ### Performance: 80% Runtime Reduction
 
-*[2026-01-30]*: Moonshot AI reports Kimi K2.5 achieves 3-4.5× wall-clock speedup on complex tasks through model-native swarm orchestration.
+_[2026-01-30]_: Moonshot AI reports Kimi K2.5 achieves 3-4.5× wall-clock speedup on complex tasks through model-native swarm orchestration.
 
 **Quantified results:**
+
 - **Runtime reduction:** Up to 80% on tasks with high parallelization potential
 - **Wall-clock improvement:** 3-4.5× faster completion vs. sequential execution
 - **Scalability:** 100 concurrent subagents demonstrated
 - **Tool calls:** 1500+ parallel tool invocations in complex workflows
 
 **Example scenario (complex research task):**
+
 - Sequential execution: 45 minutes (single agent, 120 steps)
 - Model-native swarm: 10 minutes (1 main agent + 40 subagents, 28 Critical Steps)
 - Speedup: 4.5× faster
@@ -376,18 +402,18 @@ The gains scale with task parallelizability. Tasks with strict sequential depend
 
 ### Comparison: SDK Orchestration vs. Model-Native Swarm
 
-| Dimension | SDK Orchestration | Model-Native Swarm |
-|-----------|-------------------|-------------------|
+| Dimension              | SDK Orchestration                            | Model-Native Swarm                 |
+| ---------------------- | -------------------------------------------- | ---------------------------------- |
 | **Coordination Logic** | External framework code (LangGraph, AutoGen) | Model reasoning (trained behavior) |
-| **Subagent Spawning** | Explicit API calls or Task tool invocations | Model decision during generation |
-| **Parallelism Limit** | Framework/infrastructure constraints (5-10) | Model capacity constraints (100+) |
-| **Developer Control** | High (explicit routing, handoffs) | Medium (prompt guidance, not code) |
-| **Debugging** | Trace through coordination code | Inspect model reasoning traces |
-| **Infrastructure** | Requires orchestration layer | Single model API endpoint |
-| **Latency Overhead** | Framework coordination + network calls | Model-internal coordination only |
-| **Token Overhead** | Context duplication across agents | Shared context in model memory |
-| **Adaptability** | Fixed coordination logic | Dynamic parallelization decisions |
-| **Implementation** | Write coordination code | Write task prompts |
+| **Subagent Spawning**  | Explicit API calls or Task tool invocations  | Model decision during generation   |
+| **Parallelism Limit**  | Framework/infrastructure constraints (5-10)  | Model capacity constraints (100+)  |
+| **Developer Control**  | High (explicit routing, handoffs)            | Medium (prompt guidance, not code) |
+| **Debugging**          | Trace through coordination code              | Inspect model reasoning traces     |
+| **Infrastructure**     | Requires orchestration layer                 | Single model API endpoint          |
+| **Latency Overhead**   | Framework coordination + network calls       | Model-internal coordination only   |
+| **Token Overhead**     | Context duplication across agents            | Shared context in model memory     |
+| **Adaptability**       | Fixed coordination logic                     | Dynamic parallelization decisions  |
+| **Implementation**     | Write coordination code                      | Write task prompts                 |
 
 **Key distinction:** SDK orchestration separates planning from execution through code. Model-native swarm embeds both in trained model behavior. This trades explicit control for learned efficiency.
 
@@ -411,6 +437,7 @@ Trained coordination behavior may vary across similar tasks. SDK orchestration p
 ### When to Use Model-Native Swarm
 
 **Good fit:**
+
 - Model supports native swarm capability (currently limited to Kimi K2.5)
 - Tasks benefit from dynamic parallelization (model determines optimal decomposition)
 - Willing to trade explicit control for autonomous coordination
@@ -418,6 +445,7 @@ Trained coordination behavior may vary across similar tasks. SDK orchestration p
 - Trust model's coordination decisions based on validation
 
 **Poor fit:**
+
 - Requires deterministic coordination (regulatory, safety-critical)
 - Complex handoff logic between subtasks (stateful workflows)
 - Need to switch models frequently (tight coupling to model family)
@@ -443,19 +471,20 @@ Model-native swarm makes sense when parallelization speedup (3-4.5×) exceeds th
 Clean model handoffs require structured data. Unstructured planning outputs force execution models to interpret intent, reintroducing the complexity separation was meant to avoid.
 
 **JSON task definitions:**
+
 ```json
 {
   "tasks": [
     {
       "id": 1,
       "action": "read_file",
-      "parameters": {"path": "config.yaml"},
+      "parameters": { "path": "config.yaml" },
       "output_to": "config_data"
     },
     {
       "id": 2,
       "action": "validate_schema",
-      "parameters": {"data": "config_data", "schema": "config_schema"},
+      "parameters": { "data": "config_data", "schema": "config_schema" },
       "depends_on": [1]
     }
   ]
@@ -465,6 +494,7 @@ Clean model handoffs require structured data. Unstructured planning outputs forc
 The planning model outputs this structure. The execution model reads it as unambiguous instructions. No interpretation needed.
 
 **Dependency graphs:**
+
 ```python
 {
     "nodes": {
@@ -525,11 +555,13 @@ model = ROUTING_TABLE[task_type]
 ```
 
 **Advantages:**
+
 - Zero overhead—no classification inference
 - Deterministic and testable
 - Easy to optimize per task type
 
 **Disadvantages:**
+
 - Requires accurate task classification upfront
 - Cannot adapt to within-category complexity variance
 - Brittle when task types don't map cleanly to requests
@@ -551,17 +583,20 @@ else:
 ```
 
 **Complexity signals:**
+
 - Prompt length (longer often means more complex)
 - Keyword presence (technical terms, domain jargon)
 - Structural markers (nested lists, multi-part questions)
 - Historical patterns (similar requests routed to which tier)
 
 **Advantages:**
+
 - Adapts to actual request complexity
 - Handles within-category variance
 - Can route unfamiliar request types
 
 **Disadvantages:**
+
 - Classification overhead (latency + cost)
 - Requires calibration of thresholds
 - Misclassification sends simple requests to expensive models
@@ -587,17 +622,20 @@ model = router.predict(extract_features(prompt))
 ```
 
 **Feature engineering:**
+
 - Embedding similarity to known query types
 - Syntactic complexity (parse tree depth, clause count)
 - Semantic complexity (domain-specific vocabulary density)
 - User context (enterprise tier vs. free tier)
 
 **Advantages:**
+
 - Learns patterns from actual performance data
 - Improves over time as training data accumulates
 - Can optimize for custom objectives (cost, latency, quality)
 
 **Disadvantages:**
+
 - Requires labeled training data (expensive to collect)
 - Must retrain as query distribution shifts
 - Adds inference latency and complexity
@@ -606,11 +644,12 @@ Learned routing works when you have sufficient historical data and query distrib
 
 ### Hybrid: GPT-5 Real-Time Router
 
-*[2025-12-10]*: OpenAI's GPT-5 system includes a real-time router that selects between fast-but-cheap and slow-but-capable models based on request analysis.
+_[2025-12-10]_: OpenAI's GPT-5 system includes a real-time router that selects between fast-but-cheap and slow-but-capable models based on request analysis.
 
 The router uses a lightweight classifier trained on millions of production queries. It extracts features from the request, predicts expected quality for each model tier, and routes to the minimum-capability model that meets quality threshold.
 
 **Key design decisions:**
+
 - Router runs on separate infrastructure (doesn't consume model capacity)
 - Optimizes for latency—routing decision completes in <50ms
 - Continuously retrains on production feedback (quality vs. predicted quality)
@@ -626,22 +665,23 @@ The system demonstrates that routing becomes infrastructure-level concern at sca
 
 Multi-model architectures enable optimization along multiple dimensions. Choosing which to optimize depends on use case constraints.
 
-| Pattern | Cost | Latency | Capability | Coordination Complexity |
-|---------|------|---------|------------|------------------------|
-| Single Model (Frontier) | High | Medium | Maximum | None |
-| Single Model (Small) | Low | Low | Limited | None |
-| Orchestrator-Specialist | High | Medium | High | High |
-| Model Cascade | Medium | Low (common case) | High (fallback) | Medium |
-| Planning-Execution | Medium | Medium | High | Medium |
-| Static Routing | Low-Medium | Low | Varies by task | Low |
-| Dynamic Routing | Medium | Medium | Adapts | Medium |
-| Learned Routing | Medium | Medium | Optimizes over time | High |
+| Pattern                 | Cost       | Latency           | Capability          | Coordination Complexity |
+| ----------------------- | ---------- | ----------------- | ------------------- | ----------------------- |
+| Single Model (Frontier) | High       | Medium            | Maximum             | None                    |
+| Single Model (Small)    | Low        | Low               | Limited             | None                    |
+| Orchestrator-Specialist | High       | Medium            | High                | High                    |
+| Model Cascade           | Medium     | Low (common case) | High (fallback)     | Medium                  |
+| Planning-Execution      | Medium     | Medium            | High                | Medium                  |
+| Static Routing          | Low-Medium | Low               | Varies by task      | Low                     |
+| Dynamic Routing         | Medium     | Medium            | Adapts              | Medium                  |
+| Learned Routing         | Medium     | Medium            | Optimizes over time | High                    |
 
 ### Cost-Optimized: Model Cascade
 
 When budget is the primary constraint, cascades deliver maximum cost reduction with minimal quality sacrifice.
 
 **Configuration:**
+
 - Tier 1: Smallest model that can handle structured tasks (Haiku)
 - Tier 2: Frontier model for complex reasoning (Opus)
 - Quality gate: Strict validation with low tolerance for ambiguity
@@ -655,6 +695,7 @@ When budget is the primary constraint, cascades deliver maximum cost reduction w
 When response time is critical, route aggressively to fast models and accept capability limitations.
 
 **Configuration:**
+
 - Default: Fastest available model (Haiku, GPT-3.5-Turbo)
 - Exceptions: Small set of query types hard-coded to frontier model
 - No quality gates (accept first response)
@@ -668,6 +709,7 @@ When response time is critical, route aggressively to fast models and accept cap
 When quality is paramount and budget permits, orchestrate multiple frontier models.
 
 **Configuration:**
+
 - Orchestrator: Largest reasoning model (Opus)
 - Specialists: Mix of frontier models based on subtask requirements
 - No cascade fallback (start with best model)
@@ -686,6 +728,7 @@ Using models from the same family (Claude 3.5 Sonnet + Haiku, GPT-4o + GPT-3.5) 
 Models in the same family share training data, instruction-following patterns, and output formatting. A prompt tuned for Sonnet often works well for Haiku with minimal modification.
 
 **Example:**
+
 ```python
 # Same prompt works across Claude family
 PLANNING_PROMPT = """

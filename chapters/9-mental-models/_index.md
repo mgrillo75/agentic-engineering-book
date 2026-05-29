@@ -19,17 +19,15 @@ Mental models are frameworks for thinking about agentic systems. They're evaluat
 
 ## Mental Models
 
-| Model | Description |
-|-------|-------------|
-| [Pit of Success](1-pit-of-success.md) | Design systems where the easiest path is also the correct path |
-| [Prompt Maturity Model](2-prompt-maturity-model.md) | Seven levels of prompt sophistication from static to meta-cognitive |
-| [Specs as Source Code](3-specs-as-source-code.md) | Specifications are the primary programming surface in agentic systems |
-| [Context as Code](4-context-as-code.md) | Treat agent knowledge like software, not documents |
-| [Execution Topologies](5-execution-topologies.md) | A measurement framework for understanding and improving agent execution structures |
-| [Design as Bottleneck](6-design-as-bottleneck.md) | When implementation is automated, design becomes the constraint |
-| [Software Factories](7-software-factories.md) | The resurgence of industrial-scale software production — what the factory metaphor reveals about agentic systems at scale |
-
-
+| Model                                               | Description                                                                                                               |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| [Pit of Success](1-pit-of-success.md)               | Design systems where the easiest path is also the correct path                                                            |
+| [Prompt Maturity Model](2-prompt-maturity-model.md) | Seven levels of prompt sophistication from static to meta-cognitive                                                       |
+| [Specs as Source Code](3-specs-as-source-code.md)   | Specifications are the primary programming surface in agentic systems                                                     |
+| [Context as Code](4-context-as-code.md)             | Treat agent knowledge like software, not documents                                                                        |
+| [Execution Topologies](5-execution-topologies.md)   | A measurement framework for understanding and improving agent execution structures                                        |
+| [Design as Bottleneck](6-design-as-bottleneck.md)   | When implementation is automated, design becomes the constraint                                                           |
+| [Software Factories](7-software-factories.md)       | The resurgence of industrial-scale software production — what the factory metaphor reveals about agentic systems at scale |
 
 ---
 

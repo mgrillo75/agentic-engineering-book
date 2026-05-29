@@ -3,7 +3,20 @@ title: Tool Design
 description: Principles for creating well-designed tools that agents can use effectively
 created: 2025-12-10
 last_updated: 2026-04-11
-tags: [tool-design, naming, parameters, descriptions, function-calling, coding-agent, edit-formats, diff, search-replace, tool-inventory, poka-yoke]
+tags:
+  [
+    tool-design,
+    naming,
+    parameters,
+    descriptions,
+    function-calling,
+    coding-agent,
+    edit-formats,
+    diff,
+    search-replace,
+    tool-inventory,
+    poka-yoke,
+  ]
 part: 1
 part_title: Foundations
 chapter: 5
@@ -19,9 +32,10 @@ Well-designed tools make the difference between an agent that can accomplish tas
 
 ## Tool Examples as Design Pattern
 
-*[2025-12-09]*: JSON schemas define structural validity but can't teach usage—that's what examples are for.
+_[2025-12-09]_: JSON schemas define structural validity but can't teach usage—that's what examples are for.
 
 **The Gap**: Schemas tell the model what parameters exist and their types, but not:
+
 - When to include optional parameters
 - Which parameter combinations make sense together
 - API conventions not expressible in JSON Schema
@@ -29,6 +43,7 @@ Well-designed tools make the difference between an agent that can accomplish tas
 **The Pattern**: Provide 1-5 concrete tool call examples demonstrating correct usage at varying complexity levels.
 
 **Example Structure** (for a support ticket API):
+
 1. **Minimal**: Title-only task—shows the floor
 2. **Partial**: Feature request with some reporter info—shows selective use
 3. **Full**: Critical bug with escalation, full metadata—shows the ceiling
@@ -38,12 +53,14 @@ This progression teaches when to use optional fields, not just that they exist.
 **Results**: Internal testing showed accuracy improvement from 72% → 90% on complex parameter handling.
 
 **Best Practices**:
+
 - Use realistic data, not placeholder values ("John Doe", not "{name}")
 - Focus examples on ambiguity areas not obvious from schema alone
 - Show the minimal case first—don't always demonstrate full complexity
 - Keep examples concise (1-5 per tool, not 20)
 
 **See Also**:
+
 - [Prompt: Structuring](../2-prompt/2-structuring.md) — How tool examples relate to broader prompt design principles
 
 **Source**: [Advanced Tool Use - Anthropic](https://www.anthropic.com/engineering/advanced-tool-use)
@@ -52,7 +69,7 @@ This progression teaches when to use optional fields, not just that they exist.
 
 ## Rich User Questioning Patterns
 
-*[2026-01-30]*: Orchestration research from cc-mirror reveals sophisticated user clarification patterns that replace text-based menus with rich, decision-guiding question structures.
+_[2026-01-30]_: Orchestration research from cc-mirror reveals sophisticated user clarification patterns that replace text-based menus with rich, decision-guiding question structures.
 
 ### Philosophy: Users Need to See Options
 
@@ -63,6 +80,7 @@ Asking "What should I prioritize?" yields vague answers. Showing 4 options with 
 ### The 4×4 Maximal Pattern
 
 **Structure:**
+
 - 4 questions addressing different decision dimensions
 - 4 options per question with rich descriptions
 - Trade-offs and implications explicit
@@ -166,6 +184,7 @@ AskUserQuestion(
 ### Anti-Pattern: Text-Based Menus
 
 **Avoid:**
+
 ```
 Please choose:
 1. Fast
@@ -176,6 +195,7 @@ Which do you prefer?
 ```
 
 **Problems:**
+
 - No context about trade-offs
 - Binary thinking (can't combine attributes)
 - Vague options without implications
@@ -184,6 +204,7 @@ Which do you prefer?
 ### When to Use Maximal Questions
 
 **Good fit:**
+
 - Request admits multiple valid interpretations
 - Choices meaningfully affect implementation approach
 - Actions carry risk or are difficult to reverse
@@ -191,6 +212,7 @@ Which do you prefer?
 - Scope clarification prevents rework
 
 **Poor fit:**
+
 - Decisions are obvious from context
 - Only one reasonable approach exists
 - User already provided detailed requirements
@@ -199,17 +221,20 @@ Which do you prefer?
 ### Implementation Guidelines
 
 **Option descriptions should include:**
+
 1. What this choice means concretely
 2. Primary trade-off or cost
 3. When this choice makes sense
 4. What happens if this choice is wrong
 
 **The recommended flag signals:**
+
 - Optimal choice given typical constraints
 - Not forcing—user can override
 - Guides users unfamiliar with domain
 
 **Multi-select enables:**
+
 - "Performance AND simplicity" combinations
 - "All of these except X" selections
 - Prioritization without forced ranking
@@ -220,28 +245,28 @@ Which do you prefer?
 
 ## Coding Agent Edit Formats
 
-*[2026-04-11]*: Edit format selection is a first-order tool design decision for coding agents — one with direct consequences for model error rates, output size, and edit application reliability. The choice is model-capability-driven, not aesthetic.
+_[2026-04-11]_: Edit format selection is a first-order tool design decision for coding agents — one with direct consequences for model error rates, output size, and edit application reliability. The choice is model-capability-driven, not aesthetic.
 
 ### Three Primary Format Archetypes
 
-| Format | Mechanism | Cognitive Load on Model | Production Evidence |
-|--------|-----------|------------------------|---------------------|
-| **Whole-file rewrite** | Model returns complete updated file | Low — no line number tracking required | Reliable; expensive for large files |
-| **Unified diff (udiff)** | Standard diff format with `+`/`-` line prefixes | High — requires tracking original line numbers before writing new code | Used for legacy models with "lazy coding" tendency |
-| **Search-replace blocks** | Model specifies exact text to find and exact replacement text | Medium — no line numbers; exact string matching | Most models in production; Aider's primary format |
+| Format                    | Mechanism                                                     | Cognitive Load on Model                                                | Production Evidence                                |
+| ------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| **Whole-file rewrite**    | Model returns complete updated file                           | Low — no line number tracking required                                 | Reliable; expensive for large files                |
+| **Unified diff (udiff)**  | Standard diff format with `+`/`-` line prefixes               | High — requires tracking original line numbers before writing new code | Used for legacy models with "lazy coding" tendency |
+| **Search-replace blocks** | Model specifies exact text to find and exact replacement text | Medium — no line numbers; exact string matching                        | Most models in production; Aider's primary format  |
 
-The cognitive load distinction is significant. Unified diff requires the model to know the line count of original content *before* writing new code — a constraint that causes errors on complex edits. Search-replace blocks avoid this by using content identity rather than position. Whole-file rewrites sidestep both constraints at the cost of output token volume.
+The cognitive load distinction is significant. Unified diff requires the model to know the line count of original content _before_ writing new code — a constraint that causes errors on complex edits. Search-replace blocks avoid this by using content identity rather than position. Whole-file rewrites sidestep both constraints at the cost of output token volume.
 
 ### Model-Capability-Driven Format Selection
 
 Aider's production documentation provides the most concrete evidence available for model-specific format selection:
 
-| Model Family | Recommended Format | Reason |
-|-------------|-------------------|--------|
-| Most modern models (Claude, GPT-4o, Gemini 1.5+) | Search-replace (`diff`) | Reliable exact-match application; balanced output size |
-| Gemini models (older) | `diff-fenced` (path inside fence) | Standard fencing syntax failed consistently |
-| GPT-4 Turbo | `udiff` | Mitigated "lazy coding" — replacing implementation with placeholder comments |
-| Architect mode tasks | `editor-diff` / `editor-whole` | Streamlined for multi-file operations in a separate editor model |
+| Model Family                                     | Recommended Format                | Reason                                                                       |
+| ------------------------------------------------ | --------------------------------- | ---------------------------------------------------------------------------- |
+| Most modern models (Claude, GPT-4o, Gemini 1.5+) | Search-replace (`diff`)           | Reliable exact-match application; balanced output size                       |
+| Gemini models (older)                            | `diff-fenced` (path inside fence) | Standard fencing syntax failed consistently                                  |
+| GPT-4 Turbo                                      | `udiff`                           | Mitigated "lazy coding" — replacing implementation with placeholder comments |
+| Architect mode tasks                             | `editor-diff` / `editor-whole`    | Streamlined for multi-file operations in a separate editor model             |
 
 **The practical implication:** format choice is not a configuration detail — it is a tool design decision that affects model reliability at the task level. When a model produces incorrect edits, audit the edit format before adjusting the prompt.
 
@@ -250,6 +275,7 @@ Aider's production documentation provides the most concrete evidence available f
 Anthropic's SWE-bench implementation provides a concrete example of constraint-based tool design: converting relative to absolute filepaths as a required tool input. The result was measurable reduction in model path errors — the tool became harder to use incorrectly.
 
 **The principle:** coding agent tools benefit from constraints that prevent common model errors:
+
 - Require absolute paths (eliminates relative-path resolution errors)
 - Require exact string matching in search-replace (prevents approximate matches that corrupt context)
 - Validate that referenced line numbers exist before executing edits (prevents off-by-one failures)
@@ -262,17 +288,17 @@ These are not validation afterthoughts — they are design decisions that change
 
 ## Coding Agent Tool Inventory
 
-*[2026-04-11]*: Coding agents use a recurring, minimal tool set. Raschka identifies the baseline as five named tools; Anthropic's SWE-bench work extends this with patch-application tools. Understanding the canonical inventory prevents over-engineering the tool layer.
+_[2026-04-11]_: Coding agents use a recurring, minimal tool set. Raschka identifies the baseline as five named tools; Anthropic's SWE-bench work extends this with patch-application tools. Understanding the canonical inventory prevents over-engineering the tool layer.
 
 ### Standard Inventory
 
-| Tool | Role | Notes |
-|------|------|-------|
-| `read_file` | Retrieve file content for context | Prefer whole-file for small files; line-range for large |
-| `write_file` / `apply_edit` | Persist changes to disk | Format depends on edit format choice (see above) |
-| `search` / `grep` | Find symbols, patterns, references across the repo | Critical for navigation without full-file reads |
-| `bash` / `shell` | Run commands, tests, linters, build tools | Primary execution feedback mechanism |
-| `list_files` / `ls` | Directory traversal and discovery | Supports repo orientation without reading every file |
+| Tool                        | Role                                               | Notes                                                   |
+| --------------------------- | -------------------------------------------------- | ------------------------------------------------------- |
+| `read_file`                 | Retrieve file content for context                  | Prefer whole-file for small files; line-range for large |
+| `write_file` / `apply_edit` | Persist changes to disk                            | Format depends on edit format choice (see above)        |
+| `search` / `grep`           | Find symbols, patterns, references across the repo | Critical for navigation without full-file reads         |
+| `bash` / `shell`            | Run commands, tests, linters, build tools          | Primary execution feedback mechanism                    |
+| `list_files` / `ls`         | Directory traversal and discovery                  | Supports repo orientation without reading every file    |
 
 Claude Code adds a sixth functional layer via hooks — pre/post action enforcement that operates outside the agent's direct tool calls. This is best understood as a meta-tool: it applies constraints and side effects that the agent cannot disable.
 

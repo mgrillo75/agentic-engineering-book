@@ -29,12 +29,12 @@ Ethan Mollick introduced the horse harness metaphor to explain why the term is w
 
 The analogy maps precisely:
 
-| Dimension | Horse Analogy | AI Agent |
-|-----------|--------------|---------|
-| Raw capability | Physical strength | Model reasoning and language capability |
+| Dimension            | Horse Analogy                        | AI Agent                                        |
+| -------------------- | ------------------------------------ | ----------------------------------------------- |
+| Raw capability       | Physical strength                    | Model reasoning and language capability         |
 | Harnessing mechanism | Physical harness straps and fittings | Software harness (prompt, tools, memory, loops) |
-| Output | Directed work (plowing, transport) | Completed tasks (code, research, decisions) |
-| Without harness | Undirected energy | Answered prompts, not completed work |
+| Output               | Directed work (plowing, transport)   | Completed tasks (code, research, decisions)     |
+| Without harness      | Undirected energy                    | Answered prompts, not completed work            |
 
 A model without a harness is like a horse standing in a field — full of capability, producing nothing useful. The harness is what makes the difference between potential and performance.
 
@@ -44,15 +44,15 @@ This metaphor also explains why the term "harness" has displaced earlier vocabul
 
 ## Definitions from Multiple Authorities
 
-*[2026-04-12]*: Five authoritative practitioners converged on complementary definitions within the same 90-day window in early 2026. This convergence is itself evidence that the concept has crystallized into a stable practitioner term.
+_[2026-04-12]_: Five authoritative practitioners converged on complementary definitions within the same 90-day window in early 2026. This convergence is itself evidence that the concept has crystallized into a stable practitioner term.
 
-| Source | Definition |
-|--------|-----------|
+| Source               | Definition                                                                                                                                                                               |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Raschka (2026-04-04) | "The software layer around the model that assembles prompts, exposes tools, tracks file state, applies edits, runs commands, manages permissions, caches stable prefixes, stores memory" |
-| LangChain (2026) | "Every piece of code, configuration, and execution logic that isn't the model itself" |
-| Fowler (~2026-Q1) | The execution environment that decomposes into Guides (feedforward) and Sensors (feedback), each computational or inferential |
-| Mollick (~2026-Q1) | "A system that lets the AI use tools, take actions, and complete multi-step tasks on its own" |
-| Schmid (~2026-Q1) | The OS in a Model-as-CPU metaphor — coordinates resources, enforces permissions, manages application lifecycle |
+| LangChain (2026)     | "Every piece of code, configuration, and execution logic that isn't the model itself"                                                                                                    |
+| Fowler (~2026-Q1)    | The execution environment that decomposes into Guides (feedforward) and Sensors (feedback), each computational or inferential                                                            |
+| Mollick (~2026-Q1)   | "A system that lets the AI use tools, take actions, and complete multi-step tasks on its own"                                                                                            |
+| Schmid (~2026-Q1)    | The OS in a Model-as-CPU metaphor — coordinates resources, enforces permissions, manages application lifecycle                                                                           |
 
 These definitions are complementary rather than competing. LangChain's definition is the widest aperture — "everything except the model" — which is useful for establishing scope but not for analysis. Raschka's definition is the most specific, naming six concrete components. Fowler's is the most architecturally precise, decomposing the harness into control mechanisms. Mollick's is the most accessible. Schmid's is the most conceptually generative — the OS analogy unlocks a rich set of implications about resource management, permission enforcement, and application lifecycle.
 
@@ -85,20 +85,22 @@ The academic and SWE-bench research literature uses "scaffold" where practitione
 
 arXiv:2603.05344 (2026-03) provides the clearest available formalization: "Scaffolding assembles the agent before the first prompt; the harness orchestrates everything after."
 
-| Term | When It Operates | Primary Function | What It Manages |
-|------|-----------------|-----------------|----------------|
-| Scaffold | Pre-runtime (setup) | Assembly | System prompt construction, tool schema registration, subagent registry initialization, initial context loading |
-| Harness | Runtime (execution) | Orchestration | Tool dispatch, context management, safety enforcement, loop control, memory updates |
+| Term     | When It Operates    | Primary Function | What It Manages                                                                                                 |
+| -------- | ------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| Scaffold | Pre-runtime (setup) | Assembly         | System prompt construction, tool schema registration, subagent registry initialization, initial context loading |
+| Harness  | Runtime (execution) | Orchestration    | Tool dispatch, context management, safety enforcement, loop control, memory updates                             |
 
 The distinction matters for practitioners because scaffolding failures and harness failures have different symptoms and different fixes:
 
 **Scaffold failure symptoms:**
+
 - Agent begins with incorrect capabilities or missing tools
 - System prompt missing critical instructions
 - Tool schemas malformed or absent
 - Initial context contains stale or irrelevant information
 
 **Harness failure symptoms:**
+
 - Agent accumulates context rot across turns
 - Tool calls reach outside allowed scope
 - Memory state inconsistent across sessions
@@ -107,7 +109,7 @@ The distinction matters for practitioners because scaffolding failures and harne
 
 A practitioner who conflates scaffold and harness will apply harness fixes to scaffold problems (adding runtime context management when the real issue is missing upfront initialization) and scaffold fixes to harness problems (revising system prompt instructions when the real issue is runtime permission enforcement).
 
-*[2026-04-12]*: "Scaffold" remains dominant in academic literature and SWE-bench benchmarking contexts. "Harness" is the 2026 practitioner term in production engineering discussions. Practitioners reading research papers should translate "scaffold" as approximately "harness" in most contexts — with awareness that the research term is ambiguous between pre-runtime and runtime concerns.
+_[2026-04-12]_: "Scaffold" remains dominant in academic literature and SWE-bench benchmarking contexts. "Harness" is the 2026 practitioner term in production engineering discussions. Practitioners reading research papers should translate "scaffold" as approximately "harness" in most contexts — with awareness that the research term is ambiguous between pre-runtime and runtime concerns.
 
 ---
 
@@ -129,7 +131,7 @@ The harness in this era was the context manager — still not fully named, but c
 
 ### Era 3: Harness Engineering (2026 — )
 
-*[2026-04-12]*: Mitchell Hashimoto coined "harness engineering" on February 5, 2026, to describe the discipline of systematically improving the surrounding system whenever an agent makes a mistake. The coinage named a practice that had been happening in fragmentary form but lacked a vocabulary.
+_[2026-04-12]_: Mitchell Hashimoto coined "harness engineering" on February 5, 2026, to describe the discipline of systematically improving the surrounding system whenever an agent makes a mistake. The coinage named a practice that had been happening in fragmentary form but lacked a vocabulary.
 
 The shift: the harness is now the primary design object. When an agent underperforms, practitioners ask first whether the harness component is the cause — not whether the model is insufficient. The model is a fixed capability (for a given provider and tier); the harness is the variable that practitioners control and can improve.
 
@@ -164,13 +166,13 @@ Investing in harness engineering is investing in all of these leverage points si
 
 The five foundational pillars answer five distinct questions:
 
-| Pillar | Question |
-|--------|---------|
-| Prompt | What instruction does the agent receive? |
-| Model | What reasoning can the agent perform? |
-| Context | What information can the agent access? |
-| Tool Use | What actions can the agent execute? |
-| Harness | What system orchestrates and constrains the agent's execution? |
+| Pillar   | Question                                                       |
+| -------- | -------------------------------------------------------------- |
+| Prompt   | What instruction does the agent receive?                       |
+| Model    | What reasoning can the agent perform?                          |
+| Context  | What information can the agent access?                         |
+| Tool Use | What actions can the agent execute?                            |
+| Harness  | What system orchestrates and constrains the agent's execution? |
 
 The first four pillars are necessary but not sufficient. A perfectly crafted prompt, a frontier model, a rich context, and well-designed tools will not produce reliable agent behavior without a harness that:
 

@@ -26,6 +26,7 @@ while :; do cat PROMPT.md | claude-code ; done
 ```
 
 Each iteration:
+
 1. Loads task specification from PROMPT.md
 2. Spawns fresh Claude Code session
 3. Executes task attempt
@@ -55,25 +56,29 @@ Effective autonomous loop prompts specify outcomes, not procedures:
 
 ```markdown
 ## Task
+
 Migrate all React class components to functional components with hooks.
 
 ## Success Criteria
+
 - All .jsx files under src/ use functional component syntax
 - Tests pass (npm test)
 - No console errors on dev server startup
 
 ## Constraints
+
 - Preserve existing prop types
 - Maintain component behavior (no logic changes)
 - One component per commit
 
 ## Stop Conditions
+
 - All tests passing
 - No files matching class component pattern
 - 30 consecutive failed iterations (reset to main)
 ```
 
-**Key Principle**: The prompt defines *what* (completion state), the loop discovers *how* (implementation path).
+**Key Principle**: The prompt defines _what_ (completion state), the loop discovers _how_ (implementation path).
 
 ### Git History as External Memory
 
@@ -87,10 +92,10 @@ git diff main                # Current state vs baseline
 
 **Architecture Decision**: Store state in git commits, not context windows.
 
-| Storage Location | Pros | Cons |
-|------------------|------|------|
-| Git history | Survives context resets, append-only, structured | Token cost to read each iteration |
-| Context window | No re-reading cost | Pollutes with failed attempts, cascading errors |
+| Storage Location | Pros                                             | Cons                                            |
+| ---------------- | ------------------------------------------------ | ----------------------------------------------- |
+| Git history      | Survives context resets, append-only, structured | Token cost to read each iteration               |
+| Context window   | No re-reading cost                               | Pollutes with failed attempts, cascading errors |
 
 For mechanical tasks with 10+ iterations, git history provides better signal-to-noise ratio.
 
@@ -99,16 +104,19 @@ For mechanical tasks with 10+ iterations, git history provides better signal-to-
 Explicit completion signals prevent runaway loops:
 
 **Positive completion**:
+
 - All tests passing: `npm test && exit 0`
 - No matching files: `! grep -r "class.*extends React.Component"`
 - Metric threshold: `coverage > 80%`
 
 **Safety exits**:
+
 - Max iterations: 30 attempts without progress
 - Time limit: 8-hour maximum runtime
 - Cost ceiling: $50 budget exceeded
 
 **Entropy management**:
+
 - Reset to known-good state after 20 failed iterations
 - Squash failed attempts every 10 commits
 
@@ -127,7 +135,7 @@ Failures don't block—they contribute to the solution space exploration. Each f
 
 ### The Smart Zone Insight
 
-*[2026-01-21]*: Empirical testing shows only 40-60% of context window exhibits high-quality reasoning. Early tokens and late tokens show degraded performance. Tight task scoping keeps work within this smart zone. When tasks expand beyond it, iteration quality degrades.
+_[2026-01-21]_: Empirical testing shows only 40-60% of context window exhibits high-quality reasoning. Early tokens and late tokens show degraded performance. Tight task scoping keeps work within this smart zone. When tasks expand beyond it, iteration quality degrades.
 
 **Strategy**: PROMPT.md should scope work to fit comfortably in smart zone. For large migrations, break into subtasks with separate prompts rather than one comprehensive specification.
 
@@ -156,6 +164,7 @@ Iteration N+2: Reads success, moves to ComponentB
 ### Best Fit
 
 **Mechanical tasks with clear completion criteria:**
+
 - Codebase-wide refactoring (rename variables, update imports)
 - Dependency migrations (React 17→18, Python 3.9→3.11)
 - Test coverage expansion (add tests until coverage > 80%)
@@ -163,6 +172,7 @@ Iteration N+2: Reads success, moves to ComponentB
 - Documentation generation (docstrings for all public APIs)
 
 **Task characteristics:**
+
 - Binary completion check (tests pass/fail, coverage met/not met)
 - Multiple valid implementation paths (iteration explores options)
 - Tolerance for failed attempts (each failure narrows solution space)
@@ -173,12 +183,14 @@ Iteration N+2: Reads success, moves to ComponentB
 ### Poor Fit
 
 **Architectural decisions:**
+
 - System design choices (database selection, framework architecture)
 - API contract definition (breaking changes, versioning strategy)
 - Security-sensitive code (authentication flows, encryption implementation)
 - Ambiguous requirements (user experience, feature prioritization)
 
 **Task characteristics:**
+
 - Subjective completion criteria (requires human judgment)
 - Single valid approach (iteration wastes resources)
 - High cost of failure (security breach, data loss)
@@ -191,34 +203,40 @@ Iteration N+2: Reads success, moves to ComponentB
 ### vs. Plan-Build-Review
 
 **Ralph Wiggum**:
+
 - No explicit planning phase
 - Iteration discovers the path
 - Failures are expected and informative
 - Git history serves as implicit "plan"
 
 **Plan-Build-Review**:
+
 - Structured phases with approval gates
 - Specification precedes implementation
 - Failures indicate process breakdown
 - Explicit spec serves as contract
 
 **When to use which**:
+
 - Ralph: "Migrate 500 files to new API" (outcome clear, path flexible)
 - PBR: "Design authentication system" (outcome requires judgment, path critical)
 
 ### vs. Self-Improving Experts
 
 **Ralph Wiggum**:
+
 - Improvement through iteration, no persistent learning
 - Each session starts from zero (reads PROMPT.md + git log)
 - Knowledge doesn't accumulate in prompts
 
 **Self-Improving Experts**:
+
 - Expertise.yaml accumulates learnings across sessions
 - Improve-agent extracts patterns from git history
 - Knowledge compounds (each session smarter than last)
 
 **Synthesis Opportunity**: Combine Ralph's iteration loop with improve-agent:
+
 1. Run Ralph loop for 4-hour session
 2. Run improve-agent on git history
 3. Update expertise.yaml with patterns discovered
@@ -229,12 +247,14 @@ This creates **learning Ralph**: iteration loop that extracts meta-patterns and 
 ### vs. Orchestrator Pattern
 
 **Ralph Wiggum**:
+
 - Single-agent looping
 - No explicit orchestration layer
 - Parallelism through sequential iterations
 - Simple bash loop coordination
 
 **Orchestrator Pattern**:
+
 - Multi-agent coordination with tool boundaries
 - Orchestrator synthesizes outputs from specialists
 - Parallel execution within single message
@@ -243,6 +263,7 @@ This creates **learning Ralph**: iteration loop that extracts meta-patterns and 
 **Production Insight**: Geoffrey Huntley's implementation uses 500 parallel Sonnet scouts for reads, 1 agent for builds. This is orchestration emerging within the loop—not explicit orchestrator, but similar separation of concerns.
 
 **Synthesis**: Ralph + Orchestrator = **Iterative Orchestration**:
+
 ```
 Loop:
   Parallel(scout_agents) → findings
@@ -257,10 +278,10 @@ Loop:
 
 **Tension**: Ralph deliberately discards context (fresh sessions) while Context-as-Code advocates for context accumulation. Both approaches are valid—depends on task type.
 
-| Task Type | Best Approach | Memory Strategy |
-|-----------|--------------|-----------------|
-| Mechanical, 10+ iterations | Fresh context (Ralph) | Git history (external) |
-| Architectural, 1-3 iterations | Accumulated context | Expertise files (internal) |
+| Task Type                     | Best Approach         | Memory Strategy            |
+| ----------------------------- | --------------------- | -------------------------- |
+| Mechanical, 10+ iterations    | Fresh context (Ralph) | Git history (external)     |
+| Architectural, 1-3 iterations | Accumulated context   | Expertise files (internal) |
 
 **Evidence**: Huntley's data shows migration tasks succeed 85% with fresh context vs 60% with persistent context (5+ hour sessions). Architectural tasks show inverse correlation—persistent context enables 70% success vs 40% fresh context.
 
@@ -281,6 +302,7 @@ Completion checks must be automatable:
 
 ```markdown
 ## Success Criteria
+
 - All tests pass: `npm test`
 - Coverage threshold: `coverage >= 80%`
 - No linting errors: `npm run lint`
@@ -294,6 +316,7 @@ Prevent runaway loops through explicit limits:
 
 ```markdown
 ## Safety Exits
+
 - Max iterations: 30 attempts
 - Time limit: 8 hours
 - Cost ceiling: $50
@@ -306,6 +329,7 @@ Many low-quality commits create noise in git history. Mitigation strategies:
 
 ```markdown
 ## Git History Management
+
 - Squash consecutive failures into single "attempted X" commit
 - Preserve only successful completions in final history
 - Reset to main branch if 15 consecutive failures
@@ -319,17 +343,19 @@ Many low-quality commits create noise in git history. Mitigation strategies:
 
 ### Model Selection Trade-offs
 
-| Model | Iterations to Completion | Cost per Iteration | Total Cost |
-|-------|-------------------------|-------------------|------------|
-| Sonnet | 20 iterations | ~$0.40 | ~$8 |
-| Opus 4.5 | 5 iterations | ~$1.20 | ~$6 |
+| Model    | Iterations to Completion | Cost per Iteration | Total Cost |
+| -------- | ------------------------ | ------------------ | ---------- |
+| Sonnet   | 20 iterations            | ~$0.40             | ~$8        |
+| Opus 4.5 | 5 iterations             | ~$1.20             | ~$6        |
 
 **When to use Opus for Ralph**:
+
 - High-value tasks (migration unblocks team)
 - Tight deadlines (overnight completion vs multi-day)
 - Complex reasoning per iteration (architectural refactoring)
 
 **When to stick with Sonnet**:
+
 - Low-priority tasks (can wait days for completion)
 - Simple mechanical changes (renaming, formatting)
 - Budget-constrained projects
@@ -355,6 +381,7 @@ Many low-quality commits create noise in git history. Mitigation strategies:
 ### Creator Profile
 
 Geoffrey Huntley:
+
 - Goat farmer in rural Australia
 - Previous work: Open source developer tooling
 - Philosophy: "Computers should work while humans sleep"
@@ -363,16 +390,19 @@ Geoffrey Huntley:
 ### Community Reception
 
 **Enthusiasts**:
+
 - Matt Pocock (TypeScript educator): "Ralph Wiggum is the closest we've gotten to autonomous development that actually works in production."
 - Dennison Bertram (AI researcher): "The loop structure is the breakthrough, not the model."
 
 **Skeptics** raised concerns:
+
 1. Task scoping failures (vague PROMPT.md → infinite loop)
 2. Context pollution (fresh sessions discard valuable learnings)
 3. Lack of verification gates (no safety checks before commits)
 4. Cost unpredictability (can't estimate iterations required)
 
 **Counterarguments**:
+
 1. Scoping failures exist in human development too (unclear requirements)
 2. Empirical data shows fresh context reduces cascading errors
 3. Tests in success criteria serve as gates
@@ -381,12 +411,14 @@ Geoffrey Huntley:
 ### Anthropic Plugin vs Original Philosophy
 
 **Anthropic Official Plugin**:
+
 - Stop hooks (max iterations, time limits, cost ceilings)
 - Plan regeneration after failures (adjusts PROMPT.md automatically)
 - Progress reporting (estimated completion, current phase)
 - Safety checks (test runs before commits)
 
 **Original Philosophy (Huntley)**:
+
 - Minimal structure: just the loop
 - No automatic plan adjustment (PROMPT.md is immutable)
 - No progress reporting (trust the process)
@@ -432,11 +464,13 @@ Opus reduces iterations 4×. Does this mean iteration matters less for better mo
 ### Primary Sources
 
 **Geoffrey Huntley's Blog**: [ghuntley.com/ralph/](https://ghuntley.com/ralph/)
+
 - Original pattern documentation
 - Philosophy and rationale
 - Production case studies
 
 **GitHub Repository**: [github.com/ghuntley/how-to-ralph-wiggum](https://github.com/ghuntley/how-to-ralph-wiggum)
+
 - Reference implementations
 - PROMPT.md examples
 - Stop hook samples
@@ -445,11 +479,13 @@ Opus reduces iterations 4×. Does this mean iteration matters less for better mo
 ### Media Coverage
 
 **Dev Interrupted Podcast**: [linearb.io/dev-interrupted/podcast/inventing-the-ralph-wiggum-loop](https://linearb.io/dev-interrupted/podcast/inventing-the-ralph-wiggum-loop)
+
 - 45-minute interview with Huntley (November 2025)
 - Origin story and design decisions
 - Production deployment experiences
 
 **VentureBeat Article**: [venturebeat.com/technology/how-ralph-wiggum-went-from-the-simpsons-to-the-biggest-name-in-ai-right-now](https://venturebeat.com/technology/how-ralph-wiggum-went-from-the-simpsons-to-the-biggest-name-in-ai-right-now)
+
 - Viral spread analysis
 - Industry adoption metrics
 - Cultural phenomenon coverage

@@ -19,7 +19,7 @@ A context management pattern that loads information in tiers based on relevance,
 
 ## Core Insight
 
-*[2025-12-09]*: Context windows are finite, but knowledge bases are not. Progressive disclosure addresses this asymmetry by loading information in tiers—maintaining a semantic index of everything available while loading full content only when needed.
+_[2025-12-09]_: Context windows are finite, but knowledge bases are not. Progressive disclosure addresses this asymmetry by loading information in tiers—maintaining a semantic index of everything available while loading full content only when needed.
 
 The pattern mirrors human cognition: encyclopedias are not memorized, but their tables of contents are. The index lives in working memory; the content fetches on-demand.
 
@@ -80,6 +80,7 @@ This creates "effectively unlimited" expertise: the index can reference thousand
 Claude Skills demonstrate this pattern in production:
 
 **Initial Load (Tier 1):**
+
 ```yaml
 skills:
   - name: authentication-expert
@@ -104,17 +105,20 @@ When a task involves authentication, `authentication-expert` loads:
 # Authentication Expert
 
 ## OAuth 2.0 Flows
+
 - Authorization Code: For server-side apps with secure storage
 - PKCE: For SPAs and mobile apps without secure storage
 - Client Credentials: For machine-to-machine communication
 
 ## JWT Validation Checklist
+
 1. Verify signature using public key
 2. Check `exp` claim for expiration
 3. Validate `iss` and `aud` claims
 4. Confirm `iat` is not in the future
 
 ## Session Management Patterns
+
 [... 500-5,000 words of expertise ...]
 ```
 
@@ -129,10 +133,10 @@ Grep: "refresh_token" in /src/auth/
 
 ### Token Economics
 
-| Approach | 10 Skills | 100 Skills | 1000 Skills |
-|----------|-----------|------------|-------------|
-| **Eager Loading** | 50k tokens | 500k tokens | 5M tokens (impossible) |
-| **Progressive Disclosure** | ~6k tokens | ~7k tokens | ~8k tokens |
+| Approach                   | 10 Skills  | 100 Skills  | 1000 Skills            |
+| -------------------------- | ---------- | ----------- | ---------------------- |
+| **Eager Loading**          | 50k tokens | 500k tokens | 5M tokens (impossible) |
+| **Progressive Disclosure** | ~6k tokens | ~7k tokens  | ~8k tokens             |
 
 Progressive disclosure scales logarithmically; eager loading scales linearly.
 
@@ -148,7 +152,7 @@ Tool definitions naturally support progressive disclosure. The description serve
 tools:
   - name: search_documentation
     description: "Search internal documentation. Use for API references,
-                  architecture decisions, and coding standards."
+      architecture decisions, and coding standards."
     # Full search capability available on invocation
 ```
 
@@ -159,11 +163,11 @@ Build explicit index structures for large knowledge bases:
 ```markdown
 ## Available Expertise
 
-| Domain | Trigger Keywords | Summary |
-|--------|-----------------|---------|
-| Security | auth, encrypt, OWASP | Authentication, encryption, vulnerability patterns |
-| Performance | optimize, cache, N+1 | Profiling, caching strategies, query optimization |
-| Testing | test, mock, coverage | Unit testing, integration testing, test design |
+| Domain      | Trigger Keywords     | Summary                                            |
+| ----------- | -------------------- | -------------------------------------------------- |
+| Security    | auth, encrypt, OWASP | Authentication, encryption, vulnerability patterns |
+| Performance | optimize, cache, N+1 | Profiling, caching strategies, query optimization  |
+| Testing     | test, mock, coverage | Unit testing, integration testing, test design     |
 
 To activate: "Load [Domain] expertise"
 ```
@@ -180,6 +184,7 @@ Level 0: Category summaries
 ```
 
 Example traversal:
+
 ```
 "What testing patterns exist?" → Level 0 (category list)
 "Tell me about integration testing" → Level 1 (section overview)
@@ -212,14 +217,14 @@ When `api-design` activates, the system can speculatively load `error-handling-p
 
 ### Detailed Analysis
 
-| Dimension | Progressive Disclosure | Eager Loading |
-|-----------|----------------------|---------------|
-| **Initial latency** | Low (metadata only) | High (everything loads) |
-| **Access latency** | Medium (fetch on select) | Zero (already loaded) |
-| **Context utilization** | Efficient (~5-30%) | Full (often 80%+) |
-| **Scalability** | Excellent | Poor |
-| **Discoverability** | Good (via index) | Perfect |
-| **Complexity** | Medium | Low |
+| Dimension               | Progressive Disclosure   | Eager Loading           |
+| ----------------------- | ------------------------ | ----------------------- |
+| **Initial latency**     | Low (metadata only)      | High (everything loads) |
+| **Access latency**      | Medium (fetch on select) | Zero (already loaded)   |
+| **Context utilization** | Efficient (~5-30%)       | Full (often 80%+)       |
+| **Scalability**         | Excellent                | Poor                    |
+| **Discoverability**     | Good (via index)         | Perfect                 |
+| **Complexity**          | Medium                   | Low                     |
 
 ### Hidden Costs of Eager Loading
 
@@ -262,10 +267,10 @@ This pre-loads capability descriptions that may never be used, leaving less spac
 skill:
   name: auth
   description: "OAuth 2.0 implementation including authorization code flow
-                with PKCE extension for public clients, JWT token validation
-                with RS256 signature verification, refresh token rotation
-                with sliding window expiration, session management using
-                httpOnly secure cookies with SameSite=Strict..."
+    with PKCE extension for public clients, JWT token validation
+    with RS256 signature verification, refresh token rotation
+    with sliding window expiration, session management using
+    httpOnly secure cookies with SameSite=Strict..."
 ```
 
 **Solution:** Keep metadata to 50-200 characters. Full details belong in Tier 2.

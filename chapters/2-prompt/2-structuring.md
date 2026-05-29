@@ -3,7 +3,8 @@ title: Prompt Structuring
 description: How to organize and format prompts for clarity, consistency, and effectiveness
 created: 2025-12-08
 last_updated: 2025-12-10
-tags: [foundations, prompt-engineering, structure, self-improvement, output-formats]
+tags:
+  [foundations, prompt-engineering, structure, self-improvement, output-formats]
 part: 1
 part_title: Foundations
 chapter: 2
@@ -39,28 +40,32 @@ How a prompt is organized matters as much as what it says. Structure helps the m
 
 ```markdown
 ---
-name: agent-name                    # kebab-case (agents only)
-description: When to use this       # Action-oriented, triggers delegation
-tools: Tool1, Tool2, Tool3          # Minimal required tools
-model: haiku | sonnet | opus        # Match to task complexity
+name: agent-name # kebab-case (agents only)
+description: When to use this # Action-oriented, triggers delegation
+tools: Tool1, Tool2, Tool3 # Minimal required tools
+model: haiku | sonnet | opus # Match to task complexity
 ---
 
 # Title
 
 ## Purpose
+
 You are a [role]. Your sole focus is [single responsibility].
 
 ## Variables
+
 USER_PROMPT: $1
 STATIC_CONFIG: value
 
 ## Instructions
+
 - IMPORTANT: Critical constraint here
 - Positive instruction (do this)
 - Negative instruction (never do this)
 - Validation check (if X missing, STOP and ask)
 
 ## Workflow
+
 1. **Parse Input** - Extract and validate parameters
 2. **Gather Context** - Read relevant files
 3. **Execute Task** - Perform the core work
@@ -68,22 +73,25 @@ STATIC_CONFIG: value
 5. **Report** - Follow the Report section format
 
 ## Report
+
 ### Summary
+
 - **Status**: [success/failure]
 - **Output**: [path or result]
 
 ### Details
+
 [Exact markdown structure expected]
 ```
 
 ### Output Template Categories
 
-| Category | Use Case | Output Format | Failure Sentinel |
-|----------|----------|---------------|------------------|
-| Message-Only | Simple answers | Single line text | `0` |
-| Path Resolution | File locations | Absolute path or URL | `0` for not found |
-| Action | Operations with side effects | Structured status report | Exit code |
-| Structured Data | Machine-parseable results | Valid JSON object/array | Empty `{}` or `[]` |
+| Category        | Use Case                     | Output Format            | Failure Sentinel   |
+| --------------- | ---------------------------- | ------------------------ | ------------------ |
+| Message-Only    | Simple answers               | Single line text         | `0`                |
+| Path Resolution | File locations               | Absolute path or URL     | `0` for not found  |
+| Action          | Operations with side effects | Structured status report | Exit code          |
+| Structured Data | Machine-parseable results    | Valid JSON object/array  | Empty `{}` or `[]` |
 
 ### CRITICAL: Output Format Requirements Pattern
 
@@ -95,17 +103,21 @@ Every actionable prompt should include this section:
 **Template Category**: Action
 
 **DO NOT include:**
+
 - Explanatory preambles
 - Meta-commentary about what the agent is doing
 - Markdown formatting beyond what's specified
 
 **Correct output:**
 Implementation Summary:
+
 - Modified src/api/routes.ts: added rate limiting (45 lines)
 - Validation: Level 2 selected
 
 **INCORRECT output (FORBIDDEN):**
+
 # Implementation Report
+
 I have successfully completed the implementation!
 Based on the requirements, I created...
 ```
@@ -126,7 +138,7 @@ These patterns break downstream parsing and must be explicitly banned:
 
 ### Output Styles as Behavioral Toggles
 
-*[2025-12-09]*: Output format specification is a form of **prompt-level polymorphism**—the same agent logic can produce entirely different communication formats based on output style constraints. This enables one agent to serve multiple audiences without duplicating core logic.
+_[2025-12-09]_: Output format specification is a form of **prompt-level polymorphism**—the same agent logic can produce entirely different communication formats based on output style constraints. This enables one agent to serve multiple audiences without duplicating core logic.
 
 **The Pattern:**
 
@@ -150,11 +162,11 @@ Format: Single-line status messages, exit codes, minimal text
 
 **When to Apply This Pattern:**
 
-| Scenario | Traditional Approach | Output Style Approach |
-|----------|---------------------|---------------------|
-| Code review for humans vs. CI | Two separate agents | One agent, two output styles |
-| Documentation vs. API responses | Duplicate logic | Same analysis, different formatting |
-| Interactive chat vs. batch jobs | Different prompts | Style parameter changes behavior |
+| Scenario                        | Traditional Approach | Output Style Approach               |
+| ------------------------------- | -------------------- | ----------------------------------- |
+| Code review for humans vs. CI   | Two separate agents  | One agent, two output styles        |
+| Documentation vs. API responses | Duplicate logic      | Same analysis, different formatting |
+| Interactive chat vs. batch jobs | Different prompts    | Style parameter changes behavior    |
 
 **Implementation Example:**
 
@@ -166,7 +178,9 @@ Format: Single-line status messages, exit codes, minimal text
 ## Report
 
 **IF output_style == "markdown":**
+
 ### Summary
+
 [Detailed explanation with context]
 
 **IF output_style == "yaml":**
@@ -178,9 +192,10 @@ recommendations: [list]
 ✅ 3 issues found, 2 recommendations
 ```
 
-*[2025-12-10]*: **Key Insight:** Output style is orthogonal to analysis quality. The same depth of work can be presented in radically different formats without changing what the agent understands or discovers.
+_[2025-12-10]_: **Key Insight:** Output style is orthogonal to analysis quality. The same depth of work can be presented in radically different formats without changing what the agent understands or discovers.
 
 This separation of concerns enables:
+
 - **Reusability**: One agent serves CLI users, web dashboards, and automation pipelines
 - **Maintainability**: Core logic changes propagate to all output styles automatically
 - **Testability**: Test analysis logic independently from presentation format
@@ -189,21 +204,22 @@ This separation of concerns enables:
 **Anti-Pattern:** Creating specialized agents that duplicate analysis logic just to produce different output formats. This leads to drift, maintenance burden, and inconsistent behavior across use cases.
 
 **Related Patterns:**
+
 - Template Categories (Message-Only, Path Resolution, Action, Structured Data)
 - Output Format Requirements (explicit format specification)
 - Multi-Agent Coordination (when separate agents ARE justified—different capabilities, not just different formats)
 
 ### The 7 Levels of Prompt Complexity
 
-| Level | Name | Key Feature | Example Use |
-|-------|------|-------------|-------------|
-| 1 | High Level | Static reference, no execution | Architecture guides, standards docs |
-| 2 | Workflow | Sequential steps, no branching | Linear implementation tasks |
-| 3 | Control Flow | Conditions and loops | Tasks with if/else logic |
-| 4 | Delegate | Spawns subagents | Complex tasks requiring specialists |
-| 5 | Higher Order | Accepts prompts as input | Meta-commands that run other prompts |
-| 6 | Template Metaprompt | Generates new prompts | Agent/command creation systems |
-| 7 | Self-Improving | Updates own expertise | Experts that learn from execution |
+| Level | Name                | Key Feature                    | Example Use                          |
+| ----- | ------------------- | ------------------------------ | ------------------------------------ |
+| 1     | High Level          | Static reference, no execution | Architecture guides, standards docs  |
+| 2     | Workflow            | Sequential steps, no branching | Linear implementation tasks          |
+| 3     | Control Flow        | Conditions and loops           | Tasks with if/else logic             |
+| 4     | Delegate            | Spawns subagents               | Complex tasks requiring specialists  |
+| 5     | Higher Order        | Accepts prompts as input       | Meta-commands that run other prompts |
+| 6     | Template Metaprompt | Generates new prompts          | Agent/command creation systems       |
+| 7     | Self-Improving      | Updates own expertise          | Experts that learn from execution    |
 
 ### Variable Declaration Patterns
 
@@ -211,14 +227,17 @@ This separation of concerns enables:
 ## Variables
 
 # Dynamic (from user input)
+
 USER_PROMPT: $1
 SCALE: $2 (defaults to 4 if not provided)
 
 # Static configuration
+
 OUTPUT_DIR: specs/
 MAX_RETRIES: 3
 
 # File references
+
 CONTEXT_FILE: `path/to/context.md`
 ```
 
@@ -227,6 +246,7 @@ CONTEXT_FILE: `path/to/context.md`
 Both XML tags and JSON structures work well for organizing prompt content:
 
 **XML Tags for Logical Sections:**
+
 ```xml
 <context>
 Background information the agent needs to understand the task.
@@ -246,6 +266,7 @@ Expected structure of the response.
 ```
 
 **JSON for Structured Data:**
+
 ```json
 {
   "task": "implement feature",
@@ -261,6 +282,7 @@ Expected structure of the response.
 ```
 
 **When to use which:**
+
 - **Markdown headers** (`##`): Best for human-readable prompts, documentation-style
 - **XML tags**: Best for clearly delineated sections, especially when nesting or when sections may be empty
 - **JSON**: Best for machine-parseable configuration, structured input/output schemas
@@ -272,12 +294,14 @@ Expected structure of the response.
 ## Workflow
 
 ### Phase 1: Scout (Read-Only Analysis)
+
 1. Create scout agent with Read, Glob, Grep tools only
 2. Command scout to analyze and report findings
 3. Poll for completion (sleep + check_status loop)
 4. Extract key findings for next phase
 
 ### Phase 2: Build (Implementation)
+
 1. Create build agent with Write, Edit, Bash tools
 2. Pass scout's findings as context
 3. Command build agent to implement solution
@@ -288,6 +312,7 @@ Expected structure of the response.
 ### Agent Frontmatter vs Command Frontmatter
 
 **Agents (System Prompts):**
+
 ```yaml
 ---
 name: scout-agent
@@ -299,6 +324,7 @@ color: blue
 ```
 
 **Commands (User Prompts):**
+
 ```yaml
 ---
 description: Search codebase for relevant files
@@ -318,6 +344,7 @@ model: sonnet
 ## Critical Constraints
 
 **ABSOLUTE RESTRICTIONS - NEVER VIOLATE:**
+
 1. NEVER use Write, Edit, or Bash tools
 2. NEVER attempt to modify any file
 3. NEVER create new files or documentation
@@ -325,6 +352,7 @@ model: sonnet
 5. You are a pure observer and analyst
 
 **Your Available Tools:**
+
 - `Read` - Read file contents
 - `Glob` - Find files matching patterns
 - `Grep` - Search for patterns
@@ -340,15 +368,19 @@ Level 7 self-improving prompts maintain a critical separation: `## Expertise` co
 ## Expertise
 
 ### Domain Knowledge
+
 **Architecture Patterns:**
+
 - Pattern 1: Description and when to use
 - Pattern 2: Description and when to use
 
 **Anti-Patterns Discovered:**
+
 - Anti-pattern 1: Why it fails
 - Anti-pattern 2: Why it fails
 
 ### Lessons Learned
+
 - Insight from recent execution
 - Updated understanding of edge case
 
@@ -361,6 +393,7 @@ Level 7 self-improving prompts maintain a critical separation: `## Expertise` co
 ```
 
 **Example from Real Usage:**
+
 - `architecture_expert_plan.md` contains `## Expertise` with architecture patterns
 - `architecture_expert_improve.md` updates only the Expertise section
 - The Workflow section in both files remains unchanged across improvements
@@ -372,18 +405,22 @@ Level 7 self-improving prompts maintain a critical separation: `## Expertise` co
 ## Report / Response
 
 ### Exploration Summary
+
 > Brief 2-3 sentence overview
 
 ### Relevant Files
-| File Path | Purpose | Relevance |
-|-----------|---------|-----------|
+
+| File Path           | Purpose       | Relevance                       |
+| ------------------- | ------------- | ------------------------------- |
 | `src/api/routes.ts` | API endpoints | High - contains target function |
 
 ### Findings
+
 - **Finding 1**: Description with line numbers
 - **Finding 2**: Description with code snippet
 
 ### Recommendations
+
 1. Specific actionable recommendation
 2. Another specific recommendation
 ```
@@ -396,32 +433,32 @@ How agents know their work is complete. Validation is not a single gate but a mu
 
 ### Validation Levels (Three-Tier System)
 
-| Level | Scope | Commands | Time | Completion Signal |
-|-------|-------|----------|------|-------------------|
-| 1 (Core) | Docs, comments, config | `lint`, `tsc --noEmit`, `test` | 30-60s | Zero warnings/errors |
-| 2 (Quality) | Features, UI, business logic | `validate:full` | 3-5m | All tests + integration pass |
-| 3 (Production) | API, auth, payments, schema | `validate:full + test:e2e` | 8-12m | 100% E2E + security clean |
+| Level          | Scope                        | Commands                       | Time   | Completion Signal            |
+| -------------- | ---------------------------- | ------------------------------ | ------ | ---------------------------- |
+| 1 (Core)       | Docs, comments, config       | `lint`, `tsc --noEmit`, `test` | 30-60s | Zero warnings/errors         |
+| 2 (Quality)    | Features, UI, business logic | `validate:full`                | 3-5m   | All tests + integration pass |
+| 3 (Production) | API, auth, payments, schema  | `validate:full + test:e2e`     | 8-12m  | 100% E2E + security clean    |
 
 **Level Selection Rule:** Choose validation level BEFORE execution based on change risk, not after discovering issues.
 
 ### Completion Detection Mechanisms
 
-| Pattern | How It Works | Completion Signal |
-|---------|--------------|-------------------|
-| **Exit Code Parsing** | Non-zero exit_code in JSON context triggers retry | `exit_code == 0` |
-| **File Rename** | Report file renamed on completion | `.complete.md` or `.failed.md` suffix |
-| **Event Logs** | Poll agent_logs for specific sequence | `response` event + `Stop` hook |
-| **Phase Gating** | Required file must exist before next phase | Spec file exists → proceed to build |
-| **Severity Tiers** | Issues categorized as blocker/tech_debt/skippable | `blocker_count == 0` |
-| **Sleep-Poll Loop** | `check_agent_status` every N seconds | Terminal event detected |
-| **Schema Validation** | Output must contain required fields | All fields present + parseable |
+| Pattern               | How It Works                                      | Completion Signal                     |
+| --------------------- | ------------------------------------------------- | ------------------------------------- |
+| **Exit Code Parsing** | Non-zero exit_code in JSON context triggers retry | `exit_code == 0`                      |
+| **File Rename**       | Report file renamed on completion                 | `.complete.md` or `.failed.md` suffix |
+| **Event Logs**        | Poll agent_logs for specific sequence             | `response` event + `Stop` hook        |
+| **Phase Gating**      | Required file must exist before next phase        | Spec file exists → proceed to build   |
+| **Severity Tiers**    | Issues categorized as blocker/tech_debt/skippable | `blocker_count == 0`                  |
+| **Sleep-Poll Loop**   | `check_agent_status` every N seconds              | Terminal event detected               |
+| **Schema Validation** | Output must contain required fields               | All fields present + parseable        |
 
 ### Event-Based Completion Signal (Primary Pattern)
 
 ```markdown
 Agent task is COMPLETE when:
-  agent_logs contains → response event_category
-  FOLLOWED BY → hook with Stop event_type
+agent_logs contains → response event_category
+FOLLOWED BY → hook with Stop event_type
 ```
 
 ### Sleep-Poll Loop Pattern
@@ -432,7 +469,7 @@ Agent task is COMPLETE when:
 1. Spawn agent with `create_agent`
 2. Command agent with `command_agent`
 3. **Sleep-Poll Loop:**
-   - `Bash(sleep ${SLEEP_INTERVAL})`  # 10-15 seconds
+   - `Bash(sleep ${SLEEP_INTERVAL})` # 10-15 seconds
    - Run `check_agent_status` to retrieve agent_logs
    - Parse for `response` event_category + `Stop` hook
    - If interrupted, return to loop after handling
@@ -455,11 +492,11 @@ Agent task is COMPLETE when:
 
 ### Severity-Based Blocking (Review Decisions)
 
-| Severity | Impact | Merge Behavior |
-|----------|--------|----------------|
-| **Blocker** | Breaks functionality, fails validation, security risk | CHANGES_REQUESTED - blocks merge |
-| **Tech Debt** | Works but needs refinement | Can ship, noted for follow-up |
-| **Skippable** | Minor style, optional enhancements | Doesn't block |
+| Severity      | Impact                                                | Merge Behavior                   |
+| ------------- | ----------------------------------------------------- | -------------------------------- |
+| **Blocker**   | Breaks functionality, fails validation, security risk | CHANGES_REQUESTED - blocks merge |
+| **Tech Debt** | Works but needs refinement                            | Can ship, noted for follow-up    |
+| **Skippable** | Minor style, optional enhancements                    | Doesn't block                    |
 
 **Completion Rule:** `success: true` if and only if `blocker_count == 0`
 
@@ -499,12 +536,12 @@ Tests must show concrete evidence that integrations ran against real services:
 ## Orchestrator Phase Transitions
 
 scout → plan (MANDATORY: spec_file exists)
-           ↓
-         build (MANDATORY: spec_file exists, else HALT)
-           ↓
-         review (only if build completed)
-           ↓
-         validate (runs after review)
+↓
+build (MANDATORY: spec_file exists, else HALT)
+↓
+review (only if build completed)
+↓
+validate (runs after review)
 
 **Rule:** Each phase must complete successfully before next phase begins.
 **Failure:** Record in workflow status, include remediation command.
@@ -526,11 +563,11 @@ real_service_evidence: "Supabase logs show rate limit increments"
 
 ### Multi-Expert Consensus Aggregation
 
-| Condition | Final Decision |
-|-----------|----------------|
+| Condition                            | Final Decision             |
+| ------------------------------------ | -------------------------- |
 | Any expert returns CHANGES_REQUESTED | CHANGES_REQUESTED (blocks) |
-| All experts return APPROVE | APPROVE |
-| Mix of APPROVE + COMMENT only | COMMENT |
+| All experts return APPROVE           | APPROVE                    |
+| Mix of APPROVE + COMMENT only        | COMMENT                    |
 
 **Expert Coverage:** Minimum 4/5 experts must complete (graceful failure for 1 missing).
 
@@ -542,13 +579,13 @@ real_service_evidence: "Supabase logs show rate limit increments"
 **Level**: 2 (Pre-PR)
 **Duration**: 4m 23s
 
-| Check | Status | Details |
-|-------|--------|---------|
-| Lint | ✅ PASS | 0 warnings |
-| Types | ✅ PASS | 0 errors |
-| Unit Tests | ✅ PASS | 47/47 |
-| Integration | ✅ PASS | 12/12 |
-| Coverage | ✅ PASS | 94.2% |
+| Check       | Status  | Details    |
+| ----------- | ------- | ---------- |
+| Lint        | ✅ PASS | 0 warnings |
+| Types       | ✅ PASS | 0 errors   |
+| Unit Tests  | ✅ PASS | 47/47      |
+| Integration | ✅ PASS | 12/12      |
+| Coverage    | ✅ PASS | 94.2%      |
 
 **Evidence**: [Link to logs or screenshot]
 **Verdict**: All gates passed
@@ -591,6 +628,7 @@ For background/async agents:
 **What it looks like**: A single 2000+ line prompt trying to handle every possible scenario with nested conditionals, edge case documentation, and exhaustive examples.
 
 **Why it fails**:
+
 - Cognitive overload for both AI and humans
 - Impossible to maintain or debug
 - Contradictory instructions hidden in the mass
@@ -599,13 +637,14 @@ For background/async agents:
 
 **Better alternative**: Use delegation (Level 4+). Create focused specialist agents with clear boundaries.
 
-*[2025-12-10]*: A 200-line orchestrator commanding five 150-line specialists is far more maintainable than one 1000-line generalist.
+_[2025-12-10]_: A 200-line orchestrator commanding five 150-line specialists is far more maintainable than one 1000-line generalist.
 
 ### Over-Specification of Edge Cases
 
 **What it looks like**: Prompt lists 47 different edge cases with explicit handling for each: "If the file is TypeScript, do X. If it's JavaScript, do Y. If it's JSX, do Z. If it's TSX, do A. If it's Vue, do B..."
 
 **Why it fails**:
+
 - Edge cases multiply faster than they can be documented
 - Creates brittleness—agent can't generalize to new scenarios
 - Instruction conflicts emerge as edge cases interact
@@ -613,13 +652,14 @@ For background/async agents:
 
 **Better alternative**: Provide core principles and 2-3 canonical examples. Trust the model to generalize.
 
-*[2025-12-10]*: Use "NEVER VIOLATE" constraints for true hard boundaries, principles for everything else. Example: "Follow the existing file's conventions" beats listing every possible convention.
+_[2025-12-10]_: Use "NEVER VIOLATE" constraints for true hard boundaries, principles for everything else. Example: "Follow the existing file's conventions" beats listing every possible convention.
 
 ### The Scattered Concerns Prompt
 
 **What it looks like**: Instructions jump between validation rules, output formatting, error handling, business logic, and tool usage with no clear organization. Constraints appear in three different sections.
 
 **Why it fails**:
+
 - Agent misses critical instructions buried in wrong section
 - Duplicate or contradictory instructions in different places
 - Impossible to quickly verify completeness
@@ -627,13 +667,14 @@ For background/async agents:
 
 **Better alternative**: Use the canonical 7-section structure. Each section has one job.
 
-*[2025-12-10]*: If a constraint appears in both "Instructions" and "Critical Constraints", remove it from Instructions—constraints section is authoritative.
+_[2025-12-10]_: If a constraint appears in both "Instructions" and "Critical Constraints", remove it from Instructions—constraints section is authoritative.
 
 ### The Implicit Output Format
 
 **What it looks like**: Prompt describes the task in detail but never specifies exact output format. Agent produces inconsistent formats across runs, making downstream parsing impossible.
 
 **Why it fails**:
+
 - Downstream systems can't parse variable formats
 - Human recipients need to manually reformat
 - No way to detect malformed output programmatically
@@ -641,13 +682,14 @@ For background/async agents:
 
 **Better alternative**: Design output-first. Define exact format before writing instructions.
 
-*[2025-12-10]*: Use "CRITICAL: Output Format Requirements" section with correct/incorrect examples. Explicitly forbid meta-commentary patterns.
+_[2025-12-10]_: Use "CRITICAL: Output Format Requirements" section with correct/incorrect examples. Explicitly forbid meta-commentary patterns.
 
 ### The Workflow-Less Delegation
 
 **What it looks like**: Level 4+ prompt that spawns agents but provides no polling logic, completion detection, or phase gating. Just "create agent, command it, report results" with no handling for agent still running.
 
 **Why it fails**:
+
 - Race conditions—orchestrator finishes before subagents
 - No completion detection means premature reporting
 - Failures in subagents go unnoticed
@@ -655,13 +697,14 @@ For background/async agents:
 
 **Better alternative**: Every delegation needs sleep-poll loop, event-based completion detection, or file state monitoring.
 
-*[2025-12-10]*: Phase gating ensures prerequisites exist. See "Sleep-Poll Loop Pattern" and "Event-Based Completion Signal" sections.
+_[2025-12-10]_: Phase gating ensures prerequisites exist. See "Sleep-Poll Loop Pattern" and "Event-Based Completion Signal" sections.
 
 ### The Validation-Free Action
 
 **What it looks like**: Prompt executes changes (creates files, modifies code, runs commands) but includes no validation step. Assumes success and reports completion without evidence.
 
 **Why it fails**:
+
 - Silent failures look like success
 - Broken implementations shipped because "it ran"
 - No evidence trail for debugging
@@ -669,7 +712,7 @@ For background/async agents:
 
 **Better alternative**: Select validation level BEFORE execution based on risk. Include explicit validation step in workflow.
 
-*[2025-12-10]*: Require evidence (test output, lint status, real-service logs). See "Validation Levels" section.
+_[2025-12-10]_: Require evidence (test output, lint status, real-service logs). See "Validation Levels" section.
 
 ---
 
@@ -685,6 +728,7 @@ For background/async agents:
 ## Sources
 
 Patterns extracted from:
+
 - `appendices/examples/kotadb/` - 7-level taxonomy, constraint-first design, output format requirements, JSON schema validation, expertise sections, evidence requirements
 - `appendices/examples/TAC/agentic-prompt-engineering/` - Canonical sections, variable syntax, output styles
 - `appendices/examples/TAC/multi-agent-orchestration/` - Multi-agent orchestration, scout→build patterns

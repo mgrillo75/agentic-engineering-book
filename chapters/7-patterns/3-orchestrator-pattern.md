@@ -3,7 +3,8 @@ title: Orchestrator Pattern
 description: Hub-and-spoke coordination of specialized sub-agents in a single workflow
 created: 2025-12-08
 last_updated: 2026-02-05
-tags: [patterns, multi-agent, orchestration, coordination, tool-restriction, swarm]
+tags:
+  [patterns, multi-agent, orchestration, coordination, tool-restriction, swarm]
 part: 2
 part_title: Craft
 chapter: 7
@@ -49,7 +50,7 @@ In a single message, make multiple Task tool calls:
 
 This is the critical insight: parallelism is achieved at the message level, not the agent level.
 
-*[2025-12-09]*: This is the make-or-break implementation detail that most practitioners miss. If you invoke three Task tools across three separate messages, they execute sequentially—not in parallel. The orchestrator must emit all parallel Task calls in a single response. This explains why many "parallel" multi-agent systems actually run sequentially: developers assume agents will run concurrently by default, but the framework requires explicit single-message invocation. When debugging performance issues in multi-agent systems, check single-message parallelism first.
+_[2025-12-09]_: This is the make-or-break implementation detail that most practitioners miss. If you invoke three Task tools across three separate messages, they execute sequentially—not in parallel. The orchestrator must emit all parallel Task calls in a single response. This explains why many "parallel" multi-agent systems actually run sequentially: developers assume agents will run concurrently by default, but the framework requires explicit single-message invocation. When debugging performance issues in multi-agent systems, check single-message parallelism first.
 
 **How you scale multi-agent work**: Spawn all independent agents in a single message rather than sequential messages. This isn't just about orchestrators—it's the fundamental pattern for parallelizing any multi-agent work. Three Task calls in one message execute concurrently. Three Task calls across three messages execute sequentially. The difference compounds: 10 agents in parallel complete in roughly the same wall-clock time as 1 agent; 10 agents serialized take 10× longer.
 
@@ -57,19 +58,20 @@ This is the critical insight: parallelism is achieved at the message level, not 
 
 ### SDK Orchestration vs. Model-Native Swarm
 
-*[2026-01-30]*: The orchestration patterns described here assume SDK-level coordination—external code or tools (Task, LangGraph, AutoGen) manage agent spawning and result synthesis. Kimi K2.5 introduced an alternative: model-native swarm orchestration.
+_[2026-01-30]_: The orchestration patterns described here assume SDK-level coordination—external code or tools (Task, LangGraph, AutoGen) manage agent spawning and result synthesis. Kimi K2.5 introduced an alternative: model-native swarm orchestration.
 
 **Key distinction:** SDK orchestration uses explicit tool calls to spawn subagents. The orchestrator invokes Task tools, waits for responses, and synthesizes results through framework code. Model-native swarm embeds orchestration within the model's reasoning—the model decides when to parallelize, spawns subagents internally, and coordinates execution through trained behavior rather than prompted instructions.
 
 **Trade-off:** SDK orchestration provides explicit control and traceable coordination logic. Model-native swarm offers autonomous parallelization and potentially lower coordination overhead, but reduces visibility into orchestration decisions and couples workflows to specific model families.
 
-*[2026-02-05]*: **Agent Teams Extension** - When SDK orchestrators require peer-to-peer messaging between subagents, agent teams (TeammateTool) provide direct communication primitives. The orchestrator spawns teammates (not just subagents) who can send messages, broadcast notifications, and coordinate without routing through the orchestrator. This sits between traditional SDK orchestration (indirect coordination via orchestrator) and model-native swarm (autonomous parallelization). Subagents for focused work, agent teams for collaboration. See [Agent Teams documentation](../../10-practitioner-toolkit/1-claude-code.md#agent-teams-native-multi-agent-coordination-experimental).
+_[2026-02-05]_: **Agent Teams Extension** - When SDK orchestrators require peer-to-peer messaging between subagents, agent teams (TeammateTool) provide direct communication primitives. The orchestrator spawns teammates (not just subagents) who can send messages, broadcast notifications, and coordinate without routing through the orchestrator. This sits between traditional SDK orchestration (indirect coordination via orchestrator) and model-native swarm (autonomous parallelization). Subagents for focused work, agent teams for collaboration. See [Agent Teams documentation](../../10-practitioner-toolkit/1-claude-code.md#agent-teams-native-multi-agent-coordination-experimental).
 
 **See:** [Multi-Model Architectures: Model-Native Swarm Orchestration](../../3-model/4-multi-model-architectures.md#model-native-swarm-orchestration) for detailed comparison, including PARL training approach, Critical Steps metric, and performance characteristics (100+ subagents, 3-4.5× speedup).
 
 ### Dependency-Aware Batching
 
 For files with dependencies:
+
 - **Batch 1**: Files with no dependencies (parallel)
 - **Batch 2**: Files depending on Batch 1 (wait, then parallel)
 - **Batch 3**: Files depending on Batch 2
@@ -80,6 +82,7 @@ Analyze the dependency graph, group into batches, parallelize within each batch.
 ### Spec File as Shared Context
 
 A single artifact (spec file) flows through all phases:
+
 - Scout outputs exploration findings
 - Plan phase creates `docs/specs/<name>.md` with full context
 - Build agents read spec file for implementation details
@@ -90,6 +93,7 @@ This avoids passing massive context between agents—instead, they read from a s
 ### Phase Gating
 
 Mandatory prerequisites before transitions:
+
 - **scout → plan**: Pass exploration findings
 - **plan → build**: Spec file must exist (verify with `test -f`)
 - **build → review**: Build must complete successfully
@@ -101,11 +105,11 @@ If a prerequisite fails, halt and provide remediation instructions.
 
 ## Context Passing
 
-| Transition | What Flows |
-|------------|------------|
-| Scout → Plan | File locations, patterns, dependencies |
-| Plan → Build | Spec file path, architecture patterns |
-| Build → Review | Commit hashes, changed file paths |
+| Transition        | What Flows                                  |
+| ----------------- | ------------------------------------------- |
+| Scout → Plan      | File locations, patterns, dependencies      |
+| Plan → Build      | Spec file path, architecture patterns       |
+| Build → Review    | Commit hashes, changed file paths           |
 | Review → Validate | Validation scope (based on review findings) |
 
 Each agent receives complete context—they're stateless and assume nothing from prior calls.
@@ -114,11 +118,12 @@ Each agent receives complete context—they're stateless and assume nothing from
 
 ## Context Isolation via Sub-Agents
 
-*[2025-12-10]*: The primary rationale for delegation isn't just parallelism—it's **context hygiene**. Each sub-agent gets a fresh context window for its specialized task, preventing pollution of the orchestrator's decision-making context.
+_[2025-12-10]_: The primary rationale for delegation isn't just parallelism—it's **context hygiene**. Each sub-agent gets a fresh context window for its specialized task, preventing pollution of the orchestrator's decision-making context.
 
 ### Why Context Isolation Matters
 
 When an orchestrator needs to search files, grep patterns, or summarize code, doing this work directly fills its context window with raw data:
+
 - File listings with hundreds of paths
 - Grep results with dozens of matching lines
 - Full file contents for analysis
@@ -128,6 +133,7 @@ This raw data crowds out the orchestrator's primary job: workflow coordination a
 ### The Pattern
 
 **Deploy fresh context windows for search operations:**
+
 ```
 Orchestrator (clean context):
 ├─ Task → Scout: "Find all Python files in src/"
@@ -143,26 +149,29 @@ Orchestrator (clean context):
 ```
 
 **Sub-agents return synthesized summaries, not raw data:**
+
 - Scout returns: "Found 47 files in 3 modules" (not 47 file paths)
 - Grep agent returns: "Pattern appears in 12 locations, primarily in validation layer" (not 12 raw matches)
 - Code analyzer returns: "Authentication flow uses OAuth2 with custom middleware" (not full code dump)
 
 ### The Trade-off
 
-| Aspect | Direct Execution | Sub-Agent Delegation |
-|--------|------------------|---------------------|
-| **Token cost** | Lower (single context) | Higher (multiple contexts) |
-| **Context clarity** | Polluted with raw data | Clean, summary-only |
-| **Decision quality** | Degraded by noise | Focused on synthesis |
-| **Parallelism** | Sequential | Concurrent |
+| Aspect               | Direct Execution       | Sub-Agent Delegation       |
+| -------------------- | ---------------------- | -------------------------- |
+| **Token cost**       | Lower (single context) | Higher (multiple contexts) |
+| **Context clarity**  | Polluted with raw data | Clean, summary-only        |
+| **Decision quality** | Degraded by noise      | Focused on synthesis       |
+| **Parallelism**      | Sequential             | Concurrent                 |
 
 **When the trade-off favors delegation:**
+
 - Orchestrator needs to make complex decisions based on synthesized information
 - Search/analysis operations produce large intermediate results
 - Multiple independent investigations can run in parallel
 - Workflow spans multiple phases requiring clean transitions
 
 **When direct execution works:**
+
 - Simple, single-phase tasks
 - Orchestrator needs raw data for decision-making
 - Token budget is constrained
@@ -178,6 +187,7 @@ Orchestrator (clean context):
 ### This Is Why Orchestrators Delegate
 
 The orchestrator pattern isn't just about parallelism—it's about maintaining clean separation between:
+
 - **Discovery** (file finding, pattern searching, code reading) — sub-agent contexts
 - **Synthesis** (decision-making, workflow coordination) — orchestrator context
 
@@ -190,6 +200,7 @@ Each sub-agent pollutes its own context with raw data, then returns clean summar
 ## Expert Synthesis
 
 When multiple experts analyze in parallel:
+
 1. Collect structured outputs from each expert
 2. Identify cross-cutting concerns (mentioned by 2+ experts)
 3. Synthesize into unified recommendations
@@ -202,11 +213,13 @@ The orchestrator is responsible for synthesis—individual experts stay focused 
 ## Error Handling
 
 ### Graceful Degradation
+
 - If an expert fails, note the failure and continue with available analyses
 - Recommend manual review for failed expert domains
 - Include recovery instructions in output
 
 ### Partial Success
+
 - Commit successful changes before reporting failures
 - Allow selective retry via phases parameter
 - Never leave the workflow in an inconsistent state
@@ -218,12 +231,14 @@ The orchestrator is responsible for synthesis—individual experts stay focused 
 ### Good Fit
 
 **Multi-concern workflows requiring parallel analysis:**
+
 - Complex tasks spanning multiple domains (architecture, security, testing, performance)
 - Tasks that benefit from parallel execution (multiple independent analyses or builds)
 - Workflows requiring explicit phase gates and artifacts for review
 - Need for context isolation between exploration and decision-making
 
 **Indicators you need this pattern:**
+
 - Single agent's context window fills with search/analysis data
 - Multiple independent tasks can run concurrently
 - Workflow has clear phase transitions with checkpoints
@@ -232,6 +247,7 @@ The orchestrator is responsible for synthesis—individual experts stay focused 
 ### Poor Fit
 
 **Simple or tightly-coupled tasks:**
+
 - Single-file changes with straightforward requirements
 - Tasks where coordination overhead exceeds parallelism benefit
 - Workflows requiring tight real-time interaction between agents
@@ -259,40 +275,41 @@ The orchestrator is responsible for synthesis—individual experts stay focused 
 
 ## Capability Minimization
 
-*[2025-12-09]*: Orchestrators work better when their subagents have **intentionally restricted capabilities**. This isn't just security—it's an architectural forcing function.
+_[2025-12-09]_: Orchestrators work better when their subagents have **intentionally restricted capabilities**. This isn't just security—it's an architectural forcing function.
 
 ### Why Restrict Tools
 
 1. **Reduces context overhead**: An agent with 3 tools maintains smaller context than one with 20
-2. **Forces delegation**: A read-only scout *cannot* implement—it must report findings for others to act on
+2. **Forces delegation**: A read-only scout _cannot_ implement—it must report findings for others to act on
 3. **Enables parallelization**: Agents with minimal scope can run more instances simultaneously
 4. **Clarifies responsibility**: Tool restrictions make the agent's role unambiguous
 
 ### Tool Restriction Patterns
 
-| Agent Role | Tools | Rationale |
-|------------|-------|-----------|
-| Scout | Read, Glob, Grep | Cannot modify—forces reporting back |
-| Builder | Write, Edit, Read, Bash | Focused on implementation |
-| Reviewer | Read, Grep, Bash (tests only) | Cannot fix what they find |
-| Validator | Bash (run only), Read | Executes, doesn't implement |
+| Agent Role | Tools                         | Rationale                           |
+| ---------- | ----------------------------- | ----------------------------------- |
+| Scout      | Read, Glob, Grep              | Cannot modify—forces reporting back |
+| Builder    | Write, Edit, Read, Bash       | Focused on implementation           |
+| Reviewer   | Read, Grep, Bash (tests only) | Cannot fix what they find           |
+| Validator  | Bash (run only), Read         | Executes, doesn't implement         |
 
 ### Scope Restriction Beyond Tools
 
 Tool restriction is only half the pattern. **Scope restriction** achieves the same goal through workflow design:
 
-- **One file per builder**: Each build-agent handles exactly one file, even though it *could* write many
-- **One domain per expert**: Security expert doesn't comment on testing, even though it *could*
+- **One file per builder**: Each build-agent handles exactly one file, even though it _could_ write many
+- **One domain per expert**: Security expert doesn't comment on testing, even though it _could_
 - **Orchestrator as spec writer**: Primary job becomes packaging comprehensive context, not doing work
 
 A common pattern in multi-agent systems:
+
 > "Never guess or assume context: Each build-agent needs comprehensive instructions as if they are new engineers"
 
 This forces the orchestrator to be explicit about what each subagent needs, keeping each agent's context minimal and focused.
 
 ### The Meta-Principle
 
-Default Claude Code behavior is to inherit all parent tools. The deliberate choice to *restrict* tools signals architectural intent:
+Default Claude Code behavior is to inherit all parent tools. The deliberate choice to _restrict_ tools signals architectural intent:
 
 ```yaml
 # Inherits everything (default)
@@ -309,7 +326,7 @@ When reviewing an agent definition, ask: "What can this agent NOT do, and is tha
 
 ### SDK-Level vs CLI-Level Enforcement
 
-*[2025-12-09]*: True HEAD vs subagent tool differentiation requires SDK-level enforcement, not CLI configuration.
+_[2025-12-09]_: True HEAD vs subagent tool differentiation requires SDK-level enforcement, not CLI configuration.
 
 CLI tools like Claude Code apply tool restrictions uniformly—the HEAD agent and all subagents share the same allowed tools set. This is a known limitation. If you configure `allowedTools` in settings.json, those restrictions apply everywhere.
 
@@ -329,6 +346,7 @@ builder_tools = ["Write", "Read", "Edit", "Bash", "Glob", "Grep"]
 ```
 
 The pattern emerges across three mechanisms:
+
 - **Technical**: `allowed_tools` allowlist passed to SDK when spawning agents
 - **Behavioral**: System prompts reinforce "let subagents do the heavy lifting"
 - **Architectural**: Orchestrator gets management/coordination tools, not implementation tools
@@ -339,7 +357,7 @@ This explains why sophisticated multi-agent systems often build custom orchestra
 
 ### Tool Restriction as Coordination Forcing Function
 
-*[2025-12-09]*: Tool restriction isn't just about limiting what agents can do—it's about enabling coordination patterns through deliberate capability differentiation.
+_[2025-12-09]_: Tool restriction isn't just about limiting what agents can do—it's about enabling coordination patterns through deliberate capability differentiation.
 
 When an orchestrator uses different tools than its subagents, it creates natural separation of concerns:
 
@@ -362,21 +380,22 @@ See [Tool Use: MCP Tool Declarations](../5-tool-use/3-tool-restrictions.md#mcp-t
 
 ## Workflow Primitives
 
-*[2025-12-09]*: When orchestration patterns become routine, extract them as reusable primitives. Google ADK codifies this with SequentialAgent, ParallelAgent, and LoopAgent—workflow controllers that compose specialized agents without LLM overhead per coordination decision.
+_[2025-12-09]_: When orchestration patterns become routine, extract them as reusable primitives. Google ADK codifies this with SequentialAgent, ParallelAgent, and LoopAgent—workflow controllers that compose specialized agents without LLM overhead per coordination decision.
 
 ### The Three Primitives
 
-| Primitive | Pattern | When to Use |
-|-----------|---------|-------------|
-| **Sequential** | Pipeline—A's output feeds B | Dependent phases, ordered transformations |
-| **Parallel** | Fan-out/gather—concurrent execution, collected results | Independent analysis, embarrassingly parallel tasks |
-| **Loop** | Iterate until condition met | Refinement cycles, retry-with-feedback |
+| Primitive      | Pattern                                                | When to Use                                         |
+| -------------- | ------------------------------------------------------ | --------------------------------------------------- |
+| **Sequential** | Pipeline—A's output feeds B                            | Dependent phases, ordered transformations           |
+| **Parallel**   | Fan-out/gather—concurrent execution, collected results | Independent analysis, embarrassingly parallel tasks |
+| **Loop**       | Iterate until condition met                            | Refinement cycles, retry-with-feedback              |
 
 ### Why This Matters
 
 Traditional orchestration requires an LLM call to decide "what next?" after each step. For deterministic workflows—where the pattern is always "run A, then B, then C"—that's wasted inference.
 
 Workflow primitives eliminate this overhead:
+
 - SequentialAgent knows it runs steps in order
 - ParallelAgent knows it runs steps concurrently
 - LoopAgent knows it runs until a condition
@@ -386,6 +405,7 @@ The orchestrator LLM focuses on decisions that require reasoning: which primitiv
 ### Composition
 
 Primitives compose naturally:
+
 ```
 SequentialAgent([
     ParallelAgent([scout_a, scout_b, scout_c]),  # Fan-out exploration
@@ -411,7 +431,7 @@ Claude Code achieves similar patterns through discipline (single-message paralle
 
 ## Communication Excellence
 
-*[2026-01-30]*: Orchestration skill research from cc-mirror reveals sophisticated communication patterns that transform user experience from "watching a machine work" to "collaborating with intelligence."
+_[2026-01-30]_: Orchestration skill research from cc-mirror reveals sophisticated communication patterns that transform user experience from "watching a machine work" to "collaborating with intelligence."
 
 ### The Conductor Philosophy
 
@@ -423,43 +443,46 @@ Users describe outcomes; orchestrators decompose and coordinate; workers execute
 
 Never expose orchestration mechanics in user-facing communication:
 
-| Forbidden | Natural Alternative |
-|-----------|-------------------|
-| "Spawning subagents" | "Breaking this into parallel tracks" |
-| "Task graph analysis" | "Checking a few angles" |
-| "Fan-out pattern" | "Got several threads running" |
-| "Map-reduce phase" | "Pulling it together now" |
-| "Background agent count" | "Early returns looking promising" |
+| Forbidden                | Natural Alternative                  |
+| ------------------------ | ------------------------------------ |
+| "Spawning subagents"     | "Breaking this into parallel tracks" |
+| "Task graph analysis"    | "Checking a few angles"              |
+| "Fan-out pattern"        | "Got several threads running"        |
+| "Map-reduce phase"       | "Pulling it together now"            |
+| "Background agent count" | "Early returns looking promising"    |
 
 ### Vibe-Reading Adaptation
 
 Orchestrators detect and adapt to user energy:
 
-| User State | Signals | Orchestrator Response |
-|------------|---------|----------------------|
-| **Excited** | Exclamation marks, rapid messages | Match energy, celebrate wins visibly |
-| **Overwhelmed** | Long pauses, vague requests | Simplify, break into smaller steps |
-| **Frustrated** | Repeated questions, short responses | Direct solutions, skip process exposition |
-| **Curious** | Detail questions, exploratory tone | Share insights, explain discoveries |
-| **Rushed** | "quick", "fast", time pressure | Cut ceremony, prioritize completion |
+| User State      | Signals                             | Orchestrator Response                     |
+| --------------- | ----------------------------------- | ----------------------------------------- |
+| **Excited**     | Exclamation marks, rapid messages   | Match energy, celebrate wins visibly      |
+| **Overwhelmed** | Long pauses, vague requests         | Simplify, break into smaller steps        |
+| **Frustrated**  | Repeated questions, short responses | Direct solutions, skip process exposition |
+| **Curious**     | Detail questions, exploratory tone  | Share insights, explain discoveries       |
+| **Rushed**      | "quick", "fast", time pressure      | Cut ceremony, prioritize completion       |
 
 ### Progress Communication Patterns
 
 Maintain engagement without revealing machinery:
 
 **Starting:**
+
 ```
 "Breaking this into parallel tracks"
 "Checking a few angles on this"
 ```
 
 **Working:**
+
 ```
 "Got several threads running"
 "Early returns look promising"
 ```
 
 **Synthesis:**
+
 ```
 "Pulling it together now"
 "Building on what I found"
@@ -469,6 +492,7 @@ Maintain engagement without revealing machinery:
 Meaningful celebration with results, not process description. Show findings with file:line references, unexpected discoveries highlighted, connection to user intent explicit.
 
 **Generic synthesis (forbidden):**
+
 - ❌ "I analyzed the code"
 - ❌ "Task completed successfully"
 - ✅ "Found SQL injection vulnerability in auth.py line 147"
@@ -480,11 +504,12 @@ Meaningful celebration with results, not process description. Show findings with
 
 ## Read vs. Delegate Guidelines
 
-*[2026-01-30]*: Research from production orchestrators reveals clear thresholds for when orchestrators should read directly versus delegating to agents.
+_[2026-01-30]_: Research from production orchestrators reveals clear thresholds for when orchestrators should read directly versus delegating to agents.
 
 ### Mandatory Direct Reads
 
 **Always read directly, never delegate:**
+
 - **Skill references** - Core orchestration knowledge
 - **Domain guides** - Project-specific standards
 - **Agent output files** - Results from completed subagents (for synthesis)
@@ -494,12 +519,14 @@ These are coordination context, not search operations. Delegating them breaks or
 ### The 1-2 File Threshold
 
 **Orchestrator reads directly (1-2 files):**
+
 - Quick index lookups
 - Small configuration files
 - Single-file verification
 - Specification documents
 
 **Delegate to agents (3+ files):**
+
 - Codebase exploration
 - Multiple source file analysis
 - Deep documentation review
@@ -507,16 +534,17 @@ These are coordination context, not search operations. Delegating them breaks or
 
 ### Why This Threshold Matters
 
-| Aspect | Direct Read (1-2 files) | Delegate (3+ files) |
-|--------|------------------------|---------------------|
-| **Context cost** | Minimal overhead | High if done directly |
-| **Parallelism** | Serial bottleneck | Concurrent execution |
+| Aspect                 | Direct Read (1-2 files)      | Delegate (3+ files)               |
+| ---------------------- | ---------------------------- | --------------------------------- |
+| **Context cost**       | Minimal overhead             | High if done directly             |
+| **Parallelism**        | Serial bottleneck            | Concurrent execution              |
 | **Orchestrator focus** | Maintains synthesis capacity | Preserves decision-making clarity |
-| **Total latency** | Faster for small scope | Faster for large scope |
+| **Total latency**      | Faster for small scope       | Faster for large scope            |
 
 ### Delegation Rationale
 
 Orchestrators coordinate; workers execute. When file reading becomes exploration rather than reference lookup, delegation:
+
 - Frees orchestrator context for synthesis
 - Enables parallel investigation
 - Returns summaries instead of raw data
@@ -530,13 +558,14 @@ Orchestrators coordinate; workers execute. When file reading becomes exploration
 
 ## Background Execution Mechanics
 
-*[2026-01-30]*: TeammateTool and orchestration skill research document background execution as fundamental to parallelism, not a feature toggle.
+_[2026-01-30]_: TeammateTool and orchestration skill research document background execution as fundamental to parallelism, not a feature toggle.
 
 ### Default to Background
 
 **Always use `run_in_background=True`** when spawning agents. This is the default in production orchestrators and should be the default mental model.
 
 **Why background-first:**
+
 - Enables true parallelism (multiple agents executing concurrently)
 - Orchestrator continues coordination work while agents execute
 - Automatic completion notifications prevent polling overhead
@@ -545,6 +574,7 @@ Orchestrators coordinate; workers execute. When file reading becomes exploration
 ### Non-Blocking vs. Blocking Checks
 
 **Non-blocking check** (`block=False`):
+
 ```
 TaskOutput(task_id="task-123", block=False)
 → Returns current progress or "still running"
@@ -553,6 +583,7 @@ TaskOutput(task_id="task-123", block=False)
 Use for status updates while orchestrator continues other work.
 
 **Blocking wait** (`block=True`):
+
 ```
 TaskOutput(task_id="task-123", block=True)
 → Waits for completion, returns full results
@@ -565,6 +596,7 @@ Use only when results immediately needed for next decision.
 Background agents automatically notify orchestrator on completion. No polling required.
 
 **Workflow:**
+
 1. Orchestrator spawns agents with `run_in_background=True`
 2. Orchestrator continues coordination work (spawn more agents, synthesize partial results)
 3. Agents complete and send notifications
@@ -573,10 +605,10 @@ Background agents automatically notify orchestrator on completion. No polling re
 
 ### Trade-offs
 
-| Pattern | Parallelism | Orchestrator Throughput | Use Case |
-|---------|-------------|------------------------|----------|
-| Background (default) | High | High | Multi-agent workflows |
-| Foreground | None | Blocked | Simple single-agent delegation |
+| Pattern              | Parallelism | Orchestrator Throughput | Use Case                       |
+| -------------------- | ----------- | ----------------------- | ------------------------------ |
+| Background (default) | High        | High                    | Multi-agent workflows          |
+| Foreground           | None        | Blocked                 | Simple single-agent delegation |
 
 **The mental model:** Background execution is not about "running things later"—it's about enabling the orchestrator to do multiple things concurrently. The orchestrator becomes a coordination hub, not a sequential task runner.
 
@@ -586,11 +618,12 @@ Background agents automatically notify orchestrator on completion. No polling re
 
 ## Pattern Composition
 
-*[2026-01-30]*: Real-world orchestration combines fundamental patterns into complex workflows. Research from production orchestrators documents common compositions.
+_[2026-01-30]_: Real-world orchestration combines fundamental patterns into complex workflows. Research from production orchestrators documents common compositions.
 
 ### PR Review (Fan-Out + Map-Reduce)
 
 **Structure:**
+
 ```
 1. Read PR metadata (orchestrator, 1 file)
 2. Fan-Out: Spawn 3 parallel reviewers (single message)
@@ -604,6 +637,7 @@ Background agents automatically notify orchestrator on completion. No polling re
 ```
 
 **User experience:**
+
 ```
 "Got several threads running on this review..."
 
@@ -621,6 +655,7 @@ The SQL issue needs immediate attention before merge."
 ### Feature Implementation (Pipeline + Fan-Out + Background)
 
 **Structure:**
+
 ```
 1. Clarify via AskUserQuestion (4×4 rich questions)
 2. Pipeline Phase 1: Research (Haiku)
@@ -643,6 +678,7 @@ The SQL issue needs immediate attention before merge."
 ### Bug Diagnosis (Fan-Out + Pipeline)
 
 **Structure:**
+
 ```
 1. Fan-Out: Parallel investigation (Haiku, 3 agents)
    - Agent A: Analyze error logs

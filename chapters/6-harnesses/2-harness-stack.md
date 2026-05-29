@@ -21,14 +21,14 @@ Sebastian Raschka's taxonomy (2026-04-04) provides the canonical decomposition o
 
 ## Component Overview
 
-| Component | Responsibility | Common Implementation |
-|-----------|--------------|----------------------|
-| Workspace context | Stable facts about the working environment | CLAUDE.md, project instruction files, git metadata |
-| Prompt shape | Stable/dynamic split for cache reuse | System prompt architecture, context window management |
-| Tool access | Bounded, defined tool inventory | Tool schemas, MCP registrations, permission filters |
-| Context management | Output clipping, deduplication, compression | Progressive disclosure, context compaction, token budgets |
-| Session memory | Dual-layer state (working memory + full transcript) | Persistent memory files, auto-memory, session context |
-| Subagent delegation | Bounded subtask spawning with inherited context | Task tool, sub-agent configuration, context scoping |
+| Component           | Responsibility                                      | Common Implementation                                     |
+| ------------------- | --------------------------------------------------- | --------------------------------------------------------- |
+| Workspace context   | Stable facts about the working environment          | CLAUDE.md, project instruction files, git metadata        |
+| Prompt shape        | Stable/dynamic split for cache reuse                | System prompt architecture, context window management     |
+| Tool access         | Bounded, defined tool inventory                     | Tool schemas, MCP registrations, permission filters       |
+| Context management  | Output clipping, deduplication, compression         | Progressive disclosure, context compaction, token budgets |
+| Session memory      | Dual-layer state (working memory + full transcript) | Persistent memory files, auto-memory, session context     |
+| Subagent delegation | Bounded subtask spawning with inherited context     | Task tool, sub-agent configuration, context scoping       |
 
 Raschka's core diagnostic implication: "The harness can often be the distinguishing factor" separating model capabilities from product performance. When a coding agent underperforms, the first audit target is the harness — specifically, this table — not the model.
 
@@ -41,6 +41,7 @@ Workspace context is the stable, durable information about the working environme
 **Purpose:** Establish the agent's situational awareness at session start. The agent needs to know where it is (directory structure, repository layout), what the project is (purpose, conventions, constraints), and what state the project is in (current branch, recent commits, open issues) before any task begins. Assembling this information correctly at the start is cheaper than regenerating it per turn and more reliable than depending on the agent to discover it incrementally.
 
 **What belongs in workspace context:**
+
 - Repository layout (directory tree, key file locations)
 - Project instruction files (CLAUDE.md, AGENTS.md, README excerpts)
 - Git status (current branch, recent commit messages, uncommitted changes)
@@ -62,10 +63,12 @@ Workspace context is the stable, durable information about the working environme
 Prompt shape refers to the architectural decision about which portions of the context are stable across turns and which are dynamic — and the harness mechanism that enforces this distinction.
 
 **The stable/dynamic split:** The context window at any turn consists of:
+
 - **Stable prefix**: instructions, tool descriptions, workspace context summary — identical across all turns in the session
 - **Dynamic session state**: user messages, agent responses, tool outputs — changes with every turn
 
 This split is an explicit architectural decision that determines the economics of the entire session. When the split is designed correctly:
+
 - Stable prefix is cached once (one-time cost)
 - Dynamic state is priced per turn (incremental cost)
 - Total session cost falls dramatically compared to treating all context as dynamic
@@ -73,6 +76,7 @@ This split is an explicit architectural decision that determines the economics o
 When the split is wrong — volatile content placed in the stable prefix, or stable content regenerated per turn — every token is expensive.
 
 **The harness as the enforcer:** The stable/dynamic split is meaningless without enforcement. The harness is the entity that:
+
 1. Constructs the prompt with the stable prefix first
 2. Appends dynamic session state after the prefix
 3. Sends the combined prompt to the model with the correct caching directives
@@ -81,12 +85,14 @@ When the split is wrong — volatile content placed in the stable prefix, or sta
 **Aider's implementation:** Aider explicitly implements this pattern with four caching layers: (1) system prompt, (2) read-only files, (3) repository map, (4) editable files. All four are stable across turns and are cached. Individual user messages and responses are dynamic and priced per turn. Keepalive pings maintain cache freshness across long sessions.
 
 **What belongs in the stable prefix:**
+
 - Complete system prompt (role definition, task framing, behavioral constraints)
 - Tool schema definitions (these change only when the tool inventory changes)
 - Workspace context summary (the repo map or equivalent)
 - Project conventions (language, formatting, testing requirements)
 
 **What belongs in the dynamic state:**
+
 - All user messages
 - All agent responses
 - All tool call inputs and outputs
@@ -106,14 +112,15 @@ Tool access is the harness component that defines what the agent can do — the 
 
 **Bounded inventories vs. dynamic discovery:** Two architectural approaches to tool inventory management:
 
-| Approach | Mechanism | When to Use |
-|----------|-----------|------------|
-| Bounded inventory | Fixed list of named tools defined at session start | Standard production agents; most use cases |
+| Approach          | Mechanism                                            | When to Use                                                               |
+| ----------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| Bounded inventory | Fixed list of named tools defined at session start   | Standard production agents; most use cases                                |
 | Dynamic discovery | Tools discovered at runtime via registry or protocol | MCP-based systems; plugin architectures; rapidly evolving capability sets |
 
 Raschka advocates for bounded inventories in coding agents: "a pre-defined list of named tools with clear inputs and boundaries." The emphasis is on validation and controlled execution over tool quantity. More tools are not better — more tools mean more surface area for mistakes and permission violations.
 
 **Tool schemas as interface definitions:** Each tool in the harness has a schema that specifies:
+
 - Input parameters (names, types, constraints)
 - Required vs. optional parameters
 - Description of what the tool does and when to use it
@@ -150,6 +157,7 @@ Raschka's insight: "much of apparent 'model quality' is really context quality."
 **Compression timing:** Context management operates proactively, not reactively. The harness compresses when context fill reaches 40-60% of capacity — not at 95% when quality has already degraded. The context chapter's "frequent intentional compaction" principle applies here: the goal is to maintain a high-signal context, not to salvage a degraded one.
 
 **What the harness decides vs. what the model decides:**
+
 - The harness decides what gets clipped, deduplicated, and compressed
 - The model reasons within the context the harness has shaped
 - The model cannot observe that content has been removed (unless the harness explicitly notes it)
@@ -166,22 +174,24 @@ Session memory is the harness component responsible for maintaining useful state
 
 **The dual-layer architecture:** Raschka identifies two distinct memory layers:
 
-| Layer | Characteristics | Purpose |
-|-------|----------------|--------|
-| Working memory | Small, distilled, explicitly maintained, modified per turn | Active reasoning state |
-| Full transcript | Complete, append-only, durable, never discarded | Auditability and recovery |
+| Layer           | Characteristics                                            | Purpose                   |
+| --------------- | ---------------------------------------------------------- | ------------------------- |
+| Working memory  | Small, distilled, explicitly maintained, modified per turn | Active reasoning state    |
+| Full transcript | Complete, append-only, durable, never discarded            | Auditability and recovery |
 
 The duality is the design — these two layers serve different purposes and must not be conflated.
 
 **Working memory** is curated. The harness maintains a small, high-signal summary of what the agent has learned, decided, and done. This summary is actively updated: when the agent makes a significant decision, the harness records it in working memory; when information becomes stale, the harness prunes it. Working memory is what the agent reasons from — it needs to be dense, current, and relevant.
 
 **Full transcript** is archival. Every turn, every tool call, every agent response is appended to the transcript in its complete form. Nothing is removed. The transcript enables two critical capabilities that working memory cannot provide:
+
 1. **Recovery**: if the session fails mid-task, the full transcript provides a complete record from which execution can resume
 2. **Auditability**: the full transcript supports post-hoc review of what the agent did and why
 
 **Persistent memory across sessions:** Claude Code's auto-memory mechanism extends working memory across session boundaries — the harness persists learned facts, project conventions, and task history to `.claude/memory` files that are loaded at session start. This means the agent begins each session with accumulated knowledge from previous sessions, not a blank slate.
 
 **The trajectory capture insight (Schmid, ~2026-Q1):** The full transcript is not just an audit log — it is training data. Schmid's framing: "The Harness is the Dataset." Every session run through the harness produces sequences of observations, actions, and outcomes. These trajectories are:
+
 - Training data for future model fine-tuning on domain-specific tasks
 - Evaluation data for measuring harness improvement over time
 - Documentation of edge cases and failure modes specific to the practitioner's context
@@ -207,11 +217,11 @@ Subagent delegation is the harness component responsible for spawning bounded su
 
 **Anti-patterns in subagent delegation:**
 
-| Anti-pattern | Symptom | Harness Fix |
-|-------------|---------|------------|
-| Duplicate file access | Subagents writing to the same file simultaneously | Scope isolation enforced at delegation |
-| Recursive spawning | Subagent spawns more subagents without limit | Maximum delegation depth enforced by harness |
-| Context flooding | Subagent inherits full parent context | Context scoping at delegation point |
+| Anti-pattern          | Symptom                                                  | Harness Fix                                    |
+| --------------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| Duplicate file access | Subagents writing to the same file simultaneously        | Scope isolation enforced at delegation         |
+| Recursive spawning    | Subagent spawns more subagents without limit             | Maximum delegation depth enforced by harness   |
+| Context flooding      | Subagent inherits full parent context                    | Context scoping at delegation point            |
 | Result misintegration | Subagent output format varies; orchestrator cannot parse | Required output format specified in delegation |
 
 **The scoped context principle:** When the harness delegates to a subagent, it should pass the minimum context the subagent needs to complete its task — not the parent's full context. Full context inheritance creates three problems: (1) the subagent spends tokens processing irrelevant context, (2) the subagent may take actions influenced by context it shouldn't have (security concern), and (3) large subagent context slows execution and increases cost.

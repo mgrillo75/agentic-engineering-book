@@ -3,7 +3,14 @@ title: Prompt Language
 description: Linguistic patterns and semantic choices that improve agent communication
 created: 2025-12-26
 last_updated: 2025-12-26
-tags: [prompt-engineering, language-patterns, agent-communication, verb-semantics, constraint-framing]
+tags:
+  [
+    prompt-engineering,
+    language-patterns,
+    agent-communication,
+    verb-semantics,
+    constraint-framing,
+  ]
 part: 1
 part_title: Foundations
 chapter: 2
@@ -26,6 +33,7 @@ The verbs chosen for instructions shape model behavior more than most other ling
 Recent research reveals that verb mood (declarative vs. imperative) affects reasoning quality differently based on task type.
 
 **Declarative statements** describe facts or states without issuing direct commands:
+
 ```
 The output follows JSON schema format.
 Analysis identifies security vulnerabilities.
@@ -33,6 +41,7 @@ Test coverage reaches 80% minimum.
 ```
 
 **Imperative commands** issue direct instructions:
+
 ```
 Format output as JSON schema.
 Identify security vulnerabilities.
@@ -49,12 +58,12 @@ The researchers hypothesize this occurs because declarative framing encourages m
 
 Verb mood effectiveness varies by task category:
 
-| Task Type | Preferred Mood | Example | Rationale |
-|-----------|---------------|---------|-----------|
-| Reasoning | Declarative | "The solution minimizes edge cases" | Encourages state-based thinking |
-| Sequential | Imperative | "Parse input, validate schema, return result" | Clear procedural steps |
-| Tool-Calling | Imperative | "Search codebase for references" | Direct action invocation |
-| Creative | Declarative | "The narrative maintains consistent tone" | Establishes constraints without rigidity |
+| Task Type    | Preferred Mood | Example                                       | Rationale                                |
+| ------------ | -------------- | --------------------------------------------- | ---------------------------------------- |
+| Reasoning    | Declarative    | "The solution minimizes edge cases"           | Encourages state-based thinking          |
+| Sequential   | Imperative     | "Parse input, validate schema, return result" | Clear procedural steps                   |
+| Tool-Calling | Imperative     | "Search codebase for references"              | Direct action invocation                 |
+| Creative     | Declarative    | "The narrative maintains consistent tone"     | Establishes constraints without rigidity |
 
 **Implementation Guidance:**
 
@@ -62,12 +71,15 @@ For multi-phase workflows, use declarative framing for high-level goals and impe
 
 ```markdown
 ## Goal (Declarative)
+
 The implementation meets these criteria:
+
 - Code follows existing patterns
 - Changes preserve backward compatibility
 - Test coverage validates edge cases
 
 ## Workflow (Imperative)
+
 1. Read existing implementation files
 2. Identify integration points
 3. Implement changes following detected patterns
@@ -80,9 +92,11 @@ Complex tasks benefit from verb hierarchies that structure reasoning:
 
 ```markdown
 # Shallow (single-level)
+
 Analyze the code for bugs.
 
 # Hierarchical (multi-level)
+
 1. Analyze the codebase structure
 2. Extract component dependencies
 3. Identify potential failure points
@@ -97,9 +111,11 @@ Frontier models parse bare imperatives more reliably than hedged phrasing:
 
 ```markdown
 # Effective (bare imperative)
+
 Validate input before processing.
 
 # Ineffective (hedged request)
+
 Could you maybe try to validate the input if possible?
 ```
 
@@ -121,14 +137,17 @@ Modern frontier models (GPT-4.1, Claude 3.5+, Gemini 2.0) follow instructions wi
 
 ### Literal Interpretation Behavior
 
-*[2025-12-26]*: Earlier models (GPT-3.5, Claude 2.x) often inferred implicit requirements. Frontier models require explicit specification. Example:
+_[2025-12-26]_: Earlier models (GPT-3.5, Claude 2.x) often inferred implicit requirements. Frontier models require explicit specification. Example:
 
 ```markdown
 # Implicit (worked on older models)
+
 Create a React component for user profiles.
 
 # Explicit (required for frontier models)
+
 Create a React component for user profiles that:
+
 - Accepts userId prop
 - Fetches user data from /api/users/:id
 - Displays loading state during fetch
@@ -143,24 +162,26 @@ The older implicit prompt relied on the model filling gaps with "reasonable defa
 
 Research by arxiv:2512.02246 examined specificity impact across task categories:
 
-| Task Category | Specificity Gain | Details |
-|---------------|------------------|---------|
-| Mathematical | +0.47 accuracy | Step-by-step constraints, intermediate validation |
-| Decision-Making | +0.02 accuracy | Minimal benefit from added detail |
-| Code Generation | +0.31 accuracy | API signatures, error handling, test requirements |
-| Creative Writing | -0.12 quality | Over-specification reduces natural flow |
+| Task Category    | Specificity Gain | Details                                           |
+| ---------------- | ---------------- | ------------------------------------------------- |
+| Mathematical     | +0.47 accuracy   | Step-by-step constraints, intermediate validation |
+| Decision-Making  | +0.02 accuracy   | Minimal benefit from added detail                 |
+| Code Generation  | +0.31 accuracy   | API signatures, error handling, test requirements |
+| Creative Writing | -0.12 quality    | Over-specification reduces natural flow           |
 
 **Goldilocks Principle:** Specificity helps when tasks have objective correctness criteria. Over-specification harms tasks requiring creative flexibility.
 
 **Calibration Strategy:**
 
 Be specific on:
+
 - Required output format (schema, structure, delimiters)
 - Constraints and boundaries (what NOT to do)
 - Success criteria (how to know when done)
 - External dependencies (APIs, file paths, data sources)
 
 Remain flexible on:
+
 - Implementation approach (unless patterns must be followed)
 - Intermediate reasoning steps (unless chain-of-thought required)
 - Stylistic choices within defined boundaries
@@ -168,6 +189,7 @@ Remain flexible on:
 ### Optimal Prompt Length
 
 Google research on prompt optimization found **~21 words (with context)** as optimal length for many tasks. This metric combines:
+
 - Instruction clarity (enough words to be unambiguous)
 - Cognitive load (few enough to parse easily)
 - Context efficiency (leaves room for examples/data)
@@ -175,6 +197,7 @@ Google research on prompt optimization found **~21 words (with context)** as opt
 This isn't a hard rule—complex tasks require longer prompts. The finding suggests that concise, precise language outperforms verbose explanations.
 
 **Anti-Pattern:**
+
 ```markdown
 So basically what I'm trying to say is that the output should be formatted
 in a way that makes it easy to parse, like maybe JSON or something similar,
@@ -183,6 +206,7 @@ helpful if you could make sure it's valid JSON...
 ```
 
 **Better:**
+
 ```markdown
 Output valid JSON matching this schema: {schema}
 ```
@@ -207,12 +231,12 @@ The hypothesis: negative phrasing creates semantic association. The model must r
 
 Convert negative constraints to positive requirements:
 
-| Negative (Backfires) | Positive (Effective) |
-|---------------------|---------------------|
-| Never use global state | Use dependency injection for state management |
-| Don't expose internal errors | Return user-friendly error messages |
-| Never modify files without reading | Read file contents before editing |
-| Don't create new patterns | Follow existing patterns in the codebase |
+| Negative (Backfires)               | Positive (Effective)                          |
+| ---------------------------------- | --------------------------------------------- |
+| Never use global state             | Use dependency injection for state management |
+| Don't expose internal errors       | Return user-friendly error messages           |
+| Never modify files without reading | Read file contents before editing             |
+| Don't create new patterns          | Follow existing patterns in the codebase      |
 
 The positive version specifies desired behavior rather than forbidden behavior, avoiding semantic activation of the unwanted pattern.
 
@@ -224,21 +248,25 @@ For complex constraint systems, use explicit permission hierarchies:
 ## Constraint Hierarchy (highest priority first)
 
 **PRESERVE (always maintain):**
+
 - Existing API contracts
 - Backward compatibility
 - Test coverage levels
 
 **APPEND (add when needed):**
+
 - New functionality
 - Documentation updates
 - Additional test cases
 
 **REMOVE (only if explicit criteria met):**
+
 - Deprecated code (marked deprecated >6 months)
 - Unused imports (verified by static analysis)
 - Redundant comments (outdated or obvious)
 
 **NEVER:**
+
 - Breaking changes without migration path
 - Reducing test coverage
 - Exposing security vulnerabilities
@@ -251,22 +279,26 @@ This hierarchy provides clear decision rules. The agent knows what takes precede
 Constraint placement affects adherence:
 
 **Most effective ordering:**
+
 1. Critical/blocking constraints first
 2. Important guidelines second
 3. Stylistic preferences last
 
 ```markdown
 # CRITICAL CONSTRAINTS - NEVER VIOLATE
+
 - Zero data loss
 - Maintain authentication/authorization
 - Pass all existing tests
 
 # IMPORTANT GUIDELINES
+
 - Follow existing code patterns
 - Add tests for new functionality
 - Update documentation
 
 # STYLE PREFERENCES
+
 - Use TypeScript strict mode
 - Prefer functional patterns
 - Keep functions under 50 lines
@@ -283,9 +315,11 @@ The delimiters and formatting conventions used in prompts affect parsing and adh
 ### Model-Specific Delimiter Preferences
 
 **Claude (Anthropic):**
+
 - **Primary:** XML-style tags (`<instructions>`, `<context>`, `<examples>`)
 - **Rationale:** Claude's training included explicit XML parsing. Documentation confirms preferential handling.
 - **Example:**
+
 ```xml
 <task>
 Analyze the codebase for security issues.
@@ -302,28 +336,33 @@ JSON array of findings with: file, line, severity, description.
 ```
 
 **GPT (OpenAI):**
+
 - **Primary:** Markdown headers (`###`), horizontal rules (`---`), code fences (` ``` `)
 - **Rationale:** OpenAI's documentation emphasizes Markdown. Models parse it reliably.
 - **Example:**
-```markdown
+
+````markdown
 ### Task
+
 Analyze the codebase for security issues.
 
 ---
 
 ### Constraints
+
 - Focus on authentication and authorization
 - Report severity levels: critical, high, medium, low
 
 ---
 
 ### Output Format
+
 ```json
-[
-  {"file": "...", "line": 0, "severity": "...", "description": "..."}
-]
+[{ "file": "...", "line": 0, "severity": "...", "description": "..." }]
 ```
-```
+````
+
+````
 
 **Format variance impact:** Research shows **up to 40% accuracy variance** in smaller models based solely on delimiter choice. Frontier models are more robust but still show preference-based performance differences.
 
@@ -375,7 +414,7 @@ who has worked at major banks and led security teams...
 
 # Minimal (effective when role matters)
 Focus on security implications, particularly authentication and authorization.
-```
+````
 
 The minimal version specifies the domain focus without elaborate backstory. The model doesn't benefit from fictional experience claims.
 
@@ -393,19 +432,22 @@ Original research (Kojima et al., 2022) showed adding "Let's think step by step"
 
 ### Reasoning Model Era
 
-*[2025-12-26]*: Modern reasoning-optimized models (GPT-4.1, Claude 3.5+, o1) perform internal reasoning by default. Explicit CoT prompting shows diminishing returns.
+_[2025-12-26]_: Modern reasoning-optimized models (GPT-4.1, Claude 3.5+, o1) perform internal reasoning by default. Explicit CoT prompting shows diminishing returns.
 
 **Wharton 2025 Research (SSRN):**
+
 - CoT prompting increases response time **20-80%** on reasoning models
 - Accuracy gain is **minimal to zero** on tasks within model capability
 - Explicit CoT helps primarily when debugging reasoning failures
 
 **When CoT still helps:**
+
 - Debugging incorrect outputs (seeing reasoning reveals errors)
 - Tasks requiring specific reasoning format (e.g., legal analysis structure)
 - Explaining decisions to humans (transparency requirement)
 
 **When to skip CoT:**
+
 - Straightforward tasks within model capability
 - Time/cost-sensitive applications
 - Model already demonstrates correct reasoning
@@ -425,12 +467,14 @@ Different model families respond optimally to different linguistic conventions.
 ### Claude (Anthropic)
 
 **Effective patterns:**
+
 - XML tags for structure (`<instructions>`, `<examples>`, `<constraints>`)
 - Explicit scaffolding with clear section boundaries
 - Prefills for output format control (provide initial output text)
 - `<format>` tags wrapping expected output structure
 
 **Example prefill pattern:**
+
 ```markdown
 Generate a commit message for these changes.
 
@@ -445,12 +489,14 @@ The model completes starting from `<commit_message>`, naturally following the st
 ### GPT (OpenAI)
 
 **Effective patterns:**
+
 - Markdown structure with `###` headers
 - "Let's think step by step" for non-reasoning models
 - Sentence labels for hallucination reduction
 - System message for persistent behavioral rules
 
 **Sentence label pattern (reduces hallucination):**
+
 ```markdown
 For each claim:
 [CLAIM]: State the claim
@@ -465,12 +511,14 @@ The explicit labeling forces grounding of claims in evidence, reducing hallucina
 ### Gemini (Google)
 
 **Effective patterns:**
+
 - Precision over persuasion in phrasing
 - Temperature=1.0 required for Gemini 2.0 (lower values degrade quality)
 - Context-last ordering (key information at end of prompt)
 - Explicit output schema definition
 
 **Context-last example:**
+
 ```markdown
 Task: Summarize the key findings.
 
@@ -490,6 +538,7 @@ The final line provides focus after context, leveraging recency bias.
 ### Over-Hedging
 
 **Pattern:**
+
 ```
 Perhaps it might be worth considering possibly trying to maybe implement
 something that could potentially help with this issue if feasible.
@@ -498,6 +547,7 @@ something that could potentially help with this issue if feasible.
 **Problem:** Introduces ambiguity. Model uncertain whether action is required.
 
 **Better:**
+
 ```
 Implement error recovery for network timeout scenarios.
 ```
@@ -505,6 +555,7 @@ Implement error recovery for network timeout scenarios.
 ### Anthropomorphization
 
 **Pattern:**
+
 ```
 I know you're very smart and capable, so please use your intelligence to
 carefully analyze this complex problem and apply your expertise to find
@@ -514,6 +565,7 @@ the optimal solution.
 **Problem:** Zero informational content. Wastes tokens and context budget.
 
 **Better:**
+
 ```
 Analyze for security vulnerabilities. Prioritize authentication issues.
 ```
@@ -521,6 +573,7 @@ Analyze for security vulnerabilities. Prioritize authentication issues.
 ### Implicit Negation
 
 **Pattern:**
+
 ```
 Avoid global state, don't use mutable data structures, never expose internals.
 ```
@@ -528,6 +581,7 @@ Avoid global state, don't use mutable data structures, never expose internals.
 **Problem:** Pink elephant effect—semantic activation of forbidden patterns.
 
 **Better:**
+
 ```
 Use dependency injection, prefer immutable data structures, return sanitized errors.
 ```
@@ -535,6 +589,7 @@ Use dependency injection, prefer immutable data structures, return sanitized err
 ### Format Ambiguity
 
 **Pattern:**
+
 ```
 Return the results in a nice readable format.
 ```
@@ -542,6 +597,7 @@ Return the results in a nice readable format.
 **Problem:** "Nice" and "readable" undefined. Model guesses format.
 
 **Better:**
+
 ```
 Return JSON array of objects with fields: id, name, status, timestamp.
 ```
@@ -549,6 +605,7 @@ Return JSON array of objects with fields: id, name, status, timestamp.
 ### Role Overloading
 
 **Pattern:**
+
 ```
 You are a world-class expert in security, performance, architecture, UX,
 accessibility, and business strategy with decades of experience in...
@@ -557,6 +614,7 @@ accessibility, and business strategy with decades of experience in...
 **Problem:** Dilutes focus. Model has no clear priority hierarchy.
 
 **Better:**
+
 ```
 Prioritize security analysis. Note performance issues as secondary findings.
 ```

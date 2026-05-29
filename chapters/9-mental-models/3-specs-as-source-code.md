@@ -22,11 +22,13 @@ This mental model, articulated by Sean Grove, reframes how we think about specif
 ## The Core Shift
 
 In traditional programming:
+
 - Source code is the truth
 - Documentation is secondary
 - Code is machine-readable and executable
 
 In agentic programming:
+
 - **Specs are the truth**
 - Generated code is secondary (can be regenerated)
 - **Specs are machine-readable and executable** (by agents)
@@ -105,13 +107,15 @@ Code review becomes spec review:
 # PR: Add user authentication
 
 Changes to specs/:
-  + authentication-flow.md
-  + security-requirements.md
-  + error-handling.md
+
+- authentication-flow.md
+- security-requirements.md
+- error-handling.md
 
 Generated implementation in src/:
-  + auth.py (generated from specs)
-  + tests.py (generated from specs)
+
+- auth.py (generated from specs)
+- tests.py (generated from specs)
 ```
 
 The reviewer focuses on whether the spec is correct, complete, and testable. If the spec is right, the code can always be regenerated.
@@ -144,13 +148,16 @@ The plan you wrote before implementing a feature isn't scaffolding to discard. I
 # feature-plan.md
 
 ## Approach
+
 Use Redis for session storage with 24-hour TTL.
 
 ## Dependencies
+
 - Redis client library
 - Session serialization logic
 
 ## Implementation Steps
+
 1. Add Redis connection pool
 2. Implement session CRUD operations
 3. Add TTL configuration
@@ -158,7 +165,7 @@ Use Redis for session storage with 24-hour TTL.
 
 An agent can execute this plan directly. It's not pseudo-code—it's the program.
 
-*[2026-02-06]*: Production example from GSD (Get Shit Done) project—PLAN.md files are not transformed into prompts, they ARE the prompts. The executor reads them verbatim. This imposes strict requirements: plans must be unambiguous, action-oriented, and include verification criteria. GSD uses semantic XML within markdown (`<action>`, `<verify>`, `<done>`) for Claude comprehension. Real-world validation of treating plans as executable specifications.
+_[2026-02-06]_: Production example from GSD (Get Shit Done) project—PLAN.md files are not transformed into prompts, they ARE the prompts. The executor reads them verbatim. This imposes strict requirements: plans must be unambiguous, action-oriented, and include verification criteria. GSD uses semantic XML within markdown (`<action>`, `<verify>`, `<done>`) for Claude comprehension. Real-world validation of treating plans as executable specifications.
 
 ### Documentation IS Executable
 
@@ -168,9 +175,11 @@ When documentation is machine-readable and structured correctly, agents can use 
 # api-spec.md
 
 ## Endpoint: POST /users
+
 **Auth required**: Yes
 **Rate limit**: 100/hour
 **Parameters**:
+
 - email: string, required, must be valid email
 - name: string, required, 1-100 chars
 ```
@@ -205,7 +214,7 @@ The spec is the source. Everything else derives from it.
 
 ## Living Artifacts: Documentation as Primary, Code as Derivative
 
-*[2026-02-06]*: BMAD-METHOD demonstrates an extreme application of specs-as-source-code philosophy: **code is merely a downstream derivative of specifications**. In traditional development, source code is the truth and documentation is secondary (often outdated). BMAD inverts this completely.
+_[2026-02-06]_: BMAD-METHOD demonstrates an extreme application of specs-as-source-code philosophy: **code is merely a downstream derivative of specifications**. In traditional development, source code is the truth and documentation is secondary (often outdated). BMAD inverts this completely.
 
 ### The Inversion
 
@@ -223,22 +232,26 @@ Documentation                     Source Code
 BMAD structures development as document-producing phases:
 
 **1. Analysis Phase (optional)**
+
 - Outputs: Product Brief, Research Summary
 - Purpose: Problem definition before solution
 
 **2. Planning Phase**
+
 - Outputs: PRD (Product Requirements Document), UX Design
 - Purpose: Requirements + user flows
 
 **3. Solutioning Phase**
+
 - Outputs: Architecture Document, Epics/Stories, Readiness Assessment
 - Purpose: Technical design + implementation plan
 
 **4. Implementation Phase**
+
 - Outputs: Working Code, Code Reviews, Test Automation
 - Purpose: Execute designs from phases 1-3
 
-**Key insight:** Phases 1-3 produce *documents*. Phase 4 produces code *from* those documents. Each document becomes context for the next phase and audit trail for future changes.
+**Key insight:** Phases 1-3 produce _documents_. Phase 4 produces code _from_ those documents. Each document becomes context for the next phase and audit trail for future changes.
 
 ### Compliance Value
 
@@ -254,6 +267,7 @@ For organizations under regulatory constraints (SOC 2, HIPAA, financial services
 Traditional approach: Archaeologically excavate code to understand intent, make changes, hope nothing breaks.
 
 Living artifacts approach:
+
 1. Read original PRD/Architecture documents (context for why it works this way)
 2. Update documents with new requirements or constraints
 3. Regenerate code from updated specifications
@@ -267,6 +281,7 @@ BMAD implements quality gates between phases—an orchestrator critically examin
 - Ambiguous user story → unclear implementation → bugs in production
 
 **Quality gate checks:**
+
 - Are completion criteria met?
 - Are ambiguities resolved?
 - Are dependencies documented?
@@ -277,16 +292,20 @@ BMAD implements quality gates between phases—an orchestrator critically examin
 Not every project needs full four-phase documentation. BMAD adjusts:
 
 **Quick Flow (3-step rapid path):**
+
 ```
 /quick-spec → /dev-story → /code-review
 ```
+
 Skips Product Brief, PRD, Architecture for bug fixes and small features.
 
 **Full Planning Path (6-phase comprehensive):**
+
 ```
 /product-brief → /create-prd → /create-architecture →
 /create-epics-and-stories → /sprint-planning → [Dev Story Cycle]
 ```
+
 Required for new products, multi-team efforts, compliance needs.
 
 **Framework intelligence:** System recommends path based on project type. Medical diagnostic system → Full Planning. Bug fix → Quick Flow.
@@ -294,6 +313,7 @@ Required for new products, multi-team efforts, compliance needs.
 ### Production Evidence
 
 BMAD-METHOD (MIT-licensed, 34.5k GitHub stars, 19 releases) demonstrates this approach at scale:
+
 - 68 workflows spanning full SDLC
 - 26 specialized agents executing from documents
 - Modular artifact system enabling reuse across projects
@@ -301,13 +321,13 @@ BMAD-METHOD (MIT-licensed, 34.5k GitHub stars, 19 releases) demonstrates this ap
 
 ### Living Artifacts vs. Traditional Specs
 
-| Traditional Specs | Living Artifacts |
-|------------------|------------------|
-| Written after code (documentation) | Written before code (specification) |
-| Code is source of truth | Documents are source of truth |
-| Specs drift from reality | Code regenerated from specs |
-| "Comments lie, code doesn't" | "Code is derivative, specs are canonical" |
-| Manual synchronization required | Specs → Code generation enforces sync |
+| Traditional Specs                  | Living Artifacts                          |
+| ---------------------------------- | ----------------------------------------- |
+| Written after code (documentation) | Written before code (specification)       |
+| Code is source of truth            | Documents are source of truth             |
+| Specs drift from reality           | Code regenerated from specs               |
+| "Comments lie, code doesn't"       | "Code is derivative, specs are canonical" |
+| Manual synchronization required    | Specs → Code generation enforces sync     |
 
 ### Connections to Other Mental Models
 
@@ -320,12 +340,14 @@ BMAD-METHOD (MIT-licensed, 34.5k GitHub stars, 19 releases) demonstrates this ap
 ### When to Use Living Artifacts
 
 **Good fit:**
+
 - Regulated industries requiring audit trails
 - Long-lived systems where "why" matters as much as "what"
 - Multi-team projects needing shared understanding
 - Complex domains where upfront design prevents costly rework
 
 **Overkill for:**
+
 - Throwaway prototypes
 - One-person hobby projects
 - Well-understood, stable problem spaces
@@ -334,12 +356,14 @@ BMAD-METHOD (MIT-licensed, 34.5k GitHub stars, 19 releases) demonstrates this ap
 ### Implementation Considerations
 
 **Tooling requirements:**
+
 - Agents capable of reading structured documents (PRDs, architecture specs)
 - Quality gates between phases (validation before progression)
 - Version control for documents (Git for markdown/YAML)
 - Traceability system (linking code → stories → architecture → PRD)
 
 **Process requirements:**
+
 - Team buy-in on documents-first philosophy
 - Discipline to update documents before code
 - Quality standards for artifact completeness

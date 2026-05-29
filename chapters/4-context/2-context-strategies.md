@@ -23,7 +23,7 @@ Context availability serves as a rough proxy for remaining model capability. A m
 
 ### Current Practice: Boot Fresh Agents
 
-*[2025-12-10]*: Context compaction via secondary agents is not a viable strategy in current implementations (December 2025). When agents near context limits or output quality degrades, boot a fresh instance rather than attempting salvage through compression.
+_[2025-12-10]_: Context compaction via secondary agents is not a viable strategy in current implementations (December 2025). When agents near context limits or output quality degrades, boot a fresh instance rather than attempting salvage through compression.
 
 Tooling support improves this workflow. Claude Code's hook system can automatically log agent actions—reads, writes, tool calls—enabling rapid reconstruction of relevant context for successor agents. This makes "boot fresh" practical even for complex workflows.
 
@@ -41,7 +41,7 @@ The "one agent, one task" principle applies: if an agent can't complete a task w
 
 ### Architecture-Centric Approaches
 
-*[2026-03-09]*: Deterministic context management architectures (LCM, Sapling) formalize compaction into engineered systems rather than emergency measures. See [Context Management Architectures](5-context-management-architectures.md) for a comparative survey of lossless preservation, continuous curation, and the passive baseline.
+_[2026-03-09]_: Deterministic context management architectures (LCM, Sapling) formalize compaction into engineered systems rather than emergency measures. See [Context Management Architectures](5-context-management-architectures.md) for a comparative survey of lossless preservation, continuous curation, and the passive baseline.
 
 ---
 
@@ -50,6 +50,7 @@ The "one agent, one task" principle applies: if an agent can't complete a task w
 ### Injection for Priming
 
 Context injection typically occurs at session start to prime agent behavior. Common injection targets include:
+
 - Base configuration (CLAUDE.md, project structure)
 - Recent activity context (git history, previous session summaries)
 - Domain knowledge (relevant documentation, coding standards)
@@ -64,7 +65,7 @@ Codebase scale determines the injection-retrieval balance. Small codebases toler
 
 ### Open Questions
 
-*Areas requiring deeper exploration:*
+_Areas requiring deeper exploration:_
 
 - What constitutes optimal "priming" payload for typical coding sessions? CLAUDE.md alone? Recent git history? Documentation excerpts?
 - When retrieval produces context bloat (irrelevant file reads), can mid-session intervention recover quality, or does it require agent restart?
@@ -75,6 +76,7 @@ Codebase scale determines the injection-retrieval balance. Small codebases toler
 ## Structured Context Patterns
 
 Structured context (markdown, JSON, XML) consistently outperforms unstructured prose. Structure provides:
+
 - **Focus mechanisms** — Headers, sections, and delimiters guide attention
 - **Parsing support** — Both models and humans parse structured content more reliably
 - **Prompt engineering aid** — Templates and schemas assist both human developers and meta-prompting agents
@@ -87,9 +89,10 @@ Markdown offers the best balance: human-readable, model-friendly, and widely sup
 
 ### Observable Symptoms
 
-*Areas requiring characterization:*
+_Areas requiring characterization:_
 
 Context rot manifests as quality degradation distinct from simple model errors. Symptoms likely include:
+
 - Inconsistent outputs despite identical prompts
 - Drift from original task specifications
 - Increasing reliance on context window periphery
@@ -105,13 +108,13 @@ Context rot differs from standard model errors or confusion. Model errors stem f
 
 ### Context Window as Finite Resource
 
-*[2026-02-06]*: GSD project (12K-star open source tool) treats context window as a non-renewable resource with explicit quality relationship: **Quality ∝ 1/(% context used)**. This inverse relationship suggests quality degrades proportionally to context fill. Their mitigation: each plan execution gets fresh 200K context window, sized to remain <50% utilized. Main context never accumulates degradation. Context rot emerges from resource depletion—once context fills, quality cannot be recovered through compression, only through fresh allocation. This aligns with the "boot fresh agents" guidance above but adds quantified threshold: target <50% utilization for sustained quality, not just "avoid 95%."
+_[2026-02-06]_: GSD project (12K-star open source tool) treats context window as a non-renewable resource with explicit quality relationship: **Quality ∝ 1/(% context used)**. This inverse relationship suggests quality degrades proportionally to context fill. Their mitigation: each plan execution gets fresh 200K context window, sized to remain <50% utilized. Main context never accumulates degradation. Context rot emerges from resource depletion—once context fills, quality cannot be recovered through compression, only through fresh allocation. This aligns with the "boot fresh agents" guidance above but adds quantified threshold: target <50% utilization for sustained quality, not just "avoid 95%."
 
 ---
 
 ## Context Window Percentage Monitoring
 
-*[2026-01-17]*: Claude Code 2.1.9 introduced real-time context utilization percentage display, transforming context management from guesswork to data-driven decision-making.
+_[2026-01-17]_: Claude Code 2.1.9 introduced real-time context utilization percentage display, transforming context management from guesswork to data-driven decision-making.
 
 ### Display Format
 
@@ -125,13 +128,13 @@ This updates in real-time as conversation progresses, accounting for both input 
 
 ### Operational Thresholds
 
-| Range | Signal | Recommended Action |
-|-------|--------|-------------------|
-| 0-30% | Healthy | Continue normally |
-| 30-60% | Monitor | Good checkpoint for intentional compaction |
-| 60-80% | Caution | Consider fresh session if major phase ends |
-| 80-95% | Warning | Begin graceful task wrap-up |
-| 95%+ | Critical | Boot new agent immediately |
+| Range  | Signal   | Recommended Action                         |
+| ------ | -------- | ------------------------------------------ |
+| 0-30%  | Healthy  | Continue normally                          |
+| 30-60% | Monitor  | Good checkpoint for intentional compaction |
+| 60-80% | Caution  | Consider fresh session if major phase ends |
+| 80-95% | Warning  | Begin graceful task wrap-up                |
+| 95%+   | Critical | Boot new agent immediately                 |
 
 These thresholds complement the frequent intentional compaction strategy described below. The 30-60% "Monitor" range aligns directly with the 40-60% compaction trigger.
 
@@ -162,6 +165,7 @@ In orchestrated workflows, track per-agent percentages to enable proactive sched
 ```
 
 This enables capacity-aware task routing:
+
 - Route new work to agents with headroom
 - Reboot agents approaching limits before task assignment
 - Predict whether an agent can complete a task within remaining capacity
@@ -184,6 +188,7 @@ This provides operational awareness without manual monitoring, surfacing warning
 The percentage display transforms context management from reactive ("the agent seems confused") to proactive ("we're at 65%, compact before the next task").
 
 Combined with the compaction strategies below, percentage monitoring enables:
+
 - **Evidence-based compaction timing** — Compact at 50% rather than guessing
 - **Predictable session planning** — Know when you'll need a fresh agent
 - **Quality maintenance** — Intervene before degradation, not after
@@ -192,11 +197,12 @@ Combined with the compaction strategies below, percentage monitoring enables:
 
 ## Frequent Intentional Compaction
 
-*[2025-12-10]*: Most teams compact context reactively—when the agent hits 95% capacity and auto-summarization kicks in as an emergency measure. By then, quality has already degraded. Frequent intentional compaction flips this: compact proactively at 40-60% utilization to maintain quality, not salvage it.
+_[2025-12-10]_: Most teams compact context reactively—when the agent hits 95% capacity and auto-summarization kicks in as an emergency measure. By then, quality has already degraded. Frequent intentional compaction flips this: compact proactively at 40-60% utilization to maintain quality, not salvage it.
 
 **The Pattern**: Instead of waiting for context limits to force compression, compact deliberately and frequently throughout a session. Target 40-60% context utilization as your compaction trigger, not 90%+.
 
 **Optimization Priority Order**:
+
 1. **Correctness** — Preserve factual accuracy above all else
 2. **Completeness** — Ensure all critical information survives compaction
 3. **Signal-to-noise** — Remove redundancy, keep high-value context
@@ -210,28 +216,34 @@ One practical pattern is compacting status updates back into plan documents:
 
 ```markdown
 # Before (context bloat)
+
 ## Plan
+
 - Implement user authentication
 - Add database schema
 - Create API endpoints
 
 ## Status Updates
+
 - [14:23] Started auth implementation
 - [14:45] Auth working, moving to database
 - [15:12] Database schema complete
 - [15:30] Schema had bug, fixed
 - [15:45] API endpoints half done
-...
+  ...
 ```
 
 ```markdown
 # After (intentional compaction)
+
 ## Plan
+
 - ✓ Implement user authentication — Complete, no issues
 - ✓ Add database schema — Complete after fixing validation bug
 - ⧗ Create API endpoints — In progress (3/5 complete)
 
 ## Current Work
+
 Working on remaining API endpoints (POST /users, DELETE /users)
 ```
 
@@ -251,11 +263,11 @@ Requires active monitoring of context utilization and deliberate intervention. Y
 
 ### Contrast with Emergency Compaction
 
-| Approach | Trigger Point | Quality Impact | Control |
-|----------|---------------|----------------|---------|
-| **Emergency Auto-Compact** | 95%+ capacity | Degrades (forced summarization) | Low (automatic) |
-| **Frequent Intentional** | 40-60% capacity | Maintains (controlled compression) | High (deliberate) |
-| **No Compaction** | Never (boot fresh agents) | High (fresh context) | Highest (manual restart) |
+| Approach                   | Trigger Point             | Quality Impact                     | Control                  |
+| -------------------------- | ------------------------- | ---------------------------------- | ------------------------ |
+| **Emergency Auto-Compact** | 95%+ capacity             | Degrades (forced summarization)    | Low (automatic)          |
+| **Frequent Intentional**   | 40-60% capacity           | Maintains (controlled compression) | High (deliberate)        |
+| **No Compaction**          | Never (boot fresh agents) | High (fresh context)               | Highest (manual restart) |
 
 Our default advice remains "boot a new agent" for most cases. Frequent intentional compaction is for scenarios where agent continuity matters—long-running sessions, accumulated state, or workflows where restarting is expensive.
 
@@ -277,11 +289,12 @@ Our default advice remains "boot a new agent" for most cases. Frequent intention
 
 ## Federated Knowledge Architecture
 
-*[2026-02-06]*: Most context strategies assume a single repository or bounded knowledge source. Federated knowledge extends context management to distributed systems—multiple repositories, microservices, external APIs, and community knowledge sources.
+_[2026-02-06]_: Most context strategies assume a single repository or bounded knowledge source. Federated knowledge extends context management to distributed systems—multiple repositories, microservices, external APIs, and community knowledge sources.
 
 ### The Distributed Context Problem
 
 **Scenario:** Agent needs to understand authentication flow that spans:
+
 - `api-gateway` repo (entry point)
 - `auth-service` repo (token validation)
 - `user-database` repo (schema definitions)
@@ -289,6 +302,7 @@ Our default advice remains "boot a new agent" for most cases. Frequent intention
 - Third-party OAuth docs (protocol specs)
 
 **Traditional approaches fail:**
+
 - Loading all repos into context → token budget exhausted
 - Loading one repo → agent misses cross-repo dependencies
 - Manual context assembly → error-prone, doesn't scale
@@ -321,15 +335,18 @@ Central `context.md` file maps sources → cached locations:
 # Federated Knowledge Sources
 
 ## Internal Repositories
+
 - **api-gateway**: `.bmad-fks-cache/api-gateway/` - Entry point, routing logic
 - **auth-service**: `.bmad-fks-cache/auth-service/` - Token validation, session management
 - **user-database**: `.bmad-fks-cache/user-database/` - User schema, migrations
 
 ## Design Documentation
+
 - **Authentication Flow**: `.bmad-fks-cache/design-docs/auth-flow.pdf` - 2024-11 design decision
 - **Session Strategy**: `.bmad-fks-cache/design-docs/session-strategy.pdf` - Redis vs JWT tradeoff
 
 ## External References
+
 - **OAuth 2.0 RFC**: `.bmad-fks-cache/oauth-spec/rfc-6749.pdf` - Protocol specification
 ```
 
@@ -338,12 +355,14 @@ The agent loads `context.md` first, gaining awareness of all available knowledge
 **3. Multi-Source Navigation**
 
 Agent workflow:
+
 1. Read `context.md` to understand available sources
 2. Identify relevant sources for current task
 3. Load specific files from relevant source caches
 4. Cross-reference between sources when dependencies exist
 
 Example for "implement JWT validation":
+
 - Load `auth-service/jwt.py` (current implementation)
 - Load `oauth-spec/rfc-6749.pdf` (protocol requirements)
 - Load `design-docs/auth-flow.pdf` (why JWT was chosen)
@@ -361,6 +380,7 @@ Priority hierarchy:
 ```
 
 Example conflict:
+
 - Local `auth.py` uses JWT expiry = 1 hour
 - OAuth RFC recommends 10 minutes
 - Company wiki says "use 1 hour for mobile clients"
@@ -372,16 +392,19 @@ Example conflict:
 **Good fit:**
 
 **Microservices architectures:**
+
 - Authentication service + API gateway + multiple backends
 - Event-driven systems with producers/consumers across repos
 - Shared libraries with separate documentation repos
 
 **Multi-repo organizations:**
+
 - Frontend + backend + infrastructure as separate repos
 - Platform teams maintaining shared components
 - Services with cross-cutting concerns (logging, monitoring, auth)
 
 **Hybrid internal/external knowledge:**
+
 - Internal implementation + external protocol specs (OAuth, SAML)
 - Company code + third-party API documentation
 - Custom solutions + industry standards
@@ -389,11 +412,13 @@ Example conflict:
 **Poor fit:**
 
 **Single repository projects:**
+
 - Monolithic applications
 - Small services without external dependencies
 - Projects with self-contained documentation
 
 **When context already fits:**
+
 - Simple codebases where everything loads in one context
 - Well-documented single repos
 - Projects without cross-repo dependencies
@@ -436,6 +461,7 @@ sources:
 ```
 
 **Workflow:**
+
 1. Developer runs `bmad-fks sync` - pulls all sources into cache
 2. Agent loads `context.md` - gains awareness of federated sources
 3. Task-specific context loading - agent reads relevant cached files
@@ -447,31 +473,36 @@ sources:
 
 ```markdown
 # Initial load (metadata only, ~50 tokens)
+
 Available sources: api-gateway, auth-service, user-database, design-docs, oauth-spec
 
 # On selection (full context, ~2000 tokens per source)
+
 Loading: auth-service
-  - jwt.py (implementation)
-  - tests/test_jwt.py (test coverage)
-  - README.md (setup instructions)
+
+- jwt.py (implementation)
+- tests/test_jwt.py (test coverage)
+- README.md (setup instructions)
 ```
 
 Don't load all sources upfront. Load source summaries, then expand relevant sources on-demand.
 
 ### Trade-Offs
 
-| Approach | Context Budget | Discoverability | Maintenance |
-|----------|---------------|-----------------|-------------|
-| **Single-repo** | Tight (everything visible) | Perfect (grep finds all) | Simple |
-| **Manual multi-repo** | Varies (per-task assembly) | Poor (what exists?) | High (manual sync) |
-| **Federated knowledge** | Moderate (metadata + selected) | Good (unified map) | Medium (automated sync) |
+| Approach                | Context Budget                 | Discoverability          | Maintenance             |
+| ----------------------- | ------------------------------ | ------------------------ | ----------------------- |
+| **Single-repo**         | Tight (everything visible)     | Perfect (grep finds all) | Simple                  |
+| **Manual multi-repo**   | Varies (per-task assembly)     | Poor (what exists?)      | High (manual sync)      |
+| **Federated knowledge** | Moderate (metadata + selected) | Good (unified map)       | Medium (automated sync) |
 
 **Federated knowledge wins when:**
+
 - Multiple repos are inevitable (microservices, org structure)
 - Context budget can't fit everything (large codebases)
 - Cross-repo understanding is critical (dependencies, shared concerns)
 
 **Avoid when:**
+
 - Single repo works fine
 - External dependencies are minimal
 - Context budget is unconstrained
@@ -479,15 +510,18 @@ Don't load all sources upfront. Load source summaries, then expand relevant sour
 ### Integration with Existing Context Strategies
 
 **Combines with frequent intentional compaction:**
+
 - Load federated sources → compact irrelevant sections → proceed with focused context
 - Compaction at 40-60% still applies, but now across multi-source context
 
 **Combines with context loading (vs accumulation):**
+
 - Federated sources are perfect for curated payload model
 - Orchestrator stages: "load auth-service for this subagent, api-gateway for that one"
 - Each agent receives precisely the sources it needs
 
 **Enables progressive disclosure:**
+
 - Tier 1: Source names and descriptions (metadata)
 - Tier 2: File listings within selected source
 - Tier 3: Specific file contents from selected source
@@ -516,6 +550,7 @@ Compare to loading all 5 sources: 5 × 2,000 = 10,000 tokens. Federated approach
 Task: "Update authentication to use refresh tokens"
 
 Agent reasoning:
+
 - auth-service: Implements token generation (needs update)
 - api-gateway: Validates tokens (may need refresh logic)
 - design-docs: Why current design doesn't use refresh tokens (context)
@@ -529,6 +564,7 @@ Agent loads all three sources, analyzes dependencies, proposes update spanning r
 Task: "Ensure OAuth implementation follows RFC 6749"
 
 Agent reasoning:
+
 - oauth-spec: Load RFC 6749 requirements
 - auth-service: Load current implementation
 - Compare: Identify gaps between spec and implementation
@@ -542,6 +578,7 @@ Agent cross-references external standard with internal code.
 Task: "Why do we use 1-hour JWT expiry instead of 10 minutes?"
 
 Agent reasoning:
+
 - design-docs: Load historical design decision (2024-11)
 - auth-service: Current implementation confirms 1-hour
 - oauth-spec: Protocol recommendation is 10 minutes

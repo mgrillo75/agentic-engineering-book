@@ -39,16 +39,16 @@ The gap between different labs' SOTA models (Gemini 3 Pro vs. Opus 4.6) has shru
 
 Extended thinking and step-by-step reasoning directly address multi-step planning requirements. Instruction-following is important but is more of a prompting concern than a model selection concern—it's better framed as "how can I set up instructions so that any SOTA LLM can follow them?"
 
-*[2026-04-11]*: **Evidence: The frontier gap is qualitative, not just quantitative.**
+_[2026-04-11]_: **Evidence: The frontier gap is qualitative, not just quantitative.**
 
 Claude Mythos Preview, assessed by Anthropic's Frontier Red Team (April 2026), demonstrated a step-change above Opus 4.6 on security-relevant agentic tasks:
 
-| Task | Mythos Preview | Opus 4.6 |
-|------|----------------|----------|
-| Firefox 147 exploit attempts (of 200) | 181 successful | 2 successful |
-| Tier-5 full control-flow hijacks (OSS-Fuzz) | 10 | 0 |
-| USAMO mathematical olympiad | 97.6% | 42.3% |
-| Autonomous zero-day discovery | CVE-2026-4747 (17-year-old FreeBSD NFS RCE) | — |
+| Task                                        | Mythos Preview                              | Opus 4.6     |
+| ------------------------------------------- | ------------------------------------------- | ------------ |
+| Firefox 147 exploit attempts (of 200)       | 181 successful                              | 2 successful |
+| Tier-5 full control-flow hijacks (OSS-Fuzz) | 10                                          | 0            |
+| USAMO mathematical olympiad                 | 97.6%                                       | 42.3%        |
+| Autonomous zero-day discovery               | CVE-2026-4747 (17-year-old FreeBSD NFS RCE) | —            |
 
 Expert validators confirmed results at 89% exact agreement (N=198). The gap is not incremental—it reflects qualitatively different capability on complex multi-step agentic tasks requiring reasoning across long dependency chains.
 
@@ -69,7 +69,7 @@ Reliability compounds across a system—small model failures cascade through mul
 
 ### Small Models Are RAG
 
-*[2025-12-09]*: Small models function as RAG systems when embedded in an orchestrator pattern.
+_[2025-12-09]_: Small models function as RAG systems when embedded in an orchestrator pattern.
 
 ```
 USER/trigger → Orchestrator → Delegation → retrieval-agent (Haiku, natural_language_query)
@@ -77,20 +77,21 @@ USER/trigger → Orchestrator → Delegation → retrieval-agent (Haiku, natural
 
 **Context Staging** for the retrieval agent:
 
-| Component | Token Type |
-|-----------|------------|
-| `base.cc/` | Agent tokens (Claude Code base config) |
-| `project_prompt` | Agent tokens |
-| `tool_info` | Tool input tokens |
-| `tool.call (query)` | Tool input tokens |
-| `tool.result` | prompt/sys.info |
-| `distillation synthesis` | prompt/sys.info |
+| Component                | Token Type                             |
+| ------------------------ | -------------------------------------- |
+| `base.cc/`               | Agent tokens (Claude Code base config) |
+| `project_prompt`         | Agent tokens                           |
+| `tool_info`              | Tool input tokens                      |
+| `tool.call (query)`      | Tool input tokens                      |
+| `tool.result`            | prompt/sys.info                        |
+| `distillation synthesis` | prompt/sys.info                        |
 
 The pattern: keep the small model's context minimal (base config, project prompt, tool info, query), let it retrieve and distill, then return results to the orchestrator for synthesis.
 
 This explains why Haiku excels at scouting—it's not doing heavy reasoning, it's doing targeted retrieval with lightweight synthesis. The orchestrator handles the complex reasoning; the small model handles the fast, focused lookup.
 
 **See Also**:
+
 - [Orchestrator Pattern: Capability Minimization](../7-patterns/3-orchestrator-pattern.md#capability-minimization) — How tool restriction complements model selection
 - [Context: Context Loading vs. Accumulation](../4-context/3-context-patterns.md#context-loading-vs-context-accumulation) — The "payload" mental model that makes small models work
 - [Context Loading Demo](../../appendices/examples/context-loading-demo/README.md) — Demonstrates Haiku as retrieval agent with minimal context payloads (~800 tokens)
@@ -99,7 +100,7 @@ This explains why Haiku excels at scouting—it's not doing heavy reasoning, it'
 
 ### When to Train Your Own
 
-*[2026-04-11]*: A third pathway now exists between using a commodity SLM and staying on frontier: training a small model overnight specifically for your production task via an autonomous agent loop. This is distinct from prompt-tuning or hyperparameter search — the agent modifies model architecture, optimizer configuration, attention patterns, and regularization, and rewrites the training loop itself.
+_[2026-04-11]_: A third pathway now exists between using a commodity SLM and staying on frontier: training a small model overnight specifically for your production task via an autonomous agent loop. This is distinct from prompt-tuning or hyperparameter search — the agent modifies model architecture, optimizer configuration, attention patterns, and regularization, and rewrites the training loop itself.
 
 **The mechanism: autoresearch**
 
@@ -107,11 +108,11 @@ Autoresearch (Karpathy, 2026-03-06) is an autonomous agent loop that receives a 
 
 Four constraints make unattended runs viable (independently identified by the HN community and embedded in Karpathy's implementation):
 
-| Constraint | What it limits |
-|------------|----------------|
-| One-file scope | Changes confined to a single training script |
-| One scalar metric | A single measurable validation signal drives all decisions |
-| Time-boxed experiments | Each trial capped at ~5 minutes, preventing runaway compute |
+| Constraint             | What it limits                                                   |
+| ---------------------- | ---------------------------------------------------------------- |
+| One-file scope         | Changes confined to a single training script                     |
+| One scalar metric      | A single measurable validation signal drives all decisions       |
+| Time-boxed experiments | Each trial capped at ~5 minutes, preventing runaway compute      |
 | Git checkpoint per run | Every accepted change is committed; rollback is always available |
 
 **Production evidence**
@@ -137,11 +138,13 @@ It does not apply to general-purpose workloads, tasks that change frequently, or
 **Note:** Autoresearch does not involve knowledge distillation or synthetic data generation. It is architecture and training-procedure search over real task data.
 
 **See Also:**
+
 - [Evaluation Inside Training Loops](5-model-evaluation.md#evaluation-inside-training-loops) — How validation loss functions as the fitness signal inside the autoresearch loop
 - [Autonomous Loops](../7-patterns/4-autonomous-loops.md) — Structural parallel: autoresearch is an autonomous loop applied to model improvement
 - [Cost and Latency](../8-practices/3-cost-and-latency.md) — Economics of SLM fine-tuning vs. frontier model API costs
 
 **Sources:**
+
 - Schmid, P. "How Autoresearch will change Small Language Models adoption." philschmid.de, ~2026-03-10. https://www.philschmid.de/autoresearch
 - Karpathy, A. karpathy/autoresearch. GitHub, 2026-03-06. https://github.com/karpathy/autoresearch
 - Karpathy, A. X post (700 experiments / 11% speedup). 2026-03-07. https://x.com/karpathy/status/2031135152349524125
@@ -202,13 +205,13 @@ Latency matters most in multi-agent architectures: a single orchestrator running
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-The key insight: only consider downgrading *after* you have a working solution with a frontier model. Optimizing cost before validating capability is premature optimization. If no existing smaller model meets requirements and the task is narrow with available data, a trained-to-task SLM via an overnight autoresearch loop is now a viable third option — not a research experiment.
+The key insight: only consider downgrading _after_ you have a working solution with a frontier model. Optimizing cost before validating capability is premature optimization. If no existing smaller model meets requirements and the task is narrow with available data, a trained-to-task SLM via an overnight autoresearch loop is now a viable third option — not a research experiment.
 
 ---
 
 ## Cross-Provider Selection
 
-*[2026-04-11]*: The frontier-first rule answers "which tier?" within a provider's model family. A second question arises when choosing where to build agentic systems: "which provider's frontier?"
+_[2026-04-11]_: The frontier-first rule answers "which tier?" within a provider's model family. A second question arises when choosing where to build agentic systems: "which provider's frontier?"
 
 Mollick (2026) identifies three distinct dimensions of this choice:
 
@@ -220,11 +223,11 @@ Mollick (2026) identifies three distinct dimensions of this choice:
 
 ### Harness Availability by Provider
 
-| Provider | Frontier Model | Agentic Harness | Harness Maturity |
-|----------|----------------|-----------------|------------------|
-| Anthropic | Opus 4.6 | Claude Code | High — production-grade, coding and file ops |
-| OpenAI | GPT-5.2 | OpenAI Codex | High — leading on terminal/agentic benchmarks |
-| Google | Gemini 3 Pro | No direct equivalent | Limited — Gemini website is chat-optimized |
+| Provider  | Frontier Model | Agentic Harness      | Harness Maturity                              |
+| --------- | -------------- | -------------------- | --------------------------------------------- |
+| Anthropic | Opus 4.6       | Claude Code          | High — production-grade, coding and file ops  |
+| OpenAI    | GPT-5.2        | OpenAI Codex         | High — leading on terminal/agentic benchmarks |
+| Google    | Gemini 3 Pro   | No direct equivalent | Limited — Gemini website is chat-optimized    |
 
 Google's Gemini 3 Deep Think is capable as a model; the harness gap is the constraint. For practitioners building autonomous agents, harness availability should precede model capability comparison.
 
@@ -232,12 +235,12 @@ Google's Gemini 3 Deep Think is capable as a model; the harness gap is the const
 
 When cross-provider choice is on the table, task type drives the selection:
 
-| Task Type | Recommended Provider | Rationale |
-|-----------|---------------------|-----------|
-| Coding, file manipulation, agentic loops | Anthropic (Claude Code) or OpenAI (Codex) | Purpose-built harnesses; Claude: systematic caution, requests clarification before assuming; GPT-5.3-Codex: leads Terminal-Bench 2.0 at 77.3% |
-| Statistical analysis, quantitative reasoning | OpenAI (GPT-5.2 Pro) | Described as superior for "complex statistical and analytical work" (Mollick, 2026) |
-| Google Workspace, Docs, Sheets integration | Google (Gemini) | Near-flawless within Google ecosystem; agency currently restricted to that ecosystem |
-| Research synthesis over large document sets | Google (NotebookLM harness) | Specialist harness for document synthesis; no Anthropic or OpenAI equivalent |
+| Task Type                                    | Recommended Provider                      | Rationale                                                                                                                                     |
+| -------------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Coding, file manipulation, agentic loops     | Anthropic (Claude Code) or OpenAI (Codex) | Purpose-built harnesses; Claude: systematic caution, requests clarification before assuming; GPT-5.3-Codex: leads Terminal-Bench 2.0 at 77.3% |
+| Statistical analysis, quantitative reasoning | OpenAI (GPT-5.2 Pro)                      | Described as superior for "complex statistical and analytical work" (Mollick, 2026)                                                           |
+| Google Workspace, Docs, Sheets integration   | Google (Gemini)                           | Near-flawless within Google ecosystem; agency currently restricted to that ecosystem                                                          |
+| Research synthesis over large document sets  | Google (NotebookLM harness)               | Specialist harness for document synthesis; no Anthropic or OpenAI equivalent                                                                  |
 
 These heuristics reflect early 2026 harness availability and may shift as providers release new execution environments.
 
@@ -252,6 +255,7 @@ AgentArch (arXiv:2509.10769) evaluated model-architecture pairings across enterp
 **Implication:** Reasoning models (o-series, extended thinking) are not universally superior to standard frontier models in agentic systems — they are more sensitive to getting the harness configuration right. Standard frontier models offer more predictable baselines across configurations.
 
 **See Also:**
+
 - [Agent Frameworks](../10-practitioner-toolkit/4-agent-frameworks.md) — Framework comparison and harness capability tiers
 - [Model Evaluation](5-model-evaluation.md) — Cognitive profiles across providers
 - [Multi-Model Architectures](4-multi-model-architectures.md) — Cross-provider orchestration patterns
@@ -260,19 +264,20 @@ AgentArch (arXiv:2509.10769) evaluated model-architecture pairings across enterp
 
 ## Multi-Agent Model Selection
 
-*[2026-01-30]*: Orchestration research reveals distinct model selection strategies for multi-agent systems. The frontier-first rule still applies, but spawn strategy changes based on model economics.
+_[2026-01-30]_: Orchestration research reveals distinct model selection strategies for multi-agent systems. The frontier-first rule still applies, but spawn strategy changes based on model economics.
 
 ### Three-Tier Spawn Strategy
 
-| Model | Cost | Speed | Primary Use Cases | Spawn Count |
-|-------|------|-------|-------------------|-------------|
-| **Haiku** | Lowest | Fastest | Information gathering, pattern finding, file discovery, grep-style searches | Many (5-10 parallel) |
-| **Sonnet** | Medium | Medium | Well-defined implementation, established patterns, integration work, standard refactoring | Balanced (2-4 parallel) |
-| **Opus** | Highest | Slowest | Architectural decisions, ambiguous problems, creative solutions, security review | Selective (1-2 serial) |
+| Model      | Cost    | Speed   | Primary Use Cases                                                                         | Spawn Count             |
+| ---------- | ------- | ------- | ----------------------------------------------------------------------------------------- | ----------------------- |
+| **Haiku**  | Lowest  | Fastest | Information gathering, pattern finding, file discovery, grep-style searches               | Many (5-10 parallel)    |
+| **Sonnet** | Medium  | Medium  | Well-defined implementation, established patterns, integration work, standard refactoring | Balanced (2-4 parallel) |
+| **Opus**   | Highest | Slowest | Architectural decisions, ambiguous problems, creative solutions, security review          | Selective (1-2 serial)  |
 
 ### Decision Matrix
 
 **Use Haiku when:**
+
 - Finding files or code patterns
 - Fetching documentation quickly
 - Simple data extraction tasks
@@ -281,6 +286,7 @@ AgentArch (arXiv:2509.10769) evaluated model-architecture pairings across enterp
 - Task has clear retrieval pattern
 
 **Use Sonnet when:**
+
 - Implementing features with clear specifications
 - Refactoring with established patterns
 - Writing tests from requirements
@@ -289,6 +295,7 @@ AgentArch (arXiv:2509.10769) evaluated model-architecture pairings across enterp
 - Building on prior design decisions
 
 **Use Opus when:**
+
 - Designing system architecture
 - Solving ambiguous problems without clear solution path
 - Making security-critical decisions
@@ -308,6 +315,7 @@ gathering         decisions        execution       verification
 ```
 
 **Rationale:**
+
 - Research phase processes large volumes (many files, broad search) — cheap models work
 - Design decisions require reasoning about trade-offs — expensive models excel
 - Implementation follows established patterns — mid-tier models sufficient
@@ -318,18 +326,21 @@ gathering         decisions        execution       verification
 **The spawn count insight:** Cost per agent decreases with parallelism for cheaper models.
 
 **Example calculation:**
+
 - 10 Haiku agents (parallel) complete in ~30 seconds total
 - 1 Opus agent completes in ~30 seconds
 - Cost: 10 × $0.01 = $0.10 (Haiku) vs. 1 × $1.00 = $1.00 (Opus)
 - Haiku delivers 10× breadth of exploration for 1/10 cost
 
 **When to spawn many:**
+
 - Independent search/analysis tasks
 - Exploration requires coverage, not depth
 - Fast feedback more valuable than perfect reasoning
 - Failure of one agent doesn't block others
 
 **When to spawn few:**
+
 - Tasks require deep reasoning
 - Work builds sequentially on prior decisions
 - Context accumulation across agents costly
@@ -338,12 +349,14 @@ gathering         decisions        execution       verification
 ### Orchestrator Model Selection
 
 **The orchestrator itself typically uses Sonnet or Opus:**
+
 - Coordination decisions require reasoning
 - Synthesis across multiple agent outputs complex
 - Workflow routing based on partial results
 - Cost amortizes across many subagent spawns
 
 **Rarely use Haiku for orchestration:**
+
 - Weak at synthesis and decision-making
 - May mis-route work or spawn wrong specialists
 - Savings on orchestrator negligible vs. total workflow cost
@@ -361,6 +374,7 @@ Orchestrator (Sonnet):
 ```
 
 **Cost breakdown:**
+
 - 1 Opus (security): $1.00
 - 2 Sonnet (performance + orchestrator): $0.50
 - 2 Haiku (style + validation): $0.02

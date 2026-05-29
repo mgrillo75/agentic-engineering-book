@@ -3,7 +3,21 @@ title: Agent Frameworks
 description: Comparing LangGraph, CrewAI, AutoGen, and Claude Agent SDK for multi-agent orchestration
 created: 2026-01-30
 last_updated: 2026-04-12
-tags: [tools, frameworks, langchain, langgraph, crewai, autogen, claude-agent-sdk, multi-agent, orchestration, comparison, hermes, persistent-runtime]
+tags:
+  [
+    tools,
+    frameworks,
+    langchain,
+    langgraph,
+    crewai,
+    autogen,
+    claude-agent-sdk,
+    multi-agent,
+    orchestration,
+    comparison,
+    hermes,
+    persistent-runtime,
+  ]
 part: 3
 part_title: Perspectives
 chapter: 10
@@ -24,6 +38,7 @@ Before selecting an orchestration framework, practitioners face a more fundament
 For the full conceptual treatment of harness types, the Mollick Model+App+Harness stack, and the Agent Psychometrics formula (P(success) = σ(θ_LLM + θ_scaffold − β_difficulty)), see [Harness Categories](../6-harnesses/3-harness-categories.md). The frameworks discussed below apply to the full agentic harness tier.
 
 **See Also:**
+
 - [Model Selection: Cross-Provider Selection](../3-model/1-model-selection.md#cross-provider-selection) — Task-type to provider+harness mapping
 - [Claude Code](1-claude-code.md) — Reference implementation of the full agentic harness tier
 
@@ -31,24 +46,25 @@ For the full conceptual treatment of harness types, the Mollick Model+App+Harnes
 
 ## Framework Comparison Matrix
 
-| Framework | Philosophy | Best For | Learning Curve | Production Maturity |
-|-----------|------------|----------|----------------|---------------------|
-| **LangGraph** | Workflows as stateful graphs | Complex branching, conditional logic | Moderate | High (v1.0, enterprise adoption) |
-| **CrewAI** | Agents as role-playing teams | Rapid prototyping, clear role separation | Low | Growing (60% Fortune 500) |
-| **Microsoft Agent Framework** | Conversations between agents | Research, dynamic collaboration | Moderate-High | Transitioning (from AutoGen) |
-| **Claude Agent SDK** | Tool-equipped autonomous harness | Deep tool integration, code execution | Low-Moderate | Maturing |
+| Framework                     | Philosophy                       | Best For                                 | Learning Curve | Production Maturity              |
+| ----------------------------- | -------------------------------- | ---------------------------------------- | -------------- | -------------------------------- |
+| **LangGraph**                 | Workflows as stateful graphs     | Complex branching, conditional logic     | Moderate       | High (v1.0, enterprise adoption) |
+| **CrewAI**                    | Agents as role-playing teams     | Rapid prototyping, clear role separation | Low            | Growing (60% Fortune 500)        |
+| **Microsoft Agent Framework** | Conversations between agents     | Research, dynamic collaboration          | Moderate-High  | Transitioning (from AutoGen)     |
+| **Claude Agent SDK**          | Tool-equipped autonomous harness | Deep tool integration, code execution    | Low-Moderate   | Maturing                         |
 
 ---
 
 ## LangGraph
 
-*[2026-01-30]*: LangGraph reached v1.0 as the first stable major release in the durable agent framework space. Powering production applications at Uber, LinkedIn, Klarna, and JP Morgan.
+_[2026-01-30]_: LangGraph reached v1.0 as the first stable major release in the durable agent framework space. Powering production applications at Uber, LinkedIn, Klarna, and JP Morgan.
 
 ### Core Architecture
 
 LangGraph treats agent workflows as directed graphs with nodes (processing steps) and edges (transitions). State persists automatically across execution, enabling long-running workflows without custom database logic.
 
 **Key v1.0 Capabilities:**
+
 - **Durable state**: Agent execution state persists automatically
 - **Built-in persistence**: Save and resume workflows at any point
 - **Human-in-the-loop**: First-class API support for pausing execution for human review
@@ -56,12 +72,12 @@ LangGraph treats agent workflows as directed graphs with nodes (processing steps
 
 ### Design Patterns
 
-| Pattern | Implementation |
-|---------|----------------|
-| Sequential | Nodes chain linearly |
-| Branching | Conditional edges based on state |
-| Parallel | Fan-out/gather subgraphs |
-| Cyclical | Loops for iterative refinement |
+| Pattern    | Implementation                   |
+| ---------- | -------------------------------- |
+| Sequential | Nodes chain linearly             |
+| Branching  | Conditional edges based on state |
+| Parallel   | Fan-out/gather subgraphs         |
+| Cyclical   | Loops for iterative refinement   |
 
 ### Strengths
 
@@ -79,12 +95,14 @@ LangGraph treats agent workflows as directed graphs with nodes (processing steps
 ### When to Use
 
 LangGraph fits when:
+
 - Tasks require branching, error recovery, or conditional logic
 - Long-running workflows need checkpoint and resume capabilities
 - Production requirements demand durable execution guarantees
 - Teams need visual representation of complex workflows
 
 LangGraph does not fit when:
+
 - Simple linear workflows suffice
 - Rapid prototyping is the priority
 - Teams lack graph-based thinking experience
@@ -93,13 +111,14 @@ LangGraph does not fit when:
 
 ## CrewAI
 
-*[2026-01-30]*: CrewAI operates as a standalone framework (independent of LangChain) with 100,000+ certified developers and adoption by 60% of Fortune 500 companies.
+_[2026-01-30]_: CrewAI operates as a standalone framework (independent of LangChain) with 100,000+ certified developers and adoption by 60% of Fortune 500 companies.
 
 ### Core Architecture
 
 CrewAI organizes agents into "crews" where each agent has a defined role, backstory, and tool access. Agents collaborate on tasks through structured delegation.
 
 **Two Primitives:**
+
 - **Crews**: Teams of autonomous agents with specialized roles
 - **Flows**: Event-driven workflows that orchestrate crews and manage state
 
@@ -136,12 +155,14 @@ Role-based design mirrors human team organization:
 ### When to Use
 
 CrewAI fits when:
+
 - Teams have clear role separation (researcher, analyst, writer)
 - Rapid prototyping is prioritized over fine-grained control
 - Business users need to understand agent architecture
 - Multi-agent collaboration is primary use case
 
 CrewAI does not fit when:
+
 - Workflows require complex branching logic
 - Deterministic, reproducible behavior is critical
 - Fine-grained state management is needed
@@ -150,13 +171,14 @@ CrewAI does not fit when:
 
 ## Microsoft Agent Framework (AutoGen Evolution)
 
-*[2026-01-30]*: Microsoft merged AutoGen with Semantic Kernel into a unified Microsoft Agent Framework, targeting GA by end of Q1 2026. AutoGen enters maintenance mode—existing projects require migration planning.
+_[2026-01-30]_: Microsoft merged AutoGen with Semantic Kernel into a unified Microsoft Agent Framework, targeting GA by end of Q1 2026. AutoGen enters maintenance mode—existing projects require migration planning.
 
 ### Core Architecture
 
 The Agent Framework treats workflows as conversations between agents. Each agent can communicate with humans, tools, and other agents through natural language exchange.
 
 **Orchestration Patterns:**
+
 - **Sequential**: Step-by-step workflows
 - **Concurrent**: Agents work in parallel
 - **Group chat**: Agents brainstorm collaboratively
@@ -186,12 +208,14 @@ The Agent Framework treats workflows as conversations between agents. Each agent
 ### When to Use
 
 Microsoft Agent Framework fits when:
+
 - Azure is the target deployment environment
 - Dynamic, context-dependent role assignment is valuable
 - Enterprise compliance requirements exist
 - Conversational multi-agent patterns match the use case
 
 Microsoft Agent Framework does not fit when:
+
 - Deterministic workflow behavior is required
 - Teams want vendor-neutral solutions
 - Simple delegation suffices over conversation
@@ -200,13 +224,14 @@ Microsoft Agent Framework does not fit when:
 
 ## Claude Agent SDK
 
-*[2026-01-30]*: The Claude Agent SDK (renamed from Claude Code SDK in late 2025) provides the agent harness powering Claude Code, now available for custom agent development.
+_[2026-01-30]_: The Claude Agent SDK (renamed from Claude Code SDK in late 2025) provides the agent harness powering Claude Code, now available for custom agent development.
 
 ### Core Architecture
 
 The SDK provides an agentic loop where Claude autonomously reads files, runs commands, searches the web, and edits code. Tools are first-class citizens in Claude's context window.
 
 **Key Components:**
+
 - **Built-in tools**: File operations, command execution, code editing
 - **Custom tools via MCP**: In-process MCP servers without separate processes
 - **Tool Search Tool**: Access thousands of tools without context bloat
@@ -215,6 +240,7 @@ The SDK provides an agentic loop where Claude autonomously reads files, runs com
 ### Advanced Tool Use (2026)
 
 Three features for large-scale tool libraries:
+
 - **Tool Search Tool**: Search over tools dynamically (85% token reduction)
 - **Programmatic Tool Calling**: Reduces context window impact
 - **Tool Use Examples**: Universal standard for demonstrating tool usage
@@ -237,12 +263,14 @@ Performance: Opus 4.5 accuracy improved from 79.5% to 88.1% with Tool Search ena
 ### When to Use
 
 Claude Agent SDK fits when:
+
 - Deep tool integration is the primary requirement
 - Autonomous code execution and file manipulation are needed
 - Anthropic models are the target
 - Teams want Claude Code's proven patterns
 
 Claude Agent SDK does not fit when:
+
 - Multi-vendor model support is required
 - Complex multi-agent coordination is primary use case
 - Teams need established multi-agent patterns out of the box
@@ -253,15 +281,15 @@ Claude Agent SDK does not fit when:
 
 ### Quick Selection Guide
 
-| If you need... | Consider |
-|----------------|----------|
-| Complex stateful workflows with checkpoints | LangGraph |
-| Team-based collaboration with clear roles | CrewAI |
-| Azure-native enterprise deployment | Microsoft Agent Framework |
-| Deep tool integration with Anthropic models | Claude Agent SDK |
-| Rapid prototyping | CrewAI |
-| Production scale with durability | LangGraph |
-| Conversational multi-agent dynamics | Microsoft Agent Framework |
+| If you need...                              | Consider                  |
+| ------------------------------------------- | ------------------------- |
+| Complex stateful workflows with checkpoints | LangGraph                 |
+| Team-based collaboration with clear roles   | CrewAI                    |
+| Azure-native enterprise deployment          | Microsoft Agent Framework |
+| Deep tool integration with Anthropic models | Claude Agent SDK          |
+| Rapid prototyping                           | CrewAI                    |
+| Production scale with durability            | LangGraph                 |
+| Conversational multi-agent dynamics         | Microsoft Agent Framework |
 
 ### Decision Tree
 

@@ -21,7 +21,6 @@ Agents that are too slow or too expensive don't ship. These constraints shape ev
 
 **Frame cost as investment, not expense.** The question isn't "is this expensive?" but "what's the cost of NOT using it?" When agents ship 10× faster, the API bill becomes a productivity multiplier, not a line item.
 
-
 ---
 
 ## Connections
@@ -38,13 +37,15 @@ Agents that are too slow or too expensive don't ship. These constraints shape ev
 
 ### Real-World ROI: What $12K/Month Buys
 
-*[2025-12-10]*: Concrete numbers from a 3-person engineering team running Claude Code in production:
+_[2025-12-10]_: Concrete numbers from a 3-person engineering team running Claude Code in production:
 
 **The Investment**:
+
 - ~$12,000/month in API costs
 - ~$4,000 per engineer per month
 
 **The Return**:
+
 - Week's worth of work shipped **daily** per engineer
 - 10× productivity multiplier on feature delivery
 - Tasks estimated at 3-5 days completed in 7 hours
@@ -57,6 +58,7 @@ Traditional question: "Can we afford $12K/month in API costs?"
 Correct question: "Can we afford to ship 10× slower?"
 
 For a team with loaded costs of ~$150K/year per engineer ($12.5K/month), spending $4K/month to 10× their output means:
+
 - Effective cost per unit of work drops by 90%
 - Each engineer delivers the output of 10 engineers
 - The $4K API cost buys you $120K worth of equivalent engineering capacity
@@ -64,6 +66,7 @@ For a team with loaded costs of ~$150K/year per engineer ($12.5K/month), spendin
 **Productivity Benchmarks**:
 
 From actual development sessions:
+
 - **Code generation**: 35K LOC in 7 hours (previously estimated at 3-5 days)
 - **Feature velocity**: Daily shipping cadence vs. weekly estimates
 - **Context switching**: Agents handle tedious implementation while engineers focus on architecture
@@ -71,12 +74,14 @@ From actual development sessions:
 ### The Hidden Costs of NOT Using Agents
 
 **Opportunity cost compounds**:
+
 - Shipping 10× slower means 10× fewer customer deployments
 - 10× fewer A/B tests run
 - 10× fewer bugs found and fixed
 - 10× less market feedback incorporated
 
 **Engineering team economics**:
+
 - Hiring cost for additional engineers: ~6 months to recruit, onboard, ramp
 - Agent productivity: Available immediately, scales instantly
 - Knowledge retention: Agents don't leave; patterns persist in prompts
@@ -84,11 +89,13 @@ From actual development sessions:
 ### When Cost Actually Matters
 
 **Cost becomes the constraint when**:
+
 - You're running batch processing at massive scale (millions of documents)
 - Latency requirements force you to over-provision for peak load
 - You're building consumer products with thin margins
 
 **Cost is rarely the constraint when**:
+
 - Building internal tooling (developer time >> API costs)
 - Shipping customer features (revenue impact >> API costs)
 - Prototyping and validation (speed to learning >> API costs)
@@ -96,17 +103,20 @@ From actual development sessions:
 ### Measuring What Matters
 
 **Poor metrics**:
+
 - Total API spend (no context on value delivered)
 - Cost per token (optimizes the wrong thing)
 - Agent invocation count (ignores quality)
 
 **Better metrics**:
+
 - Cost per feature shipped
 - Cost per bug fixed
 - API cost as % of engineer loaded cost
 - Time-to-delivery improvement vs. baseline
 
 **Best metric**:
+
 - Revenue or value delivered per dollar of API cost
 
 For a SaaS product, if agents help ship a feature that generates $50K/year in revenue, the $1K in API costs to build it is a 50× return.
@@ -115,19 +125,21 @@ For a SaaS product, if agents help ship a feature that generates $50K/year in re
 
 ## Optimization Techniques You've Used
 
-*Document specific optimizations, what worked, what the tradeoffs were:*
+_Document specific optimizations, what worked, what the tradeoffs were:_
 
 ### Multi-Agent: Trading Tokens for Quality
 
-*[2025-12-09]*: Multi-agent architectures trade tokens for deterministic quality. The numbers from academic research are striking:
+_[2025-12-09]_: Multi-agent architectures trade tokens for deterministic quality. The numbers from academic research are striking:
 
 **What You Get**:
+
 - 80× improvement in action specificity
 - 100% actionable recommendation rate (vs. 1.7% for single-agent)
 - 140× improvement in solution correctness in some domains
 - Zero quality variance across trials—deterministic outcomes
 
 **What You Pay**:
+
 - ~15× more tokens than single-agent approaches
 - Token usage explains 80% of performance variance
 
@@ -141,16 +153,16 @@ For a SaaS product, if agents help ship a feature that generates $50K/year in re
 
 ### Token Cost Models by Feature Type
 
-*[2025-12-09]*: Different agent feature types—tools, Skills, subagents, and MCP servers—have radically different token cost profiles. Understanding these profiles shapes architectural decisions.
+_[2025-12-09]_: Different agent feature types—tools, Skills, subagents, and MCP servers—have radically different token cost profiles. Understanding these profiles shapes architectural decisions.
 
 **Cost Profiles by Feature Type**:
 
-| Feature Type | Tokens per Invocation | Primary Cost Driver |
-|--------------|----------------------|---------------------|
-| Traditional Tools | ~100 tokens | Call overhead (parameters + results) |
-| Skills | ~1,500+ tokens | Discovery metadata + execution context |
-| Subagents | Full conversation history | Isolated context per subagent |
-| MCP Servers | 10,000+ tokens | Rich integration schemas + persistent state |
+| Feature Type      | Tokens per Invocation     | Primary Cost Driver                         |
+| ----------------- | ------------------------- | ------------------------------------------- |
+| Traditional Tools | ~100 tokens               | Call overhead (parameters + results)        |
+| Skills            | ~1,500+ tokens            | Discovery metadata + execution context      |
+| Subagents         | Full conversation history | Isolated context per subagent               |
+| MCP Servers       | 10,000+ tokens            | Rich integration schemas + persistent state |
 
 **Frequency-Depth Trade-offs**:
 
@@ -181,6 +193,7 @@ Ask these questions when choosing feature types:
 **Real-World Example**:
 
 For a code analysis workflow:
+
 - File reading: Tool (~100 tokens/call, frequent, simple)
 - Security audit: Skill (~1,500 tokens, weekly, needs discovery)
 - Background research: Subagent (isolated context, parallel to main work)
@@ -191,7 +204,6 @@ The token cost model directly reflects the architectural value provided. Tools a
 **Sources**: [Simon Willison: Claude Skills](https://simonwillison.net/2025/Oct/16/claude-skills/), [Claude Skills Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/), [Claude Code: Skills Documentation](https://code.claude.com/docs/en/skills)
 
 **See Also**:
+
 - [Tool Use](../5-tool-use/_index.md) — Feature comparison and tool design patterns
 - [Claude Code: Subagent System](../10-practitioner-toolkit/1-claude-code.md#subagent-system) — Implementation details for context isolation
-
-

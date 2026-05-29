@@ -22,21 +22,25 @@ Running multi-agent systems in production differs fundamentally from running the
 ## Core Questions
 
 ### Identity and State
+
 - How do agents maintain continuity when sessions are disposable?
 - What survives a crash, and what must be reconstructed?
 - Where does agent identity live if not in the running process?
 
 ### Supervision and Recovery
+
 - How does the system detect and recover from stuck agents without human intervention?
 - What supervision architecture handles the full spectrum from process crashes to reasoning failures?
 - When does automated recovery become more dangerous than the original failure?
 
 ### Coordination at Scale
+
 - How do 20+ agents coordinate without shared memory or a central bus?
 - What communication primitives survive crashes, restarts, and network partitions?
 - How does work tracking persist across agent failures and handoffs?
 
 ### Resource Discipline
+
 - What happens to agent resources when work completes (or fails)?
 - How does the system prevent resource leaks from accumulating over time?
 - When is "idle" a valid state versus a system failure?
@@ -84,11 +88,13 @@ Agent sessions are inherently ephemeral. Context windows fill, processes crash, 
 ```
 
 **Persistent layer** stores identity artifacts on the filesystem:
+
 - **CV/Work History** — past tasks completed, quality assessments, domain specializations
 - **Domain Expertise** — accumulated patterns, anti-patterns, decision heuristics
 - **Session Logs** — queryable history of predecessor sessions
 
 **Ephemeral layer** handles current execution:
+
 - Fresh context window per session (no accumulated bloat)
 - Current task assignment and working state
 - Tool connections and temporary artifacts
@@ -103,7 +109,7 @@ Agent sessions are inherently ephemeral. Context windows fill, processes crash, 
 
 **Evidence:** Gas Town workers ("polecats") maintain CVs across sessions. When a new session starts, `gt prime` restores identity context. A worker that crashed mid-task can be replaced by a new session that seances the crashed session's logs to understand what was attempted.
 
-*[2026-02-13]*: Overstory demonstrates the same separation through TypeScript/Bun implementation. Agent identity persists in `.overstory/agents/{name}/identity.yaml` with work history in `work-history.md`. Sessions spawn via `overstory sling` with fresh context loaded through `overstory prime`, implementing the seancing pattern through different tooling. The cross-ecosystem validation (Go + TypeScript) suggests this pattern is language-agnostic and fundamental to swarm coordination.
+_[2026-02-13]_: Overstory demonstrates the same separation through TypeScript/Bun implementation. Agent identity persists in `.overstory/agents/{name}/identity.yaml` with work history in `work-history.md`. Sessions spawn via `overstory sling` with fresh context loaded through `overstory prime`, implementing the seancing pattern through different tooling. The cross-ecosystem validation (Go + TypeScript) suggests this pattern is language-agnostic and fundamental to swarm coordination.
 
 ### Implementation
 
@@ -126,13 +132,16 @@ strengths:
 
 ```markdown
 # work-history.md — append-only log
+
 ## 2026-02-10 Session 34
+
 - Task: Implement refresh token rotation
 - Status: Complete
 - Branch: auth/refresh-rotation
 - Notes: Edge case discovered—concurrent refresh requests need mutex
 
 ## 2026-02-09 Session 33
+
 - Task: Fix token expiry race condition
 - Status: Complete
 - Branch: auth/token-expiry-fix
@@ -155,24 +164,26 @@ cat "$EXPERTISE_PATH"
 ### When to Use
 
 **Good fit:**
+
 - Long-running systems where agents operate across days or weeks
 - Domains where expertise accumulates (each session builds on prior knowledge)
 - Systems where agent sessions crash or expire regularly
 - Environments with model upgrades (new model inherits old identity)
 
 **Poor fit:**
+
 - One-off tasks with no continuity requirement
 - Systems where every task is independent (no expertise accumulation)
 - Environments where session persistence adds complexity without benefit
 
 ### Trade-offs
 
-| Dimension | Benefit | Cost |
-|-----------|---------|------|
-| Continuity | Expertise survives crashes and restarts | Requires filesystem persistence layer |
-| Context freshness | Each session starts with clean context window | Priming adds startup latency (~5-10 seconds) |
-| Model flexibility | Identity persists across model upgrades | Seancing logic must handle format differences |
-| Debugging | Full history of agent behavior across sessions | History files grow; require periodic pruning |
+| Dimension         | Benefit                                        | Cost                                          |
+| ----------------- | ---------------------------------------------- | --------------------------------------------- |
+| Continuity        | Expertise survives crashes and restarts        | Requires filesystem persistence layer         |
+| Context freshness | Each session starts with clean context window  | Priming adds startup latency (~5-10 seconds)  |
+| Model flexibility | Identity persists across model upgrades        | Seancing logic must handle format differences |
+| Debugging         | Full history of agent behavior across sessions | History files grow; require periodic pruning  |
 
 ---
 
@@ -208,25 +219,25 @@ Tier 1: Mechanical Daemon (no AI, fastest)
 
 Each tier has a distinct capability and speed:
 
-| Tier | Speed | Reasoning | Handles |
-|------|-------|-----------|---------|
-| **Daemon** (Tier 1) | Seconds | None (mechanical) | Process crashes, unresponsive agents, resource exhaustion |
-| **Triage** (Tier 2) | Seconds-minutes | Fast AI reasoning | Failure classification, restart decisions, escalation |
-| **Supervisor** (Tier 3) | Minutes | Medium AI reasoning | Quality assessment, rework requests, task reassignment |
-| **Patrol** (Tier 4) | 30-60 minutes | Deep AI reasoning | System-wide health, progress assessment, strategic replanning |
+| Tier                    | Speed           | Reasoning           | Handles                                                       |
+| ----------------------- | --------------- | ------------------- | ------------------------------------------------------------- |
+| **Daemon** (Tier 1)     | Seconds         | None (mechanical)   | Process crashes, unresponsive agents, resource exhaustion     |
+| **Triage** (Tier 2)     | Seconds-minutes | Fast AI reasoning   | Failure classification, restart decisions, escalation         |
+| **Supervisor** (Tier 3) | Minutes         | Medium AI reasoning | Quality assessment, rework requests, task reassignment        |
+| **Patrol** (Tier 4)     | 30-60 minutes   | Deep AI reasoning   | System-wide health, progress assessment, strategic replanning |
 
 **Key insight:** The lowest tier (Daemon) cannot reason—it only detects mechanical failures. The highest tier (Patrol) reasons deeply but operates too slowly for health checks. The Triage tier bridges the gap: fast enough to respond to Daemon alerts, smart enough to classify failures and route responses.
 
 **Evidence:** Gas Town implements this as Daemon → Boot (triage) → Deacon (patrol) → Witness (per-unit supervisor). The Daemon detects process-level failures in seconds. Boot classifies them and decides between restart, escalate, or ignore. The Deacon performs periodic sweeps of overall system health. Witnesses supervise individual workers during task execution.
 
-*[2026-02-13]*: Overstory's tiered watchdog architecture parallels Gas Town but organizes layers differently:
+_[2026-02-13]_: Overstory's tiered watchdog architecture parallels Gas Town but organizes layers differently:
 
-| Tier | Overstory | Gas Town |
-|------|-----------|----------|
-| 0 (Mechanical) | Watchdog daemon (tmux/PID monitoring) | Daemon (Go process) |
-| 1 (AI Triage) | Ephemeral triage agent (on-demand classification) | Boot (ephemeral) |
-| 2 (Monitor) | Continuous patrol agent (persistent background) | Deacon (persistent) |
-| 3 (Supervisor) | Per-project oversight agent (depth-1) | Witness + Refinery |
+| Tier           | Overstory                                         | Gas Town            |
+| -------------- | ------------------------------------------------- | ------------------- |
+| 0 (Mechanical) | Watchdog daemon (tmux/PID monitoring)             | Daemon (Go process) |
+| 1 (AI Triage)  | Ephemeral triage agent (on-demand classification) | Boot (ephemeral)    |
+| 2 (Monitor)    | Continuous patrol agent (persistent background)   | Deacon (persistent) |
+| 3 (Supervisor) | Per-project oversight agent (depth-1)             | Witness + Refinery  |
 
 Both implement the same escalation pattern (mechanical → AI reasoning → strategic) through different tier labels and agent roles. The convergence validates the three-tier model as robust across implementations. Overstory's session-based coordination adds a distinct constraint: Tier 3 supervisors are active agents in the practitioner's orchestrator session, not independent daemons.
 
@@ -262,24 +273,26 @@ Triage receives alert
 ### When to Use
 
 **Good fit:**
+
 - Systems with 10+ agents where manual monitoring is impractical
 - Long-running operations (hours to days) where failures are inevitable
 - Autonomous systems where human intervention should be the last resort
 - Environments with diverse failure modes (crashes, stalls, reasoning failures)
 
 **Poor fit:**
+
 - Small systems (1-3 agents) where a single supervisor suffices
 - Short-lived tasks where restart-from-scratch is cheaper than recovery
 - Environments with reliable infrastructure (cloud functions with built-in retry)
 
 ### Trade-offs
 
-| Dimension | Benefit | Cost |
-|-----------|---------|------|
-| Recovery speed | Sub-minute for mechanical failures | Four-tier architecture is complex to build |
-| Failure coverage | Handles crashes through strategic failures | Each tier requires distinct implementation |
-| Autonomy | Reduces human intervention to rare edge cases | Incorrect triage can amplify failures |
-| Observability | Each tier produces structured logs | Log volume grows with agent count |
+| Dimension        | Benefit                                       | Cost                                       |
+| ---------------- | --------------------------------------------- | ------------------------------------------ |
+| Recovery speed   | Sub-minute for mechanical failures            | Four-tier architecture is complex to build |
+| Failure coverage | Handles crashes through strategic failures    | Each tier requires distinct implementation |
+| Autonomy         | Reduces human intervention to rare edge cases | Incorrect triage can amplify failures      |
+| Observability    | Each tier produces structured logs            | Log volume grows with agent count          |
 
 ---
 
@@ -305,14 +318,14 @@ Supervisor ── HANDOFF ─────────► Worker D
 
 A production mail protocol needs a small set of well-defined message types:
 
-| Type | Sender | Receiver | Purpose |
-|------|--------|----------|---------|
-| `TASK_COMPLETE` | Worker | Supervisor / Queue | Work finished, ready for review |
-| `MERGE_READY` | Worker | Merge Processor | Branch ready for integration |
-| `REWORK_REQUEST` | Reviewer | Worker | Quality gate failed, changes needed |
-| `HELP_REQUEST` | Worker | Supervisor | Stuck, needs guidance or reassignment |
-| `HANDOFF` | Supervisor | Worker | Reassigning task from failed/stuck worker |
-| `STATUS_UPDATE` | Worker | Dashboard | Progress notification for visibility |
+| Type             | Sender     | Receiver           | Purpose                                   |
+| ---------------- | ---------- | ------------------ | ----------------------------------------- |
+| `TASK_COMPLETE`  | Worker     | Supervisor / Queue | Work finished, ready for review           |
+| `MERGE_READY`    | Worker     | Merge Processor    | Branch ready for integration              |
+| `REWORK_REQUEST` | Reviewer   | Worker             | Quality gate failed, changes needed       |
+| `HELP_REQUEST`   | Worker     | Supervisor         | Stuck, needs guidance or reassignment     |
+| `HANDOFF`        | Supervisor | Worker             | Reassigning task from failed/stuck worker |
+| `STATUS_UPDATE`  | Worker     | Dashboard          | Progress notification for visibility      |
 
 ### How It Works
 
@@ -326,7 +339,7 @@ A production mail protocol needs a small set of well-defined message types:
 
 **Evidence:** Gas Town implements a typed mail protocol with `POLECAT_DONE`, `MERGE_READY`, `REWORK_REQUEST`, and other message types. Each message follows a defined route (sender → receiver), creating an auditable trail of every coordination event across 20+ concurrent workers.
 
-*[2026-02-13]*: Overstory implements typed mail protocol through custom SQLite database (`.overstory/mail.db`) with WAL mode for concurrent access. Message schema includes 8 protocol types (`status`, `question`, `result`, `error`, `dispatch`, `escalation`, `worker_done`, `merge_ready`) with ~1-5ms query latency. Hook integration (UserPromptSubmit) injects unread messages into agent context automatically. The SQLite approach demonstrates that file-based mail can achieve sub-10ms coordination suitable for production swarms, validating the pattern across both filesystem-based (Gas Town) and database-backed (Overstory) implementations.
+_[2026-02-13]_: Overstory implements typed mail protocol through custom SQLite database (`.overstory/mail.db`) with WAL mode for concurrent access. Message schema includes 8 protocol types (`status`, `question`, `result`, `error`, `dispatch`, `escalation`, `worker_done`, `merge_ready`) with ~1-5ms query latency. Hook integration (UserPromptSubmit) injects unread messages into agent context automatically. The SQLite approach demonstrates that file-based mail can achieve sub-10ms coordination suitable for production swarms, validating the pattern across both filesystem-based (Gas Town) and database-backed (Overstory) implementations.
 
 ### Implementation
 
@@ -362,22 +375,24 @@ mail/
 
 ### Comparison with Alternatives
 
-| Approach | Durability | Auditability | Scale Behavior | Failure Mode |
-|----------|-----------|-------------|----------------|-------------|
-| **Shared memory** (files/DB) | Low (race conditions) | Low (overwrites) | Degrades at 5+ writers | Corruption, lost updates |
-| **Synchronous calls** | None (in-memory) | Low (no trace) | Cascading stalls | Blocked chains |
-| **Event bus** | Medium (depends on bus) | High | Good (if bus scales) | Single point of failure |
-| **Mail protocol** | High (filesystem) | High (every message persisted) | Linear (per-route) | Message processing delay |
+| Approach                     | Durability              | Auditability                   | Scale Behavior         | Failure Mode             |
+| ---------------------------- | ----------------------- | ------------------------------ | ---------------------- | ------------------------ |
+| **Shared memory** (files/DB) | Low (race conditions)   | Low (overwrites)               | Degrades at 5+ writers | Corruption, lost updates |
+| **Synchronous calls**        | None (in-memory)        | Low (no trace)                 | Cascading stalls       | Blocked chains           |
+| **Event bus**                | Medium (depends on bus) | High                           | Good (if bus scales)   | Single point of failure  |
+| **Mail protocol**            | High (filesystem)       | High (every message persisted) | Linear (per-route)     | Message processing delay |
 
 ### When to Use
 
 **Good fit:**
+
 - 10+ agents needing coordination without shared state
 - Systems where crash recovery requires replaying coordination history
 - Environments requiring audit trails of agent interactions
 - Async workflows where agents operate at different speeds
 
 **Poor fit:**
+
 - Tight real-time coordination (sub-second responses needed)
 - Simple two-agent systems where direct messaging suffices
 - Environments where filesystem I/O is expensive or unreliable
@@ -420,11 +435,11 @@ Agent systems leak resources. A worker that finishes its task but remains runnin
 
 **Three states, no more:**
 
-| State | Meaning | System Response |
-|-------|---------|-----------------|
-| **Working** | Actively executing task | Monitor progress |
-| **Stalled** | Detected failure, potentially recoverable | Triage → restart or reassign |
-| **Zombie** | Unrecoverable failure, consuming resources | Kill process, reclaim resources |
+| State       | Meaning                                    | System Response                 |
+| ----------- | ------------------------------------------ | ------------------------------- |
+| **Working** | Actively executing task                    | Monitor progress                |
+| **Stalled** | Detected failure, potentially recoverable  | Triage → restart or reassign    |
+| **Zombie**  | Unrecoverable failure, consuming resources | Kill process, reclaim resources |
 
 ### The Idle Worker Heresy
 
@@ -438,7 +453,7 @@ Treating "idle" as a valid worker state creates three problems:
 
 **Evidence:** Gas Town codifies this as the "Idle Polecat Heresy." Workers execute `gt done` on task completion, which pushes the branch, submits to the merge queue, destroys the sandbox, and terminates the session. The system never has idle workers—only working workers and cleanup-in-progress workers.
 
-*[2026-02-13]*: Overstory implements the same pattern through worktree lifecycle management. Agent completion triggers `bd close <task-id>`, which pushes the branch, sends `worker_done` mail to orchestrator, and marks the task complete. The `overstory worktree clean` command removes the worktree directory, deletes the branch reference (if merged), and kills the tmux session. Logs are preserved (never auto-deleted) for debugging. The convergence validates that self-cleaning workers are implementation-agnostic—both Go and TypeScript implementations discover that idle state is an anti-pattern at scale.
+_[2026-02-13]_: Overstory implements the same pattern through worktree lifecycle management. Agent completion triggers `bd close <task-id>`, which pushes the branch, sends `worker_done` mail to orchestrator, and marks the task complete. The `overstory worktree clean` command removes the worktree directory, deletes the branch reference (if merged), and kills the tmux session. Logs are preserved (never auto-deleted) for debugging. The convergence validates that self-cleaning workers are implementation-agnostic—both Go and TypeScript implementations discover that idle state is an anti-pattern at scale.
 
 ### Cleanup Sequence
 
@@ -463,12 +478,14 @@ Each step has a fallback. The cleanup sequence is designed so that failure at an
 ### When to Use
 
 **Good fit:**
+
 - Systems with 10+ workers where resource leaks compound
 - Cloud environments where idle compute costs money
 - Long-running operations where workers spin up and down frequently
 - Any system where "how many workers are actually productive?" matters
 
 **Poor fit:**
+
 - Systems where worker startup is expensive (amortize by keeping workers alive)
 - Environments with a fixed worker pool (workers wait for work by design)
 - Development environments where manual lifecycle management is acceptable
@@ -524,6 +541,7 @@ When 20 workers operate across multiple repositories, tracking overall progress 
 ### Key Properties
 
 **Persistence across failures:**
+
 ```
 Swarm 1: Workers A, B, C
   - Worker A: completes task 1 ✓
@@ -546,17 +564,19 @@ A single convoy can track work spanning multiple repositories, providing a unifi
 
 **Evidence:** Gas Town convoys group issues across repositories into a single tracking unit. Ephemeral worker swarms execute batches of tasks. When a worker fails, the convoy records it and includes the task in the next swarm. Dashboard visibility shows convoy-level completion, not per-worker status.
 
-*[2026-02-13]*: Overstory implements batch coordination through task groups (`overstory group create <name>`). Groups track completion state across multiple beads (issues), auto-closing when all member issues complete. The persistent tracking survives worker failures—groups live in `.overstory/` filesystem state, not worker memory. While Gas Town's convoy pattern is more elaborate (multi-repo, multi-swarm), Overstory's task groups validate the core insight: persistent tracking units must outlive ephemeral worker executions.
+_[2026-02-13]_: Overstory implements batch coordination through task groups (`overstory group create <name>`). Groups track completion state across multiple beads (issues), auto-closing when all member issues complete. The persistent tracking survives worker failures—groups live in `.overstory/` filesystem state, not worker memory. While Gas Town's convoy pattern is more elaborate (multi-repo, multi-swarm), Overstory's task groups validate the core insight: persistent tracking units must outlive ephemeral worker executions.
 
 ### When to Use
 
 **Good fit:**
+
 - Multi-repo features requiring coordinated tracking
 - Work that spans multiple swarm executions (too large for one batch)
 - Systems where worker failures are expected and retries are routine
 - Environments needing dashboard-level visibility into multi-agent progress
 
 **Poor fit:**
+
 - Single-task execution (tracking overhead exceeds benefit)
 - Short-lived tasks where simple success/failure is sufficient
 - Systems with reliable workers where retry logic is rarely needed
@@ -596,18 +616,18 @@ Worker N ─── branch ──► │              │
 
 The merge processor operates through escalating resolution strategies:
 
-| Tier | Strategy | When | Cost |
-|------|----------|------|------|
-| **Clean merge** | `git merge` succeeds | No conflicts | Seconds |
-| **Auto-resolve** | Standard conflict resolution (accept theirs/ours by region) | Textual conflicts in non-overlapping regions | Seconds |
-| **AI resolve** | AI reads both versions, produces merged result | Semantic conflicts requiring understanding of intent | Minutes |
-| **Re-imagination** | AI re-implements the change against current main | Intractable conflicts where merge is harder than reimplementation | Minutes-hours |
+| Tier               | Strategy                                                    | When                                                              | Cost          |
+| ------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------- | ------------- |
+| **Clean merge**    | `git merge` succeeds                                        | No conflicts                                                      | Seconds       |
+| **Auto-resolve**   | Standard conflict resolution (accept theirs/ours by region) | Textual conflicts in non-overlapping regions                      | Seconds       |
+| **AI resolve**     | AI reads both versions, produces merged result              | Semantic conflicts requiring understanding of intent              | Minutes       |
+| **Re-imagination** | AI re-implements the change against current main            | Intractable conflicts where merge is harder than reimplementation | Minutes-hours |
 
-**Re-imagination** is the critical innovation. When a worker's branch has drifted so far from main that merging is impractical, the merge processor understands the *intent* of the change (from the task description and branch diff) and re-implements it cleanly against current main.
+**Re-imagination** is the critical innovation. When a worker's branch has drifted so far from main that merging is impractical, the merge processor understands the _intent_ of the change (from the task description and branch diff) and re-implements it cleanly against current main.
 
 **Evidence:** Gas Town's Refinery agent processes the merge queue. When standard merge fails, it escalates through AI resolution. For intractable conflicts—common when 20+ workers modify shared test fixtures—the Refinery re-imagines the implementation against current main state rather than attempting to merge divergent branches.
 
-*[2026-02-13]*: Overstory's merge queue implements 4-tier resolution escalation:
+_[2026-02-13]_: Overstory's merge queue implements 4-tier resolution escalation:
 
 1. **Clean merge** — `git merge` succeeds (seconds)
 2. **Auto-resolve** — Standard conflict resolution by region (seconds)
@@ -626,12 +646,14 @@ The "re-imagination" tier matches Gas Town's Refinery pattern, validating the ap
 ### When to Use
 
 **Good fit:**
+
 - 5+ workers producing branches in parallel
 - Repositories with high contention (shared files, configuration, tests)
 - Systems requiring linear commit history (bisect-friendly)
 - Environments where merge conflict resolution is a bottleneck
 
 **Poor fit:**
+
 - Single-worker systems (no contention)
 - Repositories where workers modify completely disjoint files
 - Environments where merge commits are acceptable (no linearity requirement)
@@ -730,14 +752,14 @@ Not every system needs all six patterns. Complexity should match scale.
 
 ### Scale Thresholds
 
-| Pattern | Useful At | Essential At | Overkill Below |
-|---------|-----------|-------------|----------------|
-| Persistent Identity | 3+ agents | 10+ agents with turnover | Single-session tasks |
-| Watchdog Chains | 5+ agents | 10+ autonomous agents | Supervised agents |
-| Mail Protocol | 5+ agents needing coordination | 20+ agents | 2-3 agents with shared state |
-| Self-Cleaning Workers | 5+ ephemeral workers | Any system paying for idle compute | Fixed worker pools |
-| Convoy Tracking | 10+ tasks across sessions | Multi-repo multi-session work | Single-batch tasks |
-| Merge Queue | 3+ parallel writers | 10+ parallel writers to same repo | Sequential workflows |
+| Pattern               | Useful At                      | Essential At                       | Overkill Below               |
+| --------------------- | ------------------------------ | ---------------------------------- | ---------------------------- |
+| Persistent Identity   | 3+ agents                      | 10+ agents with turnover           | Single-session tasks         |
+| Watchdog Chains       | 5+ agents                      | 10+ autonomous agents              | Supervised agents            |
+| Mail Protocol         | 5+ agents needing coordination | 20+ agents                         | 2-3 agents with shared state |
+| Self-Cleaning Workers | 5+ ephemeral workers           | Any system paying for idle compute | Fixed worker pools           |
+| Convoy Tracking       | 10+ tasks across sessions      | Multi-repo multi-session work      | Single-batch tasks           |
+| Merge Queue           | 3+ parallel writers            | 10+ parallel writers to same repo  | Sequential workflows         |
 
 ### Decision Framework
 
@@ -784,7 +806,7 @@ Each pattern builds on the previous. Self-Cleaning Workers is the foundation bec
 
 ## Connections
 
-- **To [Expert Swarm](8-expert-swarm-pattern.md)**: Expert Swarm addresses *what* parallel agents work on (domain-consistent tasks with shared expertise). Production Multi-Agent Systems addresses *how* those agents operate reliably (identity persistence, supervision, coordination, cleanup). The two compose naturally: Expert Swarm provides task decomposition and expertise inheritance; these patterns provide the operational infrastructure.
+- **To [Expert Swarm](8-expert-swarm-pattern.md)**: Expert Swarm addresses _what_ parallel agents work on (domain-consistent tasks with shared expertise). Production Multi-Agent Systems addresses _how_ those agents operate reliably (identity persistence, supervision, coordination, cleanup). The two compose naturally: Expert Swarm provides task decomposition and expertise inheritance; these patterns provide the operational infrastructure.
 
 - **To [Orchestrator Pattern](3-orchestrator-pattern.md)**: The orchestrator coordinates task assignment and synthesis. Production patterns extend this with supervision (watchdog chains), durable coordination (mail protocol), and integration (merge queue). An orchestrator without production patterns works in development; production requires both.
 

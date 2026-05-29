@@ -134,6 +134,7 @@ This mental model reframes prompt engineering from "writing good instructions" t
 You're not convincing a mind. You're shaping a mathematical landscape where the peak of the probability mountain is exactly where you want the output to land.
 
 When you get this right:
+
 - Less token spend on elaborate instructions
 - More consistent outputs across runs
 - Robustness to model variations

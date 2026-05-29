@@ -19,15 +19,15 @@ Theory gets you started. Practice is where the learning happens.
 
 ## Practice Areas
 
-| Practice | Focus |
-|----------|-------|
-| [Debugging Agents](1-debugging-agents.md) | Finding and fixing what went wrong |
-| [Evaluation](2-evaluation.md) | Measuring agent performance systematically |
-| [Cost and Latency](3-cost-and-latency.md) | Managing the economics and speed of agent systems |
-| [Production Concerns](4-production-concerns.md) | Running agents reliably at scale |
-| [Workflow Coordination](5-workflow-coordination.md) | Structured metadata for agent coordination |
-| [Knowledge Evolution](6-knowledge-evolution.md) | Guidelines for updating knowledge base entries |
-| [Operating Agent Swarms](7-operating-agent-swarms.md) | Running multi-agent systems at production scale |
+| Practice                                              | Focus                                             |
+| ----------------------------------------------------- | ------------------------------------------------- |
+| [Debugging Agents](1-debugging-agents.md)             | Finding and fixing what went wrong                |
+| [Evaluation](2-evaluation.md)                         | Measuring agent performance systematically        |
+| [Cost and Latency](3-cost-and-latency.md)             | Managing the economics and speed of agent systems |
+| [Production Concerns](4-production-concerns.md)       | Running agents reliably at scale                  |
+| [Workflow Coordination](5-workflow-coordination.md)   | Structured metadata for agent coordination        |
+| [Knowledge Evolution](6-knowledge-evolution.md)       | Guidelines for updating knowledge base entries    |
+| [Operating Agent Swarms](7-operating-agent-swarms.md) | Running multi-agent systems at production scale   |
 
 ---
 
@@ -42,7 +42,7 @@ Theory gets you started. Practice is where the learning happens.
 
 ## Your Development Workflow
 
-*How do you typically work when building or improving an agent?*
+_How do you typically work when building or improving an agent?_
 
 ---
 
@@ -84,5 +84,3 @@ Skimming the plan, then carefully reviewing every generated line of code. This i
 4. **Review by testing:** Run it. Does it behave as the plan specified? If not, was the plan wrong or the implementation?
 
 Mental alignment matters more than individual line correctness. Correct thinking makes implementation debuggable. Flawed thinking means perfect code just automates misconceptions faster. This observation holds across production deployments: conceptual validation prevents more failures than implementation review catches.
-
-

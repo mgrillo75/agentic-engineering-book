@@ -23,7 +23,7 @@ Memory in current LLMs doesn't exist in any meaningful way by default. Each fres
 
 The distinction matters for architecture. Context is ephemeral working memory that dies with the session. Memory would be persistent knowledge that survives restarts—but without external storage mechanisms, agents don't have this by default. See [Multi-Agent Context: Persistent State vs. Ephemeral Context](4-multi-agent-context.md#persistent-state-vs-ephemeral-context) for the full distinction.
 
-*[2026-02-05]*: Claude Code's session memory feature (v2.1.32+) provides automatic persistent memory across sessions through background summarization. This external storage mechanism enables agents to recall context from previous sessions without manual persistence. See [Claude Code: Memory Management](../10-practitioner-toolkit/1-claude-code.md#memory-management) for implementation details.
+_[2026-02-05]_: Claude Code's session memory feature (v2.1.32+) provides automatic persistent memory across sessions through background summarization. This external storage mechanism enables agents to recall context from previous sessions without manual persistence. See [Claude Code: Memory Management](../10-practitioner-toolkit/1-claude-code.md#memory-management) for implementation details.
 
 ---
 
@@ -47,7 +47,7 @@ This frames context management as capability engineering. High-signal context (r
 
 ### Context Fill Correlates with Capability Drain
 
-*[2025-12-10]*: Observable patterns suggest context utilization above 40% correlates with early signs of capability degradation, though the precise relationship between context usage and capability remains uncharacterized.
+_[2025-12-10]_: Observable patterns suggest context utilization above 40% correlates with early signs of capability degradation, though the precise relationship between context usage and capability remains uncharacterized.
 
 The relationship may not be linear—there could be capability cliffs at certain thresholds. Without rigorous measurement, conservative practice treats 40% utilization as a caution point rather than a hard limit. Production deployments observing quality degradation typically find agents operating above 60% capacity.
 
@@ -126,7 +126,7 @@ Context is the agent's working memory—ephemeral, finite, and the single bigges
 
 3. **Fresh starts are cheap.** When in doubt, boot a new agent. Trying to salvage a degraded context is almost never worth it. The cost of restarting is lower than the cost of fighting context rot.
 
-4. **Injection for priming, retrieval for discovery.** Inject what the agent *must* know upfront. Let it retrieve what it *might* need. The balance shifts based on codebase size and task specificity.
+4. **Injection for priming, retrieval for discovery.** Inject what the agent _must_ know upfront. Let it retrieve what it _might_ need. The balance shifts based on codebase size and task specificity.
 
 5. **One agent, one task.** Scope tasks to fit comfortably within context limits. If a task balloons, kill and rescope rather than push through.
 

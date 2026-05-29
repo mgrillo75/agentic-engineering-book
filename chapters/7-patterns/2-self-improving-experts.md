@@ -22,12 +22,13 @@ A three-command expert pattern that creates a learning triangle where production
 Self-Improving Expert Commands implement a specialized version of the Plan-Build-Review pattern where the "review" phase actively updates the expertise embedded in the planning and building commands. This creates a system where each cycle of usage makes the next iteration smarter.
 
 The pattern separates two types of prompt content:
+
 - **Expertise sections**: Mutable domain knowledge that evolves with experience
 - **Workflow sections**: Stable process descriptions that define how the expert operates
 
 Only Expertise sections get updated, ensuring the process remains consistent while knowledge accumulates.
 
-*[2026-04-11]*: Nous Research's [Hermes Agent](https://github.com/NousResearch/hermes-agent) (MIT license, ~47K GitHub stars within six weeks of its February 2026 launch) instantiates this loop in a consumer-facing open-source runtime: tasks generate skills procedurally, skills refine during use, and consolidation nudges periodically update the agent's persistent memory store. The architecture maps directly onto the Plan-Build-Improve triangle — expertise accumulates in external storage (SQLite + FTS5), workflow logic remains stable, and updates are post-hoc not mid-execution. Hermes demonstrates that the self-improving expert pattern has migrated from developer tooling into general-purpose personal agent systems.
+_[2026-04-11]_: Nous Research's [Hermes Agent](https://github.com/NousResearch/hermes-agent) (MIT license, ~47K GitHub stars within six weeks of its February 2026 launch) instantiates this loop in a consumer-facing open-source runtime: tasks generate skills procedurally, skills refine during use, and consolidation nudges periodically update the agent's persistent memory store. The architecture maps directly onto the Plan-Build-Improve triangle — expertise accumulates in external storage (SQLite + FTS5), workflow logic remains stable, and updates are post-hoc not mid-execution. Hermes demonstrates that the self-improving expert pattern has migrated from developer tooling into general-purpose personal agent systems.
 
 ---
 
@@ -36,9 +37,11 @@ Only Expertise sections get updated, ensuring the process remains consistent whi
 The pattern consists of three commands that form a learning triangle:
 
 ### Plan Command (`*_plan.md`)
+
 Contains domain-specific knowledge and creates detailed specifications.
 
 Structure:
+
 - `## Expertise` - Mutable knowledge base (patterns, examples, anti-patterns)
 - `## Workflow` - Stable planning process
 - `## Report` - Output format template
@@ -46,9 +49,11 @@ Structure:
 Purpose: Analyzes requirements and produces a specification for implementation.
 
 ### Build Command (`*_build.md`)
+
 Implements based on specifications, applying accumulated expertise.
 
 Structure:
+
 - `## Expertise` - Mutable implementation patterns
 - `## Workflow` - Stable build process
 - `## Report` - Output format template
@@ -56,9 +61,11 @@ Structure:
 Purpose: Executes the plan using learned best practices.
 
 ### Improve Command (`*_improve.md`)
+
 Analyzes git history and updates expertise in Plan/Build commands.
 
 Structure:
+
 - `## Workflow` - Process for extracting learnings
 - No Expertise section (this command updates others)
 
@@ -69,9 +76,11 @@ Purpose: Mines production experience and updates Plan/Build expertise.
 ## Key Design Principles
 
 ### 1. Separate Expertise from Workflow
+
 Only Expertise sections are designed to be modified. Workflow sections remain stable, providing consistent process execution while knowledge evolves.
 
 ### 2. Conservative Update Rules
+
 The Improve command follows strict guidelines for updating expertise:
 
 - **PRESERVE**: Keep patterns that are still relevant and working
@@ -80,20 +89,23 @@ The Improve command follows strict guidelines for updating expertise:
 - **REMOVE**: Delete only patterns proven ineffective with clear evidence
 
 ### 3. Git History as Learning Signal
+
 Production experience is captured in git commits. The Improve command analyzes:
+
 - Recent commits in the domain area
 - Successful patterns that emerged
 - Issues that were fixed
 - Anti-patterns that caused problems
 
 ### 4. Timestamped Entries for Provenance
+
 All expertise updates include timestamps showing when the learning was captured:
 
 ```markdown
 ### API Contract Patterns
 
 **Zod-Based Validation (from #485):**
-*[2025-11-15]*: All API routes should validate requests with Zod schemas...
+_[2025-11-15]_: All API routes should validate requests with Zod schemas...
 ```
 
 This enables tracking the evolution of knowledge and pruning outdated patterns.
@@ -103,12 +115,14 @@ This enables tracking the evolution of knowledge and pruning outdated patterns.
 ## When to Use
 
 ### Good Fit
+
 - **Domains with recurring decisions**: Areas where similar choices come up repeatedly
 - **Emerging patterns**: Situations where best practices crystallize over time
 - **Codebase-specific knowledge**: Learnings that are unique to this project
 - **Complex integration points**: External services with many edge cases to learn
 
 ### Poor Fit
+
 - **One-off tasks**: No opportunity for accumulated learning
 - **Fixed requirements**: Domain knowledge doesn't evolve
 - **Trivial operations**: Overhead exceeds benefit
@@ -156,12 +170,12 @@ USER_PROMPT: $ARGUMENTS
 ### [Category 1]
 
 **Pattern Name (from #issue-number):**
-*[2025-12-08]*: Description of pattern with examples...
+_[2025-12-08]_: Description of pattern with examples...
 
 ### [Category 2]
 
 **Anti-Pattern to Avoid:**
-*[2025-11-20]*: Description of what not to do and why...
+_[2025-11-20]_: Description of what not to do and why...
 
 ## Workflow
 
@@ -210,11 +224,12 @@ PATH_TO_SPEC: $ARGUMENTS
 ### Implementation Patterns
 
 **Standard Approach:**
-*[2025-12-01]*: Code examples and guidance...
+_[2025-12-01]_: Code examples and guidance...
 
 ### Code Standards
 
 **Specific Requirements:**
+
 - Pattern to follow
 - Tools to use
 
@@ -239,7 +254,7 @@ PATH_TO_SPEC: $ARGUMENTS
 
 ### Improve Command Template
 
-```markdown
+````markdown
 ---
 description: Analyze recent changes and update expert knowledge
 ---
@@ -255,18 +270,19 @@ You analyze recent [domain] changes and update expert knowledge.
    git log --oneline -20 -- "[relevant-paths]"
    git diff main -- "[relevant-files]"
    ```
+````
 
-2. **Extract Learnings**
+1. **Extract Learnings**
    - Identify successful patterns
    - Note approaches that worked
    - Document fixes and improvements
 
-3. **Identify Anti-Patterns**
+2. **Identify Anti-Patterns**
    - Review issues fixed
    - Note failure modes
    - Capture prevention strategies
 
-4. **Update Expertise**
+3. **Update Expertise**
    - Edit `[domain]_expert_plan.md` Expertise sections
    - Edit `[domain]_expert_build.md` Expertise sections
    - Add timestamps to all new entries
@@ -279,16 +295,20 @@ You analyze recent [domain] changes and update expert knowledge.
 **Changes Analyzed:** [summary]
 
 **Learnings Extracted:**
+
 - Pattern: why it worked
 - Pattern: benefit observed
 
 **Anti-Patterns Identified:**
+
 - What to avoid: why
 
 **Expertise Updates Made:**
+
 - File: changes made
 - Sections updated
-```
+
+````
 
 ---
 
@@ -467,7 +487,7 @@ def reflect(execution_trace, max_iterations=5):
             break
 
     return insights
-```
+````
 
 #### 3. Curator: Deterministic Knowledge Integration
 
@@ -476,18 +496,21 @@ def reflect(execution_trace, max_iterations=5):
 **Key Innovation**: **Uses deterministic logic, not LLM inference**. This prevents compression bias—the tendency of language models to oversimplify or merge distinct patterns into vague generalizations.
 
 **Why deterministic curation matters**: LLMs naturally compress information. When you ask an LLM to merge new insights with existing expertise, it often:
+
 - Discards specificity for brevity
 - Merges related-but-distinct patterns
 - Loses edge case details
 - Smooths over conflicts rather than preserving them as decision points
 
 Deterministic merging preserves granularity through explicit rules:
+
 - Append new entries with timestamps
 - Preserve existing entries unless explicitly marked for removal
 - Use structural markers (headings, lists) to maintain organization
 - Apply conflict resolution rules without interpretation
 
 **Implementation Pattern**:
+
 ```python
 def curate_knowledge(insights, existing_expertise):
     """Deterministic knowledge base update."""
@@ -524,29 +547,32 @@ def curate_knowledge(insights, existing_expertise):
 
 The three-role architecture operationalizes the conceptual pattern described earlier in this entry:
 
-| Conceptual Role | Execution Role | Primary Activity |
-|-----------------|----------------|------------------|
-| **Build** | Generator | Execute tasks, produce traces |
-| **Improve (Phase 1)** | Reflector | Extract insights from traces |
-| **Improve (Phase 2)** | Curator | Merge insights into expertise |
+| Conceptual Role       | Execution Role | Primary Activity              |
+| --------------------- | -------------- | ----------------------------- |
+| **Build**             | Generator      | Execute tasks, produce traces |
+| **Improve (Phase 1)** | Reflector      | Extract insights from traces  |
+| **Improve (Phase 2)** | Curator        | Merge insights into expertise |
 
 The key insight: what appears as a single "Improve" command at the user interface level actually decomposes into two distinct execution roles (Reflector + Curator) with different mechanisms—one LLM-based, one deterministic.
 
 ### Implementation Considerations
 
 **When to apply this architecture**:
+
 - Long-lived expert systems accumulating knowledge over months/years
 - Domains where subtle distinctions matter (compression would lose critical nuance)
 - Systems where you can instrument execution to produce detailed traces
 - Contexts where you can afford the computational cost of multi-iteration reflection
 
 **When simpler approaches suffice**:
+
 - Short-term projects where knowledge doesn't need to accumulate
 - Domains with well-established patterns (no new insights emerging)
 - Resource-constrained environments where iteration cost exceeds benefit
 - Situations where human curation can happen frequently enough to prevent drift
 
 **Sources**:
+
 - ACE (Agentic Cognitive Engine) framework ablation studies
 - Production experience with multi-expert self-improving systems
 
@@ -554,7 +580,7 @@ The key insight: what appears as a single "Improve" command at the user interfac
 
 ## Expertise-as-Mental-Model Variant
 
-*[2025-12-25]*: Experience with large-scale agent systems revealed a variant of this pattern that treats expertise as a **queryable mental model** rather than embedded prompt sections. This book's own `.claude/agents/experts/` implementation demonstrates this approach. Key differences:
+_[2025-12-25]_: Experience with large-scale agent systems revealed a variant of this pattern that treats expertise as a **queryable mental model** rather than embedded prompt sections. This book's own `.claude/agents/experts/` implementation demonstrates this approach. Key differences:
 
 ### Structure
 
@@ -572,6 +598,7 @@ Instead of expertise embedded in command files, a separate `expertise.yaml` (500
 ### Expertise YAML Format
 
 Structured YAML with consistent sections:
+
 - `overview` - Domain scope and rationale
 - `core_implementation` - Key files and conventions
 - `key_operations` - Domain-specific operations documented
@@ -585,6 +612,7 @@ Structured YAML with consistent sections:
 ### Question Agent Pattern
 
 A read-only interface for querying expertise without code changes:
+
 1. Read expertise.yaml
 2. Locate relevant sections based on question
 3. Answer with evidence from expertise + code references
@@ -597,6 +625,7 @@ Model: `haiku` for fast, cost-effective queries
 ### Self-Improvement with Constraints
 
 The improve-agent enforces constraints that prevent expertise bloat:
+
 - **PRESERVE/APPEND/DATE/REMOVE rules** for controlled updates
 - **Git history analysis** to focus on recent changes
 - **Timestamp tracking** for all new entries
@@ -613,12 +642,14 @@ This reframes the improve workflow from "updating documentation" to "validating 
 ### When to Use This Variant
 
 **Prefer expertise.yaml when:**
+
 - Expertise exceeds 100 lines (too large to embed in prompts)
 - Multiple agents need the same expertise (question, plan, build)
 - Queryable interfaces are valuable (question agent)
 - Domain has many operations worth documenting (15+ operations)
 
 **Stick with embedded expertise when:**
+
 - Expertise is compact (<100 lines)
 - Single command uses the expertise
 - Overhead of separate file not justified
@@ -629,35 +660,36 @@ This reframes the improve workflow from "updating documentation" to "validating 
 
 ## Expert Domains: From Pattern to System
 
-*[2025-12-26]*: The self-improving expert pattern evolved from individual command sets into a system-wide architecture spanning 11 domains with standardized four-agent teams. This transformation emerged through five key commits:
+_[2025-12-26]_: The self-improving expert pattern evolved from individual command sets into a system-wide architecture spanning 11 domains with standardized four-agent teams. This transformation emerged through five key commits:
 
 **Evolution Timeline:**
 
-| Commit | Date | Change | Impact |
-|--------|------|--------|--------|
-| c67ed43 | Dec 26 | plan_build_improve lifecycle introduced | Established 3-command pattern |
-| 39e7904 | Dec 26 | Standardization to 4-agent pattern | Added question agent (haiku, read-only) |
-| 353d576 | Dec 26 | **CRITICAL**: Coordinators→skills, flat /do routing | Eliminated orchestration layer bloat |
-| 35a871a | Dec 26 | GitHub agent absorption | Demonstrated domain absorption pattern |
-| 5002a1c | Dec 26 | Bulk expertise update across 11 domains | System-wide knowledge standardization |
-| 89fbbf9 | Dec 26 | Color coding standardization | Visual agent role identification |
+| Commit  | Date   | Change                                              | Impact                                  |
+| ------- | ------ | --------------------------------------------------- | --------------------------------------- |
+| c67ed43 | Dec 26 | plan_build_improve lifecycle introduced             | Established 3-command pattern           |
+| 39e7904 | Dec 26 | Standardization to 4-agent pattern                  | Added question agent (haiku, read-only) |
+| 353d576 | Dec 26 | **CRITICAL**: Coordinators→skills, flat /do routing | Eliminated orchestration layer bloat    |
+| 35a871a | Dec 26 | GitHub agent absorption                             | Demonstrated domain absorption pattern  |
+| 5002a1c | Dec 26 | Bulk expertise update across 11 domains             | System-wide knowledge standardization   |
+| 89fbbf9 | Dec 26 | Color coding standardization                        | Visual agent role identification        |
 
 The shift from individual self-improving experts to a coordinated expert domain system creates emergent benefits that exceed the sum of individual agents:
 
 **System-Level Benefits:**
 
-| Benefit | Individual Experts | Expert Domain System |
-|---------|-------------------|----------------------|
-| **Knowledge Consistency** | Each expert maintains isolated knowledge | Shared expertise.yaml format enables cross-domain patterns |
-| **Tool Boundaries** | Ad-hoc tool selection per agent | Strict role-based tools (plan: no Write, question: read-only) |
-| **Routing Clarity** | Manual dispatcher logic | Pattern-based /do classification (A-E patterns) |
-| **Learning Surface** | Expertise isolated to command prompts | expertise.yaml provides queryable knowledge base |
-| **Absorption Path** | No clear upgrade path for standalone agents | 8-step absorption pattern for integration |
-| **Question Handling** | Mixed with implementation concerns | Dedicated question-agent (haiku model, safe exploration) |
+| Benefit                   | Individual Experts                          | Expert Domain System                                          |
+| ------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
+| **Knowledge Consistency** | Each expert maintains isolated knowledge    | Shared expertise.yaml format enables cross-domain patterns    |
+| **Tool Boundaries**       | Ad-hoc tool selection per agent             | Strict role-based tools (plan: no Write, question: read-only) |
+| **Routing Clarity**       | Manual dispatcher logic                     | Pattern-based /do classification (A-E patterns)               |
+| **Learning Surface**      | Expertise isolated to command prompts       | expertise.yaml provides queryable knowledge base              |
+| **Absorption Path**       | No clear upgrade path for standalone agents | 8-step absorption pattern for integration                     |
+| **Question Handling**     | Mixed with implementation concerns          | Dedicated question-agent (haiku model, safe exploration)      |
 
 Commit 353d576 represents the critical architectural pivot: **eliminating coordinator agents in favor of direct skill invocation**. The previous architecture had coordinator layers between user commands and expert agents, creating context overhead and unclear responsibility boundaries. The flat /do routing sends user requirements directly to domain experts based on pattern classification (A-E), with skills providing cross-domain capabilities like research and TOC generation.
 
 **Quantified Scale:**
+
 - **11 domains** × 4 agents = 44 specialized agents
 - **11 expertise.yaml files** (500-600 lines each) = ~6,000 lines of structured knowledge
 - **Zero coordinator bloat** after 353d576 refactoring
@@ -669,7 +701,7 @@ This architecture separates **cross-cutting concerns** (skills) from **domain ex
 
 ## The 4-Agent Pattern Template
 
-*[2025-12-26]*: Each expert domain implements a standardized four-agent team with distinct roles, tools, and color coding. The pattern emerged from standardization commit 39e7904 and now spans all 11 domains.
+_[2025-12-26]_: Each expert domain implements a standardized four-agent team with distinct roles, tools, and color coding. The pattern emerged from standardization commit 39e7904 and now spans all 11 domains.
 
 ### Plan Agent (Yellow)
 
@@ -680,11 +712,13 @@ This architecture separates **cross-cutting concerns** (skills) from **domain ex
 **Model**: `sonnet`
 
 **Constraints**:
+
 - NO execution (builds specifications, doesn't implement)
 - Write access limited to spec file creation
 - No Bash (analysis only, not operational)
 
 **Frontmatter Example** (from `.claude/agents/experts/github/github-plan-agent.md`):
+
 ```yaml
 ---
 name: github-plan-agent
@@ -696,6 +730,7 @@ color: yellow
 ```
 
 **Workflow Structure**:
+
 1. **Understand Requirement** - Parse USER_PROMPT for domain-specific context
 2. **Check State Needs** - Identify what repository/codebase state info is needed
 3. **Plan Command Sequence** - Break down operation into safe, ordered steps
@@ -712,18 +747,21 @@ color: yellow
 **Purpose**: Implementation from specification.
 
 **Tools**: Varies by domain type—
+
 - **Knowledge domains**: `Read, Write, Edit, Glob, Grep` (file operations)
 - **Operational domains**: `Read, Write, Edit, Glob, Grep, Bash` (execution)
 
 **Model**: `sonnet`
 
 **Constraints**:
+
 - NO planning (follows specification exactly)
 - MUST read spec file (PATH_TO_SPEC or SPEC variable)
 - Updates frontmatter timestamps (last_updated)
 - Validates implementation against spec requirements
 
 **Frontmatter Example** (from `.claude/agents/experts/knowledge/knowledge-build-agent.md`):
+
 ```yaml
 ---
 name: knowledge-build-agent
@@ -735,11 +773,12 @@ color: green
 ```
 
 **Workflow Structure**:
+
 1. **Load Specification** - Read spec file from PATH_TO_SPEC
 2. **Review Target Context** - Read existing files, check patterns, verify no conflicts
 3. **Implement Changes** - Apply spec (create new, extend existing, update indexes)
 4. **Implement Cross-References** - Bidirectional links with contextual descriptions
-5. **Update Index Files** - Maintain _index.md tables, alphabetical order
+5. **Update Index Files** - Maintain \_index.md tables, alphabetical order
 6. **Apply Voice Standards** - Third-person, evidence-grounded, direct statements
 7. **Verify Implementation** - Check frontmatter, formatting, links, voice consistency
 
@@ -748,6 +787,7 @@ color: green
 **Why Green**: Execution phase—proceed with implementation.
 
 **Domain-Specific Tool Variation**:
+
 - **github-build-agent**: Adds `Bash` for git/gh CLI operations
 - **knowledge-build-agent**: Adds `WebSearch` for research during writing
 - **orchestration-build-agent**: Bash for agent spawning tests
@@ -761,12 +801,14 @@ color: green
 **Model**: `sonnet`
 
 **Constraints**:
+
 - ONLY updates expertise.yaml (preserves agent prompt stability)
 - MUST add timestamps to new entries
 - MUST preserve existing valid patterns
 - Uses git commands for historical analysis
 
 **Frontmatter Example** (from `.claude/agents/experts/github/github-improve-agent.md`):
+
 ```yaml
 ---
 name: github-improve-agent
@@ -778,6 +820,7 @@ color: purple
 ```
 
 **Workflow Structure**:
+
 1. **Analyze Recent Changes** - Git log, branch analysis, PR/issue review, release patterns
 2. **Extract Workflow Learnings** - Six focus areas: commit quality, branch naming, PR structure, workflow effectiveness, collaboration, safety adherence
 3. **Identify Effective Patterns** - New workflows, successful structures, resolution approaches
@@ -787,6 +830,7 @@ color: purple
 7. **Document Pattern Discoveries** - Name patterns, add context, link evidence
 
 **Update Rules** (from github-improve-agent.md):
+
 ```yaml
 # In expertise.yaml
 patterns:
@@ -819,12 +863,14 @@ patterns:
 **Model**: `haiku` (faster, cheaper for queries)
 
 **Constraints**:
+
 - NO write access (pure advisory role)
 - NO Task spawning (doesn't coordinate)
 - Answers from expertise.yaml + codebase analysis
 - Safe for speculative queries
 
 **Frontmatter Example** (from `.claude/agents/experts/orchestration/orchestration-question-agent.md`):
+
 ```yaml
 ---
 name: orchestration-question-agent
@@ -836,22 +882,27 @@ color: cyan
 ```
 
 **Workflow Structure**:
+
 1. **Understand Question** - Parse for domain topic, identify expertise sections
 2. **Load Expertise** - Read expertise.yaml, find relevant sections, gather examples
 3. **Formulate Answer** - Direct answer from expertise with supporting evidence
 4. **Provide Context** - Explain pattern rationale, note pitfalls, suggest related topics
 
 **Common Question Patterns**:
+
 ```markdown
 ### Orchestration Domain
+
 Q: When should I use parallel vs sequential execution?
 A: Parallel when operations are independent. Sequential when B depends on A's output.
 
 ### GitHub Domain
+
 Q: Why can't I force push?
 A: Safety protocol. Force push rewrites history, breaks collaborators' repos.
 
 ### Knowledge Domain
+
 Q: How do I structure a new chapter?
 A: Use standard frontmatter with part/chapter/section, start with Core Questions...
 ```
@@ -866,11 +917,12 @@ A: Use standard frontmatter with part/chapter/section, start with Core Questions
 
 ## expertise.yaml: Structured Knowledge Schema
 
-*[2025-12-26]*: The expertise.yaml format provides a 500-600 line structured knowledge base that replaces embedded expertise sections in agent prompts. This separation enables queryable knowledge (via question-agent), self-improvement (via improve-agent), and cross-domain pattern sharing.
+_[2025-12-26]_: The expertise.yaml format provides a 500-600 line structured knowledge base that replaces embedded expertise sections in agent prompts. This separation enables queryable knowledge (via question-agent), self-improvement (via improve-agent), and cross-domain pattern sharing.
 
 ### Schema Sections
 
 **1. overview** (30-50 lines)
+
 ```yaml
 overview:
   description: |
@@ -884,6 +936,7 @@ overview:
 **Purpose**: Establishes domain boundaries and justifies specialization.
 
 **2. core_implementation** (40-80 lines)
+
 ```yaml
 core_implementation:
   primary_files:
@@ -904,6 +957,7 @@ core_implementation:
 **Example** (from github/expertise.yaml lines 18-36): Documents that git operations center on `.git/` and `.github/` directories, following Conventional Commits and branch naming conventions.
 
 **3. key_operations** (200-300 lines, largest section)
+
 ```yaml
 key_operations:
   create_conventional_commit:
@@ -929,6 +983,7 @@ key_operations:
 **Purpose**: Exhaustive documentation of 8-15 core domain operations with examples and anti-patterns.
 
 **Structure Pattern**:
+
 - **name**: Human-readable operation name
 - **description**: One-line summary
 - **when_to_use**: Context for application
@@ -939,6 +994,7 @@ key_operations:
 **Example** (from github/expertise.yaml lines 38-71): The `create_conventional_commit` operation documents commit types, format structure, Co-Authored-By requirement, with anti-pattern warning about generic messages.
 
 **4. decision_trees** (60-100 lines)
+
 ```yaml
 decision_trees:
   commit_type_selection:
@@ -964,6 +1020,7 @@ decision_trees:
 **Example** (from github/expertise.yaml lines 211-239): Commit type selection tree shows feat (45% usage) and refactor (20% usage) are most common in this repository.
 
 **5. patterns** (100-150 lines)
+
 ```yaml
 patterns:
   feature_branch_workflow:
@@ -993,6 +1050,7 @@ patterns:
 **Example** (from github/expertise.yaml lines 267-307): Documents both feature_branch_workflow and direct_to_main_workflow with analysis showing this repository uses direct-to-main (0 PRs observed).
 
 **6. safety_protocols** (40-60 lines)
+
 ```yaml
 safety_protocols:
   - protocol: Never Force Push
@@ -1009,6 +1067,7 @@ safety_protocols:
 **Example** (from github/expertise.yaml lines 398-427): Five safety protocols including force push prevention, credential exclusion, Co-Authored-By requirement.
 
 **7. best_practices** (60-100 lines, MUTABLE)
+
 ```yaml
 best_practices:
   - category: Commit Messages
@@ -1029,6 +1088,7 @@ best_practices:
 **Example** (from github/expertise.yaml lines 428-462): Commit message best practices cite observed behavior (20/34 commits have detailed bodies) and include emerging pattern of emoji in Claude Code attribution.
 
 **8. known_issues** (30-50 lines, MUTABLE)
+
 ```yaml
 known_issues:
   - issue: Force push protection relies on prompt constraints only
@@ -1045,6 +1105,7 @@ known_issues:
 **Example** (from github/expertise.yaml lines 488-512): Documents that 28% of commits use generic "update" messages, impact on history comprehension, status as open issue.
 
 **9. potential_enhancements** (40-60 lines, MUTABLE)
+
 ```yaml
 potential_enhancements:
   - enhancement: Automated commit message linting
@@ -1063,12 +1124,14 @@ potential_enhancements:
 ### Mutability Strategy
 
 **Stable Sections** (preserved by improve-agent):
+
 - `overview` - Domain definition rarely changes
 - `core_implementation` - File structure is stable
 - `key_operations` structure - Operation names/signatures stable
 - `safety_protocols` - Safety rules are immutable
 
 **Mutable Sections** (updated by improve-agent):
+
 - `key_operations.*.examples` - Add real examples from repository
 - `decision_trees.*.observed_usage` - Update statistics from git analysis
 - `patterns.*.real_examples` - Link to new exemplar commits
@@ -1084,23 +1147,23 @@ potential_enhancements:
 
 ## Multi-Domain Coordination
 
-*[2025-12-26]*: The 11-domain expert system creates specialized knowledge territories with clear boundaries and coordinated routing through the /do command.
+_[2025-12-26]_: The 11-domain expert system creates specialized knowledge territories with clear boundaries and coordinated routing through the /do command.
 
 ### The 11 Expert Domains
 
-| Domain | Agents | Expertise Lines | Purpose |
-|--------|--------|----------------|---------|
-| **agent-authoring** | plan, build, improve, question | ~520 | Agent creation and configuration (.claude/agents/) |
-| **audit** | plan, build, improve, question | ~480 | External codebase auditing and analysis |
-| **book-structure** | plan, build, improve, question | ~560 | Frontmatter, chapters, TOC management |
-| **claude-config** | plan, build, improve, question | ~490 | Claude Code configuration (.clauderc, prompts) |
-| **do-management** | plan, build, improve, question | ~530 | /do command routing and classification |
-| **external-teacher** | plan, build, improve, question | ~510 | Teaching external projects .claude/ setup |
-| **github** | plan, build, improve, question | 550 | Git/GitHub operations (commits, PRs, branches) |
-| **knowledge** | plan, build, improve, question | ~540 | Book content updates (chapters/, STYLE_GUIDE) |
-| **orchestration** | plan, build, improve, question | ~505 | Coordination patterns (Task, parallelism, specs) |
-| **questions** | ask, build, deepen, format, improve | ~590 | Question-driven content development |
-| **research** | plan, build, improve, question | ~470 | External source research and synthesis |
+| Domain               | Agents                              | Expertise Lines | Purpose                                            |
+| -------------------- | ----------------------------------- | --------------- | -------------------------------------------------- |
+| **agent-authoring**  | plan, build, improve, question      | ~520            | Agent creation and configuration (.claude/agents/) |
+| **audit**            | plan, build, improve, question      | ~480            | External codebase auditing and analysis            |
+| **book-structure**   | plan, build, improve, question      | ~560            | Frontmatter, chapters, TOC management              |
+| **claude-config**    | plan, build, improve, question      | ~490            | Claude Code configuration (.clauderc, prompts)     |
+| **do-management**    | plan, build, improve, question      | ~530            | /do command routing and classification             |
+| **external-teacher** | plan, build, improve, question      | ~510            | Teaching external projects .claude/ setup          |
+| **github**           | plan, build, improve, question      | 550             | Git/GitHub operations (commits, PRs, branches)     |
+| **knowledge**        | plan, build, improve, question      | ~540            | Book content updates (chapters/, STYLE_GUIDE)      |
+| **orchestration**    | plan, build, improve, question      | ~505            | Coordination patterns (Task, parallelism, specs)   |
+| **questions**        | ask, build, deepen, format, improve | ~590            | Question-driven content development                |
+| **research**         | plan, build, improve, question      | ~470            | External source research and synthesis             |
 
 **Total**: 44 agents, ~5,745 lines of structured expertise.
 
@@ -1111,30 +1174,35 @@ potential_enhancements:
 The /do command routes user requirements directly to expert domains based on pattern classification:
 
 **Pattern A - Direct Questions** → **question-agent** (domain-specific)
+
 ```
 User: "/do How do I structure a PR?"
 → github-question-agent (haiku, read-only)
 ```
 
 **Pattern B - Simple Implementation** → **build-agent** (skip planning)
+
 ```
 User: "/do Fix typo in README.md line 42"
 → knowledge-build-agent (with inline spec)
 ```
 
 **Pattern C - Standard Plan→Build** → **plan-agent** → [approval] → **build-agent**
+
 ```
 User: "/do Add new section on context patterns"
 → knowledge-plan-agent → spec file → [user reviews] → knowledge-build-agent
 ```
 
 **Pattern D - Full Lifecycle** → **plan** → [approval] → **build** → **improve**
+
 ```
 User: "/do Implement GitHub release workflow"
 → github-plan-agent → spec → [approval] → github-build-agent → github-improve-agent
 ```
 
 **Pattern E - Improve Only** → **improve-agent** (analysis mode)
+
 ```
 User: "/do Update GitHub expertise from recent commits"
 → github-improve-agent (analyzes git log, updates expertise.yaml)
@@ -1147,12 +1215,14 @@ User: "/do Update GitHub expertise from recent commits"
 The 353d576 refactoring separated **cross-cutting capabilities** (skills) from **domain expertise** (experts):
 
 **Skills** (in `.claude/skills/`):
+
 - `orchestrating-knowledge-workflows` - Plan→build→improve orchestration
 - `researching-external-sources` - Parallel web research
 - `executing-comprehensive-reviews` - Multi-type review routing
 - `managing-book-operations` - TOC generation, metadata validation
 
 **Experts** (in `.claude/agents/experts/<domain>/`):
+
 - Domain-specific knowledge (expertise.yaml)
 - 4-agent teams (plan/build/improve/question)
 - Focused on single knowledge territory
@@ -1166,6 +1236,7 @@ The 353d576 refactoring separated **cross-cutting capabilities** (skills) from *
 With 11 domains, clear boundaries prevent overlap:
 
 **Boundary Examples**:
+
 - **github** domain: Git commands, PR structure, commit format
 - **orchestration** domain: Task tool usage, parallelism, coordinator patterns
 - **knowledge** domain: Book content structure, STYLE_GUIDE, frontmatter
@@ -1183,6 +1254,7 @@ Cross-Reference: Checks book-structure expertise for chapter frontmatter validat
 
 **Expertise Cross-References**:
 expertise.yaml files link to related domains:
+
 ```yaml
 # In github/expertise.yaml
 patterns:
@@ -1201,18 +1273,20 @@ This creates a **web of knowledge** where domains remain focused but acknowledge
 
 ## Agent Absorption: Case Study
 
-*[2025-12-26]*: Commit 35a871a demonstrates the eight-step pattern for absorbing standalone agents into the expert domain system. This case study documents the GitHub agent absorption that converted a 383-line standalone agent into a 4-agent expert domain with structured expertise.
+_[2025-12-26]_: Commit 35a871a demonstrates the eight-step pattern for absorbing standalone agents into the expert domain system. This case study documents the GitHub agent absorption that converted a 383-line standalone agent into a 4-agent expert domain with structured expertise.
 
 ### The Absorption Pattern (8 Steps)
 
 **Step 1: Identify Standalone Agent for Absorption**
 
 **Before State**:
+
 - File: `.claude/agents/github-versioning-agent.md` (383 lines)
 - Purpose: Git/GitHub CLI operations (commits, branches, PRs, issues, releases)
 - Problem: Monolithic structure, no self-improvement, difficult to query
 
 **Absorption Criteria**:
+
 - Agent handles coherent domain (GitHub operations)
 - Operations recur frequently (commits every day)
 - Domain knowledge would benefit from accumulation (commit patterns, PR structures)
@@ -1229,12 +1303,14 @@ mkdir -p .claude/agents/experts/github
 **Step 3: Extract Domain Knowledge to expertise.yaml**
 
 **Source Material**: github-versioning-agent.md contained embedded knowledge:
+
 - Conventional Commits format examples
 - Branch naming conventions
 - PR structure templates
 - Safety protocols (no force push, no credential commits)
 
 **Extraction Process**:
+
 1. Identify **stable knowledge** → `core_implementation`, `safety_protocols`
 2. Extract **operations** → `key_operations` (create_conventional_commit, create_feature_branch, etc.)
 3. Document **workflows** → `patterns` (feature_branch_workflow, hotfix_workflow)
@@ -1250,17 +1326,19 @@ mkdir -p .claude/agents/experts/github
 **Source**: github-versioning-agent.md had "planning" concerns mixed with execution.
 
 **Extraction**:
+
 ```yaml
 ---
 name: github-plan-agent
 description: Plans GitHub operations (commits, branches, PRs, issues, releases)
-tools: Read, Glob, Grep, Write  # Write for spec creation only
+tools: Read, Glob, Grep, Write # Write for spec creation only
 model: sonnet
 color: yellow
 ---
 ```
 
 **Workflow** (7 steps):
+
 1. Understand operation requirement
 2. Check repository state needs
 3. Plan command sequence
@@ -1276,17 +1354,19 @@ color: yellow
 **Source**: github-versioning-agent.md had execution logic for git/gh commands.
 
 **Extraction**:
+
 ```yaml
 ---
 name: github-build-agent
 description: Executes GitHub operations from spec
-tools: Read, Edit, Bash  # Bash for git/gh CLI
+tools: Read, Edit, Bash # Bash for git/gh CLI
 model: sonnet
 color: green
 ---
 ```
 
 **Workflow** (6 steps):
+
 1. Load specification from SPEC variable
 2. Verify repository state
 3. Execute command sequence (git/gh commands)
@@ -1304,13 +1384,14 @@ color: green
 ---
 name: github-improve-agent
 description: Improves GitHub expertise from repository patterns
-tools: Read, Write, Edit, Glob, Grep, Bash  # Bash for git log analysis
+tools: Read, Write, Edit, Glob, Grep, Bash # Bash for git log analysis
 model: sonnet
 color: purple
 ---
 ```
 
 **Workflow** (7 steps):
+
 1. Analyze recent changes (git log, branch analysis, PR/issue review)
 2. Extract workflow learnings (6 focus areas: commit quality, branch naming, PR structure, workflow effectiveness, collaboration, safety adherence)
 3. Identify effective patterns
@@ -1322,6 +1403,7 @@ color: purple
 **Lines**: 270 lines
 
 **Key Innovation**: The improve-agent analyzes actual git history to discover patterns:
+
 ```bash
 # Commit pattern analysis
 git log --format="%s" -30  # Extract commit messages
@@ -1342,13 +1424,14 @@ This enables **repository-specific learning**: observed that this repo uses dire
 ---
 name: github-question-agent
 description: Answers GitHub operation questions
-tools: Read, Glob, Grep  # Read-only, no modifications
-model: haiku  # Faster, cheaper for queries
+tools: Read, Glob, Grep # Read-only, no modifications
+model: haiku # Faster, cheaper for queries
 color: cyan
 ---
 ```
 
 **Workflow** (4 steps):
+
 1. Understand question (parse for GitHub topic)
 2. Load expertise (read expertise.yaml, find relevant sections)
 3. Formulate answer (direct answer from expertise with examples)
@@ -1357,6 +1440,7 @@ color: cyan
 **Lines**: 150 lines
 
 **Common Questions Handled**:
+
 - "Why can't I force push?" → Safety protocol explanation
 - "How do I structure a PR?" → PR template guidance
 - "What commit type should I use?" → Decision tree walkthrough
@@ -1366,11 +1450,13 @@ color: cyan
 **Step 8: Delete Original Agent, Update Routing**
 
 **Deletions**:
+
 ```bash
 rm .claude/agents/github-versioning-agent.md  # -383 lines
 ```
 
 **Additions**:
+
 ```bash
 .claude/agents/experts/github/
 ├── expertise.yaml           # +550 lines
@@ -1387,20 +1473,33 @@ Total: +1,386 lines
 **Routing Updates**:
 
 **CLAUDE.md** - Added github domain to experts table:
+
 ```markdown
 | github | plan, build, improve, question | GitHub operations: commits, branches, PRs, releases |
 ```
 
 **do.md** (do-management expertise) - Added routing logic:
+
 ```yaml
 # In do-management/expertise.yaml
 domain_routing:
   github:
-    triggers: ["commit", "branch", "PR", "pull request", "issue", "release", "git", "github"]
+    triggers:
+      [
+        "commit",
+        "branch",
+        "PR",
+        "pull request",
+        "issue",
+        "release",
+        "git",
+        "github",
+      ]
     agent_pattern: github-{plan|build|improve|question}-agent
 ```
 
 **Commit Message** (35a871a):
+
 ```
 feat(experts): add github expert domain with full 4-agent pattern
 
@@ -1417,20 +1516,21 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### Before vs After Comparison
 
-| Aspect | Standalone Agent | Expert Domain |
-|--------|-----------------|--------------|
-| **Structure** | Single 383-line file | 5 files (1,386 lines) |
-| **Knowledge Format** | Embedded in prompt | Structured expertise.yaml |
-| **Self-Improvement** | None | improve-agent with git analysis |
-| **Queryability** | Not queryable | question-agent (haiku, read-only) |
-| **Tool Boundaries** | Mixed (all tools in one agent) | Strict (plan: no Bash, question: read-only) |
-| **Planning/Execution** | Intermingled | Separated (plan → spec → build) |
-| **Evidence Base** | Static examples | Real examples from git history |
-| **Routing** | Direct invocation | Pattern-based /do routing |
+| Aspect                 | Standalone Agent               | Expert Domain                               |
+| ---------------------- | ------------------------------ | ------------------------------------------- |
+| **Structure**          | Single 383-line file           | 5 files (1,386 lines)                       |
+| **Knowledge Format**   | Embedded in prompt             | Structured expertise.yaml                   |
+| **Self-Improvement**   | None                           | improve-agent with git analysis             |
+| **Queryability**       | Not queryable                  | question-agent (haiku, read-only)           |
+| **Tool Boundaries**    | Mixed (all tools in one agent) | Strict (plan: no Bash, question: read-only) |
+| **Planning/Execution** | Intermingled                   | Separated (plan → spec → build)             |
+| **Evidence Base**      | Static examples                | Real examples from git history              |
+| **Routing**            | Direct invocation              | Pattern-based /do routing                   |
 
 ### Quantified Benefits
 
 **From improve-agent analysis** (ran after 2 weeks):
+
 - **20/50 commits** follow Conventional Commits (40% adherence)
 - **Most common types**: feat (9), refactor (4), fix (3), chore (1)
 - **Direct-to-main workflow** detected (0 PRs in repository)
@@ -1445,11 +1545,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Agent Registry Pattern
 
-*[2026-02-05]*: As expert domains scale from 1 to 10+, manual agent discovery becomes bottleneck. Agent registries auto-generate machine-readable catalogs from agent frontmatter, enabling programmatic discovery and routing.
+_[2026-02-05]_: As expert domains scale from 1 to 10+, manual agent discovery becomes bottleneck. Agent registries auto-generate machine-readable catalogs from agent frontmatter, enabling programmatic discovery and routing.
 
 ### The Discovery Problem at Scale
 
 With 11 domains × 4 agents = 44 specialized agents, routing questions emerge:
+
 - Which agents can modify TypeScript files?
 - Which agents use Haiku model (for cost-sensitive queries)?
 - Which agents have Write access (vs read-only)?
@@ -1473,6 +1574,7 @@ output-style: practitioner-focused
 **Generated indices:**
 
 **Capability Index:**
+
 ```json
 {
   "can_write": [
@@ -1489,6 +1591,7 @@ output-style: practitioner-focused
 ```
 
 **Model Index:**
+
 ```json
 {
   "haiku": ["knowledge-question-agent", "github-question-agent"],
@@ -1498,6 +1601,7 @@ output-style: practitioner-focused
 ```
 
 **Tool Matrix:**
+
 ```json
 {
   "Read": ["*-agent"],
@@ -1510,18 +1614,21 @@ output-style: practitioner-focused
 ### Routing Applications
 
 **Cost-sensitive queries:** Route to Haiku agents when speed/cost matters
+
 ```
 Query: "How do I structure a PR?"
 → github-question-agent (haiku, read-only, 4× cheaper)
 ```
 
 **Capability-aware delegation:** Route based on required tool access
+
 ```
 Task: "Implement new section"
 → knowledge-build-agent (has Write, Edit, WebSearch)
 ```
 
 **Domain discovery:** "Which agents can help with GitHub operations?"
+
 ```
 Query index: domain="github" AND tools CONTAINS "Bash"
 → [github-build-agent, github-improve-agent]
@@ -1530,16 +1637,19 @@ Query index: domain="github" AND tools CONTAINS "Bash"
 ### Registry Update Strategy
 
 **Option 1: Build-time generation**
+
 - Script scans `.claude/agents/experts/` at build time
 - Generates `agent-registry.json`
 - Commit to repository (static lookup)
 
 **Option 2: Runtime query**
+
 - On-demand frontmatter parsing
 - No pre-generated file required
 - Slower but always fresh
 
 **Option 3: Hybrid with cache invalidation**
+
 - Generate on first query, cache result
 - Invalidate when `.claude/agents/` directory changes
 - Balance speed and freshness
@@ -1547,12 +1657,14 @@ Query index: domain="github" AND tools CONTAINS "Bash"
 ### When to Use Registry Pattern
 
 **Good fit:**
+
 - 10+ agents across multiple domains
 - Programmatic routing logic (like /do command)
 - Cost-sensitive delegation (model tier selection)
 - Multi-agent orchestration systems
 
 **Poor fit:**
+
 - Small agent count (<5 agents)
 - Manual agent selection sufficient
 - Single-domain systems
