@@ -2,7 +2,7 @@
 title: "Design as Bottleneck"
 description: "Mental models for multi-agent systems at scale — when implementation is automated, design becomes the constraint"
 created: 2026-02-11
-last_updated: 2026-04-11
+last_updated: 2026-05-31
 tags:
   [
     mental-models,
@@ -824,6 +824,8 @@ Each model is useful independently. Together, they describe a coherent philosoph
 - **[Claude Code](../10-practitioner-toolkit/1-claude-code.md):** Claude Cowork/Dispatch (documented there) is the production instantiation of the interface bottleneck model — Anthropic's own product acknowledges the paradigm gap between chat and asynchronous delegation. See the Cowork entry in the Tips & Tricks section.
 
 - **[Human-in-the-Loop](../7-patterns/6-human-in-the-loop.md):** Human-in-the-Loop patterns address _developer_-designed approval gates; the interface bottleneck model addresses _user-facing_ affordance design. These are complementary concerns at different system layers.
+
+- **[Software Ecology](../11-agent-readiness/6-software-ecology.md):** Applies bottleneck and capacity analysis across the whole development pipeline as activity scales 10x.
 
 ---
 

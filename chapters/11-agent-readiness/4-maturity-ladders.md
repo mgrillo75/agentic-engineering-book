@@ -2,7 +2,7 @@
 title: Dimensions of Readiness
 description: Why agent readiness varies independently across individual practice, the environment, and the organization rather than reducing to a single score
 created: 2026-05-29
-last_updated: 2026-05-29
+last_updated: 2026-05-31
 tags: [agent-readiness, maturity, diagnostic, dimensions, organization]
 part: 3
 part_title: Perspectives
@@ -65,6 +65,10 @@ The jump from early to deliberate is the one that most changes day-to-day agent 
 
 Agreement on a shared _interface_—a setup command, a verify command, a self-description—is what makes organizational progress tractable at scale. What lives inside that interface can vary by team. Forcing one toolchain across many teams tends to produce malicious compliance—a self-description file that says "see the wiki"—rather than real readiness.
 
+#### Conway's Law and Shared Fate
+
+Two socio-technical forces shape the organization dimension beyond interfaces and ownership. **Conway's Law** holds that organizations build systems whose structure mirrors their own communication structure (Conway, Melvin E., "How Do Committees Invent?", _Datamation_, 1968). The consequence for readiness is direct: org structure and culture shape _what_ agents build, not only _how_ humans coordinate around them. **Shared fate** names how tightly the components of an ecosystem are coupled—a monorepo with trunk-based development is high shared fate, where one change can reach everything at once. That coupling is a trade-off that is simultaneously technical and social: high shared fate makes a single change propagate everywhere, which is both powerful and dangerous (_Software Engineering at Google_, O'Reilly, 2020). The full treatment of both forces lives in the Software Ecology section; here they name what the organization dimension is measuring.
+
 ---
 
 ## Reading the Dimensions Together
@@ -88,6 +92,7 @@ A team that is self-improving on all three dimensions—an environment anyone ca
 
 ## Connections
 
+- **[Software Ecology](6-software-ecology.md):** Conway's Law and shared fate are developed there as the socio-technical forces operating on the organization dimension.
 - **[Prompt Maturity Model](../9-mental-models/2-prompt-maturity-model.md):** That model describes the sophistication of an individual _prompt_; this diagnostic describes the readiness of the _repository and organization_ around the agent. The individual-practice dimension overlaps with prompt maturity, but the environment and organization dimensions measure context that prompt maturity does not address.
 - **[Software Factories](../9-mental-models/7-software-factories.md):** The factory model describes what changes at scale once readiness is high; these dimensions describe whether a team has reached the readiness a factory presumes. Factory operation presumes the self-improving end of all three.
 - **[The Four Surfaces](1-the-four-surfaces.md):** The environment dimension is the four surfaces and the readiness principles expressed as a progression.

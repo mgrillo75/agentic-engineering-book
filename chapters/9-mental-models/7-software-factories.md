@@ -2,7 +2,7 @@
 title: "Software Factories"
 description: "The resurgence of industrial-scale software production — from Japanese factories to dark factories, and what the metaphor reveals about agentic systems"
 created: 2026-04-09
-last_updated: 2026-05-29
+last_updated: 2026-05-31
 tags:
   [
     mental-models,
@@ -338,6 +338,8 @@ The factory metaphor is most useful as a way of understanding what changes as sc
 - **Journal: [Agentic Engineering vs. Vibe Coding](../../.journal/2026-02-24-agentic-engineering-vs-vibe-coding.md):** The factory model at Level 5 represents the endpoint of agentic engineering discipline. The contrast with vibe coding at scale—illustrated by the OpenClaw case study—grounds the abstract factory critique in concrete failure modes.
 
 - **[Factory to Institution](../12-long-horizon-agent-state/5-factory-to-institution.md):** A forward-looking extension argues the factory is open-loop on value and proposes a judgment layer that feeds post-merge outcomes back into intent.
+
+- **[Software Ecology](../11-agent-readiness/6-software-ecology.md):** The factory model describes production at scale; software ecology adds the socio-technical and per-node 10x view of the surrounding ecosystem.
 
 ---
 

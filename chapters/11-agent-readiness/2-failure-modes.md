@@ -2,7 +2,7 @@
 title: Failure Modes
 description: A shared triage vocabulary for agent failure mapped to root surfaces and concrete fixes
 created: 2026-05-29
-last_updated: 2026-05-29
+last_updated: 2026-05-31
 tags: [agent-readiness, failure-modes, diagnostics, triage, vocabulary]
 part: 3
 part_title: Perspectives
@@ -104,6 +104,10 @@ Without a memory surface, expertise does not accumulate. The cost is highest in 
 
 ---
 
+## Unit of Analysis
+
+These six modes take the single agent task as the unit of analysis—one agent, one task, one diagnosis. That unit is the right one for triaging a stuck session. It is the wrong one for a development pipeline running at high agent activity, where the failure is not located in any one task but in a node of the pipeline itself. At 10x activity, build, review, testing, version control, and release each break in their own way, and no per-task diagnosis names that breakage. Ecosystem-level readiness is a separate unit of analysis, developed in the Software Ecology section.
+
 ## Open Questions
 
 - Can these failure modes be detected automatically? A verification gap is observable from CI configuration; context poisoning is harder to instrument without inspecting what was loaded.
@@ -113,6 +117,7 @@ Without a memory surface, expertise does not accumulate. The cost is highest in 
 
 ## Connections
 
+- **[Software Ecology](6-software-ecology.md):** The six modes diagnose a single agent task; ecosystem readiness diagnoses the whole pipeline, where each node (build, review, testing, version control, release) breaks differently at 10x activity.
 - **[The Four Surfaces](1-the-four-surfaces.md):** Every failure mode here maps to one of the four surfaces defined in §1; the surfaces are the diagnostic axes this vocabulary sorts against.
 - **[Debugging Agents](../8-practices/1-debugging-agents.md):** The practices chapter develops a diagnostic decision tree for agent failure; this vocabulary feeds that triage by naming the failure before the tree narrows the cause.
 - **[Context Strategies](../4-context/2-context-strategies.md):** Starvation and poisoning are both context-curation failures; the strategies chapter covers how to load the right context without the noise.

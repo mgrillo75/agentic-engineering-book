@@ -2,7 +2,7 @@
 title: From Factory to Institution
 description: A forward-looking proposal for a sixth layer that feeds post-merge outcomes back into intent-formation
 created: 2026-05-29
-last_updated: 2026-05-29
+last_updated: 2026-05-31
 tags: [agent-state, judgment, evaluation, speculative, autonomy]
 part: 3
 part_title: Perspectives
@@ -102,6 +102,7 @@ This entire section is a set of hypotheses. The genuine uncertainties:
 - **[The Composition Loop](2-composition-loop.md):** Layer 6 would extend the loop past "merge → next agent inherits memory" to "merge → observe outcome → reshape intent."
 - **[Memory and Intent](3-memory-and-intent.md):** Outcome-weighting attaches to the memory and intent-shape constructs defined there; the judgment layer is what would supply the weights.
 - **[Design as Bottleneck](../9-mental-models/6-design-as-bottleneck.md):** If implementation is free and the new constraint is deciding _what_ to build, a judgment layer that improves intent-formation targets exactly that bottleneck.
+- **[Software Ecology](../11-agent-readiness/6-software-ecology.md):** Names the complex-adaptive-systems and emergence vocabulary for the institution-scale dynamics this section describes operationally.
 
 ---
 

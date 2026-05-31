@@ -2,7 +2,7 @@
 title: Agent Readiness
 description: How to engineer an environment where agents succeed by default rather than by persuasion
 created: 2026-05-29
-last_updated: 2026-05-29
+last_updated: 2026-05-31
 tags: [agent-readiness, environment, surfaces, failure-modes, maturity]
 part: 3
 part_title: Perspectives
@@ -46,6 +46,7 @@ The conversion moment for most practitioners is experiential rather than argued.
 | [Readiness Principles](3-readiness-principles.md) | Eight principles of an agent-ready environment, plus a compact five-point frame that captures them                                                              |
 | [Dimensions of Readiness](4-maturity-ladders.md)  | Readiness resolved into independent dimensions—individual practice, the environment, and the organization—for locating where it actually stands                 |
 | [Ratcheting and Legacy](5-ratcheting-legacy.md)   | How brownfield repositories become agent-ready by improving monotonically rather than by rewriting                                                              |
+| [Software Ecology](6-software-ecology.md)         | How readiness scales from one repository to the whole socio-technical ecosystem, and what breaks across the delivery pipeline at 10x agent activity              |
 
 ---
 

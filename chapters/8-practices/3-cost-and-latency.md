@@ -2,7 +2,7 @@
 title: Cost and Latency
 description: Managing the economics and speed of agent systems
 created: 2025-12-08
-last_updated: 2025-12-10
+last_updated: 2026-05-31
 tags: [practices, cost, latency, performance, economics]
 part: 2
 part_title: Craft
@@ -30,6 +30,7 @@ Agents that are too slow or too expensive don't ship. These constraints shape ev
 - **To [Evaluation](2-evaluation.md):** How do you include cost/latency in your eval metrics?
 - **To [Orchestrator Pattern: Capability Minimization](../7-patterns/3-orchestrator-pattern.md#capability-minimization):** Restricting subagent tools reduces context size → lower token cost per agent
 - **To [Scaling Tool Use](../5-tool-use/4-scaling-tools.md):** Dynamic tool discovery (85% token reduction) and programmatic orchestration (37% token reduction) are production-tested optimization patterns
+- **[Software Ecology](../11-agent-readiness/6-software-ecology.md):** The Jevons paradox is one of several second-order effects that surface when activity scales 10x across the ecosystem.
 
 ---
 
@@ -120,6 +121,10 @@ From actual development sessions:
 - Revenue or value delivered per dollar of API cost
 
 For a SaaS product, if agents help ship a feature that generates $50K/year in revenue, the $1K in API costs to build it is a 50× return.
+
+### Second-Order Effects
+
+Per-call cost optimization can coexist with rising aggregate spend. The Jevons paradox—articulated by William Stanley Jevons in _The Coal Question_ (1865)—holds that as a resource becomes cheaper and more efficient to use, total consumption rises rather than falls. Applied to agentic coding, cheaper and faster tokens and agents drive more total activity, not less. Each task costs less, but teams run far more tasks, so aggregate cost climbs even as efficiency improves. The practical implication is direct: budget and cost observability must track aggregate consumption, not just per-call efficiency, because a monthly budget can be exhausted far faster than linear intuition suggests.
 
 ---
 

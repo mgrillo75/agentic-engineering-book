@@ -91,6 +91,7 @@
 - [Readiness Principles](chapters/11-agent-readiness/3-readiness-principles.md)
 - [Dimensions of Readiness](chapters/11-agent-readiness/4-maturity-ladders.md)
 - [Ratcheting and Legacy](chapters/11-agent-readiness/5-ratcheting-legacy.md)
+- [Software Ecology](chapters/11-agent-readiness/6-software-ecology.md)
 ### Chapter 12: Long-Horizon Agent State
 - [Long-Horizon Agent State](chapters/12-long-horizon-agent-state/_index.md)
 - [The Five-Layer Model](chapters/12-long-horizon-agent-state/1-five-layer-model.md)

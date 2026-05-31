@@ -2,7 +2,7 @@
 title: "Operating Agent Swarms"
 description: "Practices for running multi-agent systems at production scale, from cost management to incident response"
 created: 2026-02-11
-last_updated: 2026-02-13
+last_updated: 2026-05-31
 tags:
   [
     practices,
@@ -122,6 +122,8 @@ Swarm Bottleneck:
 ```
 
 _[2026-02-11]_: Gas Town production experience confirms this pattern: "The system churns through implementation so quickly that design and planning become the bottleneck." A swarm of 25 agents can consume well-specified issues faster than a single practitioner can create them.
+
+**AI amplifies magnitude, not direction.** A swarm produces more of whatever the existing practices already produce—more passing tests and more confusion, more clean merges and more conflicts. Teams with strong fundamentals amplify good outcomes; teams without amplify the bad. DORA's _Accelerate State of DevOps Report 2024_ (Google Cloud / DORA) found that adopting AI magnified existing organizational strengths and weaknesses rather than uniformly improving delivery. This sharpens the scaling argument: adding agents multiplies the current state, so the infrastructure and decomposition discipline must be in place before the swarm grows, or the swarm scales the dysfunction.
 
 ### Issue Decomposition Quality Drives Throughput
 
@@ -733,3 +735,4 @@ Is the work decomposable into 10+ independent units?
 - **To [Context Strategies](../4-context/2-context-strategies.md):** Context window management is critical at swarm scale, where context exhaustion is a primary failure mode requiring handoff protocols.
 
 - **To [Production Multi-Agent Systems](../7-patterns/11-production-multi-agent-systems.md)**: Production Multi-Agent Systems defines the architectural patterns (persistent identity, watchdog chains, convoy tracking); this section covers the day-to-day operational practices that depend on those patterns.
+- **[Software Ecology](../11-agent-readiness/6-software-ecology.md):** The amplifier dynamic and the node-by-node 10x breakdown are developed as ecosystem readiness.
