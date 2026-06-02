@@ -2,7 +2,7 @@
 title: Ratcheting and Legacy
 description: How brownfield repositories become agent-ready by improving monotonically rather than by rewriting
 created: 2026-05-29
-last_updated: 2026-05-29
+last_updated: 2026-06-01
 tags: [agent-readiness, ratcheting, legacy, brownfield, characterization-tests]
 part: 3
 part_title: Perspectives
@@ -21,7 +21,7 @@ The core shift is from rewriting to ratcheting: instead of verifying the whole w
 
 ## Ratcheting Beats Rewriting
 
-A ratchet snapshots the repository's current state into a baseline file and fails continuous integration only on _regressions_ against that baseline. The repository then improves monotonically—it can only get cleaner—without anyone authorizing a dedicated cleanup effort.
+A ratchet snapshots the repository's current state into a baseline file and fails continuous integration only on _regressions_ against that baseline. The repository then improves monotonically, getting only cleaner, without anyone authorizing a dedicated cleanup effort.
 
 |               | Rewriting                                      | Ratcheting                                 |
 | ------------- | ---------------------------------------------- | ------------------------------------------ |
@@ -30,7 +30,7 @@ A ratchet snapshots the repository's current state into a baseline file and fail
 | Risk          | Large, all-at-once, easy to stall              | Incremental, monotonic, hard to stall      |
 | Legacy fit    | Effectively impossible at scale                | Works at any size                          |
 
-The pattern applies to coverage floors, file-size caps, complexity thresholds, dead code, dependency counts, and even lint-rule adoption—allowlist the existing violations, block any new one. Ratcheting is the legacy equivalent of "verifiable in seconds": the check does not prove the whole codebase is clean, it proves this pull request did not degrade it.
+The pattern applies to coverage floors, file-size caps, complexity thresholds, dead code, dependency counts, and even lint-rule adoption: allowlist the existing violations, block any new one. Ratcheting is the legacy equivalent of "verifiable in seconds": the check does not prove the whole codebase is clean, it proves this pull request did not degrade it.
 
 A baseline ratchet is the practical form. The check derives its thresholds from the repository's current worst state rather than from an ideal, so it never manufactures failures on day one; it only catches the next regression.
 
@@ -42,15 +42,15 @@ Verifiability in sixty seconds is impossible if the full test suite takes forty-
 
 Build-module boundaries and monorepo build tools exist largely to enable this slicing. For a polyglot codebase, the slices layer by language: each language gets its own self-description, its own verify command, and its own ratchet file. Unifying verification across languages is usually not worth the abstraction tax.
 
-A repository's shape determines which signals even apply. A markdown-only repository with no runtime, for example, can still be made agent-ready by explicitly excluding the runtime signals that do not apply to it—tracing, metrics, alerting—so a readiness check does not penalize the absence of telemetry there is nothing to emit. Marking non-applicable signals as out of scope, with a stated rationale, prevents metric-gaming and keeps the readiness picture honest.
+A repository's shape determines which signals even apply. A markdown-only repository with no runtime, for example, can still be made agent-ready by explicitly excluding the runtime signals that do not apply to it (tracing, metrics, alerting), so a readiness check does not penalize the absence of telemetry there is nothing to emit. Marking non-applicable signals as out of scope, with a stated rationale, prevents metric-gaming and keeps the readiness picture honest.
 
 ---
 
 ## Characterization Tests Before Refactor
 
-The highest-leverage early use of agents in a legacy codebase is writing tests for code that has no tests, so that future edits become safe. A characterization test captures the _current_ behavior of code—correct or not—so that any change altering that behavior is caught. The technique predates agents by two decades, but it suits them well: an agent will patiently write two hundred boring test cases that a human would resent.
+The highest-leverage early use of agents in a legacy codebase is writing tests for code that has no tests, so that future edits become safe. A characterization test captures the _current_ behavior of code, correct or not, so that any change altering that behavior is caught. The technique predates agents by two decades, but it suits them well: an agent will patiently write two hundred boring test cases that a human would resent.
 
-This turns a frightening refactor into a routine pull request. In a legacy context the test suite is not a quality gate layered on top—it _is_ the agent's memory of how the system is supposed to behave. An agent cannot hold a twelve-thousand-file system in context, so the tests stand in for the understanding the agent cannot load. Get the characterization suite working and most other readiness gains follow, because the verification surface finally exists.
+This turns a frightening refactor into a routine pull request. In a legacy context the test suite is not a quality gate layered on top; it _is_ the agent's memory of how the system is supposed to behave. An agent cannot hold a twelve-thousand-file system in context, so the tests stand in for the understanding the agent cannot load. Get the characterization suite working and most other readiness gains follow, because the verification surface finally exists.
 
 **Sequence:**
 
@@ -63,17 +63,17 @@ This turns a frightening refactor into a routine pull request. In a legacy conte
 
 ## The Repo Describes Itself
 
-Self-description carries extra weight in legacy work because the tribal knowledge it replaces is both deep and undocumented. A self-description file that states the setup command, the verify command, and the architecture lets an agent reach a running test suite without interviewing a senior engineer. The standards that file references should be mechanized—a check that fails the build—rather than aspirational prose, because mechanized standards are the ones agents reliably follow.
+Self-description carries extra weight in legacy work because the tribal knowledge it replaces is both deep and undocumented. A self-description file that states the setup command, the verify command, and the architecture lets an agent reach a running test suite without interviewing a senior engineer. The standards that file references should be mechanized as a check that fails the build, rather than aspirational prose, because mechanized standards are the ones agents reliably follow.
 
 The self-description must be validated, or it decays into fiction. A check that confirms every path and command the file references still resolves keeps it honest; an unverified onboarding doc in a fast-moving repository is a liability, not an asset. This validation is itself a small ratchet: it does not demand the file be complete, only that what it claims remains true.
 
-A legacy-specific honesty applies to the gains. The realistic twelve-month outcome for a long-lived monolith is not agents shipping features end to end; it is agents making engineers substantially faster on well-scoped work, with higher-quality pull requests because the verify loop is finally real. Most "AI readiness" gains in legacy are "engineering readiness" gains—pre-commit hooks, branch protection, ratcheted coverage, structured logging—that were good ideas long before agents. The agent angle is mostly a forcing function for overdue platform work.
+A legacy-specific honesty applies to the gains. The realistic twelve-month outcome for a long-lived monolith is not agents shipping features end to end; it is agents making engineers substantially faster on well-scoped work, with higher-quality pull requests because the verify loop is finally real. Most "AI readiness" gains in legacy are "engineering readiness" gains (pre-commit hooks, branch protection, ratcheted coverage, structured logging) that were good ideas long before agents. The agent angle is mostly a forcing function for overdue platform work.
 
 ---
 
 ## Anti-Pattern: Aggressive Thresholds on Day One
 
-**What it looks like:** Adopting an ideal threshold—full coverage, a strict file-size cap—on a legacy repository and watching CI light up red across hundreds of pre-existing violations.
+**What it looks like:** Adopting an ideal threshold (full coverage, a strict file-size cap) on a legacy repository and watching CI light up red across hundreds of pre-existing violations.
 
 **Why it fails:** The build is now red for reasons unrelated to any current change, so the signal is useless and the team disables the check. The readiness gain is lost to noise.
 
