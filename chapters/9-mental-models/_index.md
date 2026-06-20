@@ -28,6 +28,7 @@ Mental models are frameworks for thinking about agentic systems. They're evaluat
 | [Execution Topologies](5-execution-topologies.md)   | A measurement framework for understanding and improving agent execution structures                                        |
 | [Design as Bottleneck](6-design-as-bottleneck.md)   | When implementation is automated, design becomes the constraint                                                           |
 | [Software Factories](7-software-factories.md)       | The resurgence of industrial-scale software production — what the factory metaphor reveals about agentic systems at scale |
+| [Loop Engineering](8-loop-engineering.md)           | The leverage ladder — as implementation automates, the authored artifact moves from prompt to loop, and verification becomes the constraint |
 
 ---
 

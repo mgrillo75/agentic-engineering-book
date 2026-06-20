@@ -76,6 +76,7 @@
 - [Execution Topologies](chapters/9-mental-models/5-execution-topologies.md)
 - [Design as Bottleneck](chapters/9-mental-models/6-design-as-bottleneck.md)
 - [Software Factories](chapters/9-mental-models/7-software-factories.md)
+- [Loop Engineering](chapters/9-mental-models/8-loop-engineering.md)
 ### Chapter 10: Practitioner Toolkit
 - [Practitioner Toolkit](chapters/10-practitioner-toolkit/_index.md)
 - [Claude Code](chapters/10-practitioner-toolkit/1-claude-code.md)

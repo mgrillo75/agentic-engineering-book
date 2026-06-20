@@ -2,7 +2,7 @@
 title: Twelve Leverage Points of Agentic Coding
 description: A hierarchy of intervention points for improving agentic systems, from low to high leverage
 created: 2025-12-08
-last_updated: 2026-05-31
+last_updated: 2026-06-20
 tags:
   [
     foundations,
@@ -239,6 +239,8 @@ How does work carry between agents? How are multiple agents working together to 
 - **To [Evaluation](../8-practices/2-evaluation.md):** Each leverage point requires different evaluation approaches. Low leverage points (context, model, prompt) can be evaluated per-task. High leverage points (architecture, templates, ADWs) require system-level metrics across multiple tasks.
 
 - **To [Patterns](../7-patterns/_index.md):** ADWs (#1) and Plans (#3) directly correspond to the orchestrator and plan-build-review patterns. Templates (#2) enable self-improving expert patterns.
+
+- **To [Loop Engineering](../9-mental-models/8-loop-engineering.md):** The same upstream-intervention principle extended one level up. Where this hierarchy ranks intervention points _within_ a single agentic system, the leverage ladder (prompt → context → harness → loop → factory) ranks where the engineer authors _across_ systems—and names the rung above the harness, where the human designs the loop rather than each prompt.
 
 - **To [Prompt Maturity Model](../9-mental-models/2-prompt-maturity-model.md):** The Engineer Leverage Progression section maps practitioner framing stages to leverage levels. Stage 2 framing is what makes Plans (#3) and ADWs (#1) accessible; Stage 3 is what makes Tests (#5) and measurement infrastructure actionable. The anti-pattern catalog identifies the specific failure behaviors that occur when framing lags behind leverage ambition.
 
